@@ -13,9 +13,10 @@ def main():
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", line_buffering=True)
 
     parser = argparse.ArgumentParser(description='Sitewatcher2 Client Tool')
-    sps = parser.add_subparsers(dest='function', title='functions')
-    sps_list = sps.add_parser('list', help='list sites')
-    sps_list.add_argument('name', nargs=1, metavar='NAME', help='site name')
+    sp = parser.add_subparsers(dest='function', title='functions')
+    sp_list = sp.add_parser('list', help='list sites')
+    sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
+    sp_list.add_argument('--strict', action='store_true', help='strict name check')
 
     if len(sys.argv) == 1:
         print(parser.format_usage(), file=sys.stderr)
