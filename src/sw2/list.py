@@ -13,13 +13,12 @@ def func_list(args):
     res = None
     headers = { 'Cache-Control': 'no-cache' }
 
-    delim = '?'
-    query = api_base
+    options = []
     if args.name:
-        query =  f'{query}{delim}name={args.name}'
-        delim = '&'
+        options.append('='.join('name', args.name))
     if args.strict:
-        query = f'{query}{delim}strict=true'
+        options.append('='.join(['strict', 'true']))
+    query = '?'.join([api_base, '&'.join(options)])
 
     try:
         res = requests.get(query, headers=headers)
