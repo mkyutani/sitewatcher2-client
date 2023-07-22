@@ -1,3 +1,4 @@
+import json
 import sys
 from urllib.parse import urljoin
 import requests
@@ -15,7 +16,7 @@ def func_list(args):
 
     options = []
     if args.name:
-        options.append('='.join('name', args.name))
+        options.append('='.join(['name', args.name]))
     if args.strict:
         options.append('='.join(['strict', 'true']))
     query = '?'.join([api_base, '&'.join(options)])
@@ -43,4 +44,9 @@ def func_list(args):
         print('Failed to fetch ({})'.format(res.status_code), file=sys.stderr)
         return None
 
-    print(res.text)
+    sites = json.loads(res.text)
+    for site in sites:
+        if args.long:
+            print(args.delimiter[0].join([str(site["id"]), site["name"], site["uri"], site["type"], str(site["enabled"]), site["lastupdated"]]))
+        else:
+            print(args.delimiter[0].join([str(site["id"]), site["name"], site["uri"]]))

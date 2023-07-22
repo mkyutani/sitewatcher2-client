@@ -17,6 +17,8 @@ def main():
     sp_list = sp.add_parser('list', help='list sites')
     sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
+    sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
+    sp_list.add_argument('--long', action='store_true', help='in long format')
 
     if len(sys.argv) == 1:
         print(parser.format_usage(), file=sys.stderr)
