@@ -28,7 +28,7 @@ def sw2_list(args, env):
         return 1
 
     if res.status_code >= 400:
-        print('Failed to fetch ({})'.format(res.status_code), file=sys.stderr)
+        print('Failed to get site list ({})'.format(res.status_code), file=sys.stderr)
         return 1
 
     sites = json.loads(res.text)
