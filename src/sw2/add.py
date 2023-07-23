@@ -12,7 +12,6 @@ def sw2_parser_add(subparser):
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
 
 def sw2_add(args, env):
-
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'name': args.name,

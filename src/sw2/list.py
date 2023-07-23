@@ -11,7 +11,6 @@ def sw2_parser_list(subparser):
     sp_list.add_argument('--long', action='store_true', help='in long format')
 
 def sw2_list(args, env):
-
     headers = { 'Cache-Control': 'no-cache' }
     options = []
     if args.name:
