@@ -34,7 +34,7 @@ def sw2_list(args, env):
     sites = json.loads(res.text)
     for site in sites:
         if args.long:
-            print(args.delimiter[0].join([str(site["id"]), site["name"], site["uri"], site["type"], str(site["enabled"]), site["lastupdated"]]))
+            print(args.delimiter[0].join([str(site["id"]), site["name"], site["uri"], site["type"], str(site["enabled"]), site["created"], site["updated"]]))
         else:
             print(args.delimiter[0].join([str(site["id"]), site["name"], site["uri"]]))
 
