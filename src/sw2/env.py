@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urljoin
 
 class Environment:
 
@@ -29,3 +30,8 @@ class Environment:
 
     def server(self):
         return self.get("server")
+
+    def apiBase(self):
+        return urljoin(self.get("server"), "/api/v1/")
+    def apiSites(self):
+        return urljoin(self.get("server"), "/api/v1/sites/")

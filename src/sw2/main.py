@@ -1,32 +1,36 @@
 import argparse
 import io
 import sys
-from sw2.list import func_list
+from sw2.add import sw2_add, sw2_parser_add
+from sw2.delete import sw2_delete, sw2_parser_delete
+from sw2.env import Environment
+from sw2.list import sw2_list, sw2_parser_list
 
 functions = {
-    "list": func_list
+    "list": { "function": sw2_list, "parser": sw2_parser_list },
+    "add": { "function": sw2_add, "parser": sw2_parser_add },
+    "delete": { "function": sw2_delete, "parser": sw2_parser_delete }
 }
 
-def main():
+def set_io_buffers():
     sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", line_buffering=True)
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", line_buffering=True)
 
+def main():
+    set_io_buffers()
+
     parser = argparse.ArgumentParser(description='Sitewatcher2 Client Tool')
     sp = parser.add_subparsers(dest='function', title='functions')
-    sp_list = sp.add_parser('list', help='list sites')
-    sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
-    sp_list.add_argument('--strict', action='store_true', help='strict name check')
-    sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    sp_list.add_argument('--long', action='store_true', help='in long format')
+    for function in functions.values():
+        function["parser"](sp)
 
     if len(sys.argv) == 1:
         print(parser.format_usage(), file=sys.stderr)
         return 1
 
+    env = Environment()
     args = parser.parse_args()
-    method = args.function
+    function = functions[args.function]["function"]
 
-    functions[method](args)
-
-    return 0
+    return function(args, env)
