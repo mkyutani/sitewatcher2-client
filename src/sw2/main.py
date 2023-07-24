@@ -2,6 +2,7 @@ import argparse
 import io
 import sys
 from sw2.add import sw2_add, sw2_parser_add
+from sw2.collect import sw2_collect, sw2_parser_collect
 from sw2.delete import sw2_delete, sw2_parser_delete
 from sw2.disable import sw2_disable, sw2_parser_disable
 from sw2.enable import sw2_enable, sw2_parser_enable
@@ -15,7 +16,8 @@ functions = {
     "delete": { "function": sw2_delete, "parser": sw2_parser_delete },
     "rename": { "function": sw2_rename, "parser": sw2_parser_rename },
     "enable": { "function": sw2_enable, "parser": sw2_parser_enable },
-    "disable": { "function": sw2_disable, "parser": sw2_parser_disable }
+    "disable": { "function": sw2_disable, "parser": sw2_parser_disable },
+    "collect": { "function": sw2_collect, "parser": sw2_parser_collect }
 }
 
 def set_io_buffers():
