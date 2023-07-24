@@ -24,11 +24,12 @@ def sw2_add(args, env):
     try:
         res = requests.post(env.apiSites(), json=contents, headers=headers)
     except Exception as e:
-        print(f'Failed to fetch: {str(e)}', file=sys.stderr)
+        print(str(e), file=sys.stderr)
         return 1
 
     if res.status_code >= 400:
-        print(f'Failed to register: {res.status_code} {res.text}', file=sys.stderr)
+        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+        print(f'Response {message} ', file=sys.stderr)
         return 1
 
     site = json.loads(res.text)

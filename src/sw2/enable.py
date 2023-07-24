@@ -18,11 +18,12 @@ def sw2_enable(args, env):
     try:
         res = requests.put(query, json=contents, headers=headers)
     except Exception as e:
-        print(f'Failed to fetch: {str(e)}', file=sys.stderr)
+        print(str(e), file=sys.stderr)
         return 1
 
     if res.status_code >= 400:
-        print(f'Failed to enable: {res.status_code} {res.text}', file=sys.stderr)
+        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+        print(f'Response {message} ', file=sys.stderr)
         return 1
 
     return 0

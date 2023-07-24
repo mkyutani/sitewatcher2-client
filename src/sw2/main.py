@@ -9,6 +9,7 @@ from sw2.enable import sw2_enable, sw2_parser_enable
 from sw2.env import Environment
 from sw2.list import sw2_list, sw2_parser_list
 from sw2.rename import sw2_parser_rename, sw2_rename
+from sw2.resources import sw2_parser_resources, sw2_resources
 
 functions = {
     "list": { "function": sw2_list, "parser": sw2_parser_list },
@@ -17,7 +18,8 @@ functions = {
     "rename": { "function": sw2_rename, "parser": sw2_parser_rename },
     "enable": { "function": sw2_enable, "parser": sw2_parser_enable },
     "disable": { "function": sw2_disable, "parser": sw2_parser_disable },
-    "collect": { "function": sw2_collect, "parser": sw2_parser_collect }
+    "collect": { "function": sw2_collect, "parser": sw2_parser_collect },
+    "resources": { "function": sw2_resources, "parser": sw2_parser_resources }
 }
 
 def set_io_buffers():

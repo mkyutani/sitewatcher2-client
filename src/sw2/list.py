@@ -23,11 +23,12 @@ def sw2_list(args, env):
     try:
         res = requests.get(query, headers=headers)
     except Exception as e:
-        print(f'Failed to fetch: {str(e)}', file=sys.stderr)
+        print(str(e), file=sys.stderr)
         return 1
 
     if res.status_code >= 400:
-        print('Failed to get site list ({})'.format(res.status_code), file=sys.stderr)
+        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+        print(f'Response {message} ', file=sys.stderr)
         return 1
 
     sites = json.loads(res.text)
