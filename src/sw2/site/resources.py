@@ -25,8 +25,7 @@ def sw2_resources(args, env):
         return 1
 
     resources = json.loads(res.text)
-    print(resources)
     for resource in resources:
-        print(args.delimiter[0].join([str(resource["site"]), resource["name"], resource["uri"]]))
+        print(args.delimiter[0].join([resource["name"], resource["uri"]]))
 
     return 0
