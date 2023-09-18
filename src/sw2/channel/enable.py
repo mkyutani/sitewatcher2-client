@@ -3,16 +3,16 @@ import sys
 from urllib.parse import urljoin
 import requests
 
-def sw2_parser_site_disable(subparser):
-    sp_list = subparser.add_parser('disable', help='disable site')
+def sw2_parser_channel_enable(subparser):
+    sp_list = subparser.add_parser('enable', help='enable channel')
     sp_list.add_argument('id', metavar='ID', help='id')
 
-def sw2_site_disable(args, env):
+def sw2_channel_enable(args, env):
     headers = { 'Content-Type': 'application/json' }
     contents = {
-        'enabled': False
+        'enabled': True
     }
-    query = urljoin(env.apiSites(), args.id)
+    query = urljoin(env.apiChannels(), args.id)
 
     res = None
     try:

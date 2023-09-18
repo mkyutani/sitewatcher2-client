@@ -3,26 +3,23 @@ import sys
 from urllib.parse import urljoin
 import requests
 
-def sw2_parser_site_add(subparser):
-    sp_list = subparser.add_parser('add', help='add site')
+def sw2_parser_channel_add(subparser):
+    sp_list = subparser.add_parser('add', help='add channel')
     sp_list.add_argument('name', metavar='NAME', help='name')
-    sp_list.add_argument('uri', metavar='URI', help='source uri')
     sp_list.add_argument('--type', nargs=1, default=['html'], help='type')
     sp_list.add_argument('--disable', action='store_true', help='set disabled')
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
 
-def sw2_site_add(args, env):
+def sw2_channel_add(args, env):
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'name': args.name,
-        'uri': args.uri,
-        'type': args.type[0],
         'enabled': 'true' if args.disable else 'false'
     }
 
     res = None
     try:
-        res = requests.post(env.apiSites(), json=contents, headers=headers)
+        res = requests.post(env.apiChannels(), json=contents, headers=headers)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return 1
@@ -32,7 +29,7 @@ def sw2_site_add(args, env):
         print(f'Response {message} ', file=sys.stderr)
         return 1
 
-    site = json.loads(res.text)
-    print(str(site["id"]))
+    channel = json.loads(res.text)
+    print(str(channel["id"]))
 
     return 0

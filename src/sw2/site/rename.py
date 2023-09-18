@@ -3,12 +3,12 @@ import sys
 from urllib.parse import urljoin
 import requests
 
-def sw2_parser_rename(subparser):
+def sw2_parser_site_rename(subparser):
     sp_list = subparser.add_parser('rename', help='rename site')
     sp_list.add_argument('id', metavar='ID', help='id')
     sp_list.add_argument('name', metavar='NAME', help='name')
 
-def sw2_rename(args, env):
+def sw2_site_rename(args, env):
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'name': args.name

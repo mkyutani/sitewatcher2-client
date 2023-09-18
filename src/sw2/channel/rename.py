@@ -1,18 +1,18 @@
-import json
 import sys
 from urllib.parse import urljoin
 import requests
 
-def sw2_parser_site_disable(subparser):
-    sp_list = subparser.add_parser('disable', help='disable site')
+def sw2_parser_channel_rename(subparser):
+    sp_list = subparser.add_parser('rename', help='rename channel')
     sp_list.add_argument('id', metavar='ID', help='id')
+    sp_list.add_argument('name', metavar='NAME', help='name')
 
-def sw2_site_disable(args, env):
+def sw2_channel_rename(args, env):
     headers = { 'Content-Type': 'application/json' }
     contents = {
-        'enabled': False
+        'name': args.name
     }
-    query = urljoin(env.apiSites(), args.id)
+    query = urljoin(env.apiChannels(), args.id)
 
     res = None
     try:

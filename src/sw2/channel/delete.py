@@ -1,22 +1,18 @@
-import json
 import sys
 from urllib.parse import urljoin
 import requests
 
-def sw2_parser_site_disable(subparser):
-    sp_list = subparser.add_parser('disable', help='disable site')
+def sw2_parser_channel_delete(subparser):
+    sp_list = subparser.add_parser('delete', help='delete channel')
     sp_list.add_argument('id', metavar='ID', help='id')
 
-def sw2_site_disable(args, env):
-    headers = { 'Content-Type': 'application/json' }
-    contents = {
-        'enabled': False
-    }
-    query = urljoin(env.apiSites(), args.id)
+def sw2_channel_delete(args, env):
+    headers = {}
+    query = urljoin(env.apiChannels(), args.id)
 
     res = None
     try:
-        res = requests.put(query, json=contents, headers=headers)
+        res = requests.delete(query, headers=headers)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return 1

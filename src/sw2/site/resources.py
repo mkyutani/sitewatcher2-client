@@ -3,12 +3,12 @@ import sys
 from urllib.parse import urljoin
 import requests
 
-def sw2_parser_resources(subparser):
+def sw2_parser_site_resources(subparser):
     sp_list = subparser.add_parser('resources', help='list site resources')
     sp_list.add_argument('id', metavar='ID', help='id')
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
 
-def sw2_resources(args, env):
+def sw2_site_resources(args, env):
     headers = {}
     query = urljoin(env.apiSites(), args.id) + '/resources'
 

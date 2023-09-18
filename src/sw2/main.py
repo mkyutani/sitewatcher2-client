@@ -2,28 +2,40 @@ import argparse
 import io
 import sys
 
+from sw2.channel.add import sw2_channel_add, sw2_parser_channel_add
+from sw2.channel.delete import sw2_channel_delete, sw2_parser_channel_delete
+from sw2.channel.disable import sw2_channel_disable, sw2_parser_channel_disable
+from sw2.channel.enable import sw2_channel_enable, sw2_parser_channel_enable
+from sw2.channel.list import sw2_channel_list, sw2_parser_channel_list
+from sw2.channel.rename import sw2_channel_rename, sw2_parser_channel_rename
 from sw2.env import Environment
-from sw2.site.add import sw2_add, sw2_parser_add
-from sw2.site.collect import sw2_collect, sw2_parser_collect
-from sw2.site.delete import sw2_delete, sw2_parser_delete
-from sw2.site.disable import sw2_disable, sw2_parser_disable
-from sw2.site.enable import sw2_enable, sw2_parser_enable
-from sw2.site.list import sw2_list, sw2_parser_list
-from sw2.site.rename import sw2_parser_rename, sw2_rename
-from sw2.site.resources import sw2_parser_resources, sw2_resources
+from sw2.site.add import sw2_site_add, sw2_parser_site_add
+from sw2.site.collect import sw2_site_collect, sw2_parser_site_collect
+from sw2.site.delete import sw2_site_delete, sw2_parser_site_delete
+from sw2.site.disable import sw2_site_disable, sw2_parser_site_disable
+from sw2.site.enable import sw2_site_enable, sw2_parser_site_enable
+from sw2.site.list import sw2_site_list, sw2_parser_site_list
+from sw2.site.rename import sw2_parser_site_rename, sw2_site_rename
+from sw2.site.resources import sw2_parser_site_resources, sw2_site_resources
 
 function_map = {
     "site": {
-        "list": { "function": sw2_list, "parser": sw2_parser_list },
-        "add": { "function": sw2_add, "parser": sw2_parser_add },
-        "delete": { "function": sw2_delete, "parser": sw2_parser_delete },
-        "rename": { "function": sw2_rename, "parser": sw2_parser_rename },
-        "enable": { "function": sw2_enable, "parser": sw2_parser_enable },
-        "disable": { "function": sw2_disable, "parser": sw2_parser_disable },
-        "collect": { "function": sw2_collect, "parser": sw2_parser_collect },
-        "resources": { "function": sw2_resources, "parser": sw2_parser_resources }
+        "list": { "function": sw2_site_list, "parser": sw2_parser_site_list },
+        "add": { "function": sw2_site_add, "parser": sw2_parser_site_add },
+        "delete": { "function": sw2_site_delete, "parser": sw2_parser_site_delete },
+        "rename": { "function": sw2_site_rename, "parser": sw2_parser_site_rename },
+        "enable": { "function": sw2_site_enable, "parser": sw2_parser_site_enable },
+        "disable": { "function": sw2_site_disable, "parser": sw2_parser_site_disable },
+        "collect": { "function": sw2_site_collect, "parser": sw2_parser_site_collect },
+        "resources": { "function": sw2_site_resources, "parser": sw2_parser_site_resources }
     },
     "channel": {
+        "list": { "function": sw2_channel_list, "parser": sw2_parser_channel_list },
+        "add": { "function": sw2_channel_add, "parser": sw2_parser_channel_add },
+        "delete": { "function": sw2_channel_delete, "parser": sw2_parser_channel_delete },
+        "rename": { "function": sw2_channel_rename, "parser": sw2_parser_channel_rename },
+        "enable": { "function": sw2_channel_enable, "parser": sw2_parser_channel_enable },
+        "disable": { "function": sw2_channel_disable, "parser": sw2_parser_channel_disable }
     }
 }
 

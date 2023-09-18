@@ -3,11 +3,11 @@ import sys
 from urllib.parse import urljoin
 import requests
 
-def sw2_parser_enable(subparser):
+def sw2_parser_site_enable(subparser):
     sp_list = subparser.add_parser('enable', help='enable site')
     sp_list.add_argument('id', metavar='ID', help='id')
 
-def sw2_enable(args, env):
+def sw2_site_enable(args, env):
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'enabled': True
