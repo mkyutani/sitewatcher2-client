@@ -33,6 +33,8 @@ class Environment:
 
     def apiBase(self):
         return urljoin(self.get("server"), "/api/v1/")
+    def apiDirectories(self):
+        return urljoin(self.apiBase(),  "directories/")
     def apiSites(self):
         return urljoin(self.apiBase(),  "sites/")
     def apiChannels(self):
