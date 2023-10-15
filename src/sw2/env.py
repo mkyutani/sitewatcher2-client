@@ -9,16 +9,16 @@ class Environment:
     def get(cls, name):
         if cls.env is None:
             cls.env = {
-                "directory": ".",
-                "server": "http://localhost:8089"
+                'dir': '.',
+                'server': 'http://localhost:8089'
             }
 
             dir = os.environ.get('SW2_DIR')
             if dir:
-                cls.env["directory"] = dir
+                cls.env['dir'] = dir
             server = os.environ.get('SW2_SERVER')
             if server:
-                cls.env["server"] = server
+                cls.env['server'] = server
 
         if name in cls.env:
             return cls.env[name]
@@ -26,16 +26,16 @@ class Environment:
             return None
 
     def dir(self):
-        return self.get("dir")
+        return self.get('dir')
 
     def server(self):
-        return self.get("server")
+        return self.get('server')
 
     def apiBase(self):
-        return urljoin(self.get("server"), "/api/v1/")
+        return urljoin(self.get('server'), '/api/v1/')
     def apiDirectories(self):
-        return urljoin(self.apiBase(),  "directories/")
+        return urljoin(self.apiBase(),  'directories/')
     def apiSites(self):
-        return urljoin(self.apiBase(),  "sites/")
+        return urljoin(self.apiBase(),  'sites/')
     def apiChannels(self):
-        return urljoin(self.apiBase(),  "channels/")
+        return urljoin(self.apiBase(),  'channels/')
