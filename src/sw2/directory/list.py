@@ -8,7 +8,7 @@ def sw2_parser_directory_list(subparser):
     sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory name')
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    sp_list.add_argument('--long', action='store_true', help='in long format')
+    sp_list.add_argument('--json', action='store_true', help='in json format')
 
 def sw2_directory_list(args, env):
     headers = { 'Cache-Control': 'no-cache' }
@@ -31,11 +31,11 @@ def sw2_directory_list(args, env):
         print(f'Response {message} ', file=sys.stderr)
         return 1
 
-    directories = json.loads(res.text)
-    for directory in directories:
-        if args.long:
-            print(args.delimiter[0].join([str(directory["id"]), directory["name"], directory["uri"], directory["type"], str(directory["enabled"]), directory["created"], directory["updated"]]))
-        else:
-            print(args.delimiter[0].join([str(directory["id"]), directory["name"], directory["uri"]]))
+    if args.json:
+        print(res.text)
+    else:
+        directories = json.loads(res.text)
+        for directory in directories:
+            print(args.delimiter[0].join([str(directory['id']), directory['name'], 'enabled' if directory['enabled'] else 'disabled']))
 
     return 0

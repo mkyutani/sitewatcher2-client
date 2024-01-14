@@ -8,7 +8,7 @@ def sw2_parser_site_list(subparser):
     sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    sp_list.add_argument('--long', action='store_true', help='in long format')
+    sp_list.add_argument('--json', action='store_true', help='in json format')
 
 def sw2_site_list(args, env):
     headers = { 'Cache-Control': 'no-cache' }
@@ -31,11 +31,11 @@ def sw2_site_list(args, env):
         print(f'Response {message} ', file=sys.stderr)
         return 1
 
-    sites = json.loads(res.text)
-    for site in sites:
-        if args.long:
-            print(args.delimiter[0].join([str(site["id"]), site["name"], site["uri"], site["type"], str(site["enabled"]), site["created"], site["updated"]]))
-        else:
-            print(args.delimiter[0].join([str(site["id"]), site["name"], site["uri"]]))
+    if args.json:
+        print(res.text)
+    else:
+        sites = json.loads(res.text)
+        for site in sites:
+            print(args.delimiter[0].join([str(site['id']), site['name'], site["uri"], 'enabled' if site['enabled'] else 'disabled']))
 
     return 0
