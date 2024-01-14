@@ -10,7 +10,7 @@ class Environment:
         if cls.env is None:
             cls.env = {
                 'dir': '.',
-                'server': 'http://localhost:8089'
+                'server': 'http://localhost:18085'
             }
 
             dir = os.environ.get('SW2_DIR')
