@@ -7,6 +7,7 @@ def sw2_parser_directory_list(subparser):
     sp_list = subparser.add_parser('list', help='list directories')
     sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory name')
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
+    sp_list.add_argument('--sort-by-name', action='store_true', help='sort by name')
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     sp_list.add_argument('--json', action='store_true', help='in json format')
 
@@ -17,6 +18,8 @@ def sw2_directory_list(args, env):
         options.append('='.join(['name', args.name]))
     if args.strict:
         options.append('='.join(['strict', 'true']))
+    if args.sort_by_name:
+        options.append('='.join(['sort', 'name']))
     query = '?'.join([env.apiDirectories(), '&'.join(options)])
 
     res = None
