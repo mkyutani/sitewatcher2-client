@@ -23,7 +23,7 @@ def sw2_directory_rename(args, env):
 
     if res.status_code >= 400:
         message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'Response {message} ', file=sys.stderr)
+        print(f'{message} ', file=sys.stderr)
         return 1
 
     return 0

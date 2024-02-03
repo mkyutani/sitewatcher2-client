@@ -6,10 +6,10 @@ import requests
 def sw2_parser_directory_list(subparser):
     sp_list = subparser.add_parser('list', help='list directories')
     sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory name')
-    sp_list.add_argument('--strict', action='store_true', help='strict name check')
-    sp_list.add_argument('--sort-by-name', action='store_true', help='sort by name')
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     sp_list.add_argument('--json', action='store_true', help='in json format')
+    sp_list.add_argument('--strict', action='store_true', help='strict name check')
+    sp_list.add_argument('--sort-by-name', action='store_true', help='sort by name')
 
 def sw2_directory_list(args, env):
     headers = { 'Cache-Control': 'no-cache' }
@@ -31,7 +31,7 @@ def sw2_directory_list(args, env):
 
     if res.status_code >= 400:
         message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'Response {message} ', file=sys.stderr)
+        print(f'{message} ', file=sys.stderr)
         return 1
 
     if args.json:

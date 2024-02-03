@@ -1,14 +1,8 @@
 import argparse
 import io
 import sys
+from sw2.directory import directory_function_map
 
-from sw2.directory.add import sw2_directory_add, sw2_parser_directory_add
-from sw2.directory.delete import sw2_directory_delete, sw2_parser_directory_delete
-from sw2.directory.disable import sw2_directory_disable, sw2_parser_directory_disable
-from sw2.directory.enable import sw2_directory_enable, sw2_parser_directory_enable
-from sw2.directory.list import sw2_directory_list, sw2_parser_directory_list
-from sw2.directory.metadata import sw2_directory_metadata, sw2_parser_directory_metadata
-from sw2.directory.rename import sw2_directory_rename, sw2_parser_directory_rename
 from sw2.env import Environment
 from sw2.site.add import sw2_site_add, sw2_parser_site_add
 from sw2.site.delete import sw2_site_delete, sw2_parser_site_delete
@@ -20,15 +14,7 @@ from sw2.site.metadata import sw2_parser_site_metadata, sw2_site_metadata
 from sw2.site.rename import sw2_parser_site_rename, sw2_site_rename
 
 function_map = {
-    'directory': {
-        'list': { 'function': sw2_directory_list, 'parser': sw2_parser_directory_list },
-        'add': { 'function': sw2_directory_add, 'parser': sw2_parser_directory_add },
-        'delete': { 'function': sw2_directory_delete, 'parser': sw2_parser_directory_delete },
-        'rename': { 'function': sw2_directory_rename, 'parser': sw2_parser_directory_rename },
-        'enable': { 'function': sw2_directory_enable, 'parser': sw2_parser_directory_enable },
-        'disable': { 'function': sw2_directory_disable, 'parser': sw2_parser_directory_disable },
-        'metadata': { 'function': sw2_directory_metadata, 'parser': sw2_parser_directory_metadata }
-    },
+    'directory': directory_function_map,
     'site': {
         'list': { 'function': sw2_site_list, 'parser': sw2_parser_site_list },
         'add': { 'function': sw2_site_add, 'parser': sw2_parser_site_add },
