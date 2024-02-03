@@ -9,7 +9,7 @@ def sw2_parser_directory_list(subparser):
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     sp_list.add_argument('--json', action='store_true', help='in json format')
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
-    sp_list.add_argument('--sort-by-name', action='store_true', help='sort by name')
+    sp_list.add_argument('--sort', action='store_true', help='sort by name')
 
 def sw2_directory_list(args, env):
     headers = { 'Cache-Control': 'no-cache' }
@@ -18,8 +18,6 @@ def sw2_directory_list(args, env):
         options.append('='.join(['name', args.name]))
     if args.strict:
         options.append('='.join(['strict', 'true']))
-    if args.sort_by_name:
-        options.append('='.join(['sort', 'name']))
     query = '?'.join([env.apiDirectories(), '&'.join(options)])
 
     res = None
@@ -34,10 +32,13 @@ def sw2_directory_list(args, env):
         print(f'{message} ', file=sys.stderr)
         return 1
 
+    directories = json.loads(res.text)
+    if args.sort:
+        directories.sort(key=lambda x: x['name'])
+
     if args.json:
-        print(res.text)
+        print(directories)
     else:
-        directories = json.loads(res.text)
         for directory in directories:
             print(args.delimiter[0].join([str(directory['id']), directory['name'], 'enabled' if directory['enabled'] else 'disabled']))
 
