@@ -10,6 +10,7 @@ def sw2_parser_site_set(subparser):
     parser.add_argument('id', metavar='ID', help='site id or name')
     parser.add_argument('key', metavar='KEY', default=None, help='metadata key')
     parser.add_argument('value', nargs='?', metavar='VALUE', default=None, help='metadata value')
+    parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
 
 def sw2_site_set(args, env):
@@ -44,8 +45,12 @@ def sw2_site_set(args, env):
         print(f'{message} ', file=sys.stderr)
         return 1
 
-    metadata = json.loads(res.text)[0]
-    message = ' '.join([metadata['site'], metadata['key'], metadata['value']])
-    print(message)
+    metadata = json.loads(res.text)
+    if args.json:
+        print(res.text)
+    else:
+        for m in metadata:
+            message = ' '.join([m['site'], m['key'], m['value']])
+            print(message)
 
     return 0
