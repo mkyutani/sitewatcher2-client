@@ -5,9 +5,9 @@ import requests
 
 def sw2_parser_site_add(subparser):
     sp_list = subparser.add_parser('add', help='add site')
+    sp_list.add_argument('directory', metavar='DIR', help='directory id')
     sp_list.add_argument('name', metavar='NAME', help='name')
     sp_list.add_argument('uri', metavar='URI', help='source uri')
-    sp_list.add_argument('directory', metavar='DIR', help='directory id')
     sp_list.add_argument('--disable', action='store_true', help='set disabled')
 
 def sw2_site_add(args, env):
@@ -28,7 +28,7 @@ def sw2_site_add(args, env):
 
     if res.status_code >= 400:
         message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'Response {message} ', file=sys.stderr)
+        print(f'{message} ', file=sys.stderr)
         return 1
 
     site = json.loads(res.text)
