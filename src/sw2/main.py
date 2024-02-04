@@ -2,29 +2,12 @@ import argparse
 import io
 import sys
 from sw2.directory import directory_function_map
-
 from sw2.env import Environment
-from sw2.site.add import sw2_site_add, sw2_parser_site_add
-from sw2.site.delete import sw2_site_delete, sw2_parser_site_delete
-from sw2.site.directory import sw2_parser_site_directory, sw2_site_directory
-from sw2.site.disable import sw2_site_disable, sw2_parser_site_disable
-from sw2.site.enable import sw2_site_enable, sw2_parser_site_enable
-from sw2.site.list import sw2_site_list, sw2_parser_site_list
-from sw2.site.metadata import sw2_parser_site_metadata, sw2_site_metadata
-from sw2.site.rename import sw2_parser_site_rename, sw2_site_rename
+from sw2.site import site_function_map
 
 function_map = {
     'directory': directory_function_map,
-    'site': {
-        'list': { 'function': sw2_site_list, 'parser': sw2_parser_site_list },
-        'add': { 'function': sw2_site_add, 'parser': sw2_parser_site_add },
-        'delete': { 'function': sw2_site_delete, 'parser': sw2_parser_site_delete },
-        'rename': { 'function': sw2_site_rename, 'parser': sw2_parser_site_rename },
-        'enable': { 'function': sw2_site_enable, 'parser': sw2_parser_site_enable },
-        'disable': { 'function': sw2_site_disable, 'parser': sw2_parser_site_disable },
-        'directory': { 'function': sw2_site_directory, 'parser': sw2_parser_site_directory },
-        'metadata': { 'function': sw2_site_metadata, 'parser': sw2_parser_site_metadata }
-    }
+    'site': site_function_map
 }
 
 def set_io_buffers():

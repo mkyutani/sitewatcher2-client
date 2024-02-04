@@ -8,7 +8,6 @@ def sw2_parser_site_add(subparser):
     sp_list.add_argument('name', metavar='NAME', help='name')
     sp_list.add_argument('uri', metavar='URI', help='source uri')
     sp_list.add_argument('directory', metavar='DIR', help='directory id')
-    sp_list.add_argument('--metadata', nargs=1, default=['{}'], help='metadata')
     sp_list.add_argument('--disable', action='store_true', help='set disabled')
 
 def sw2_site_add(args, env):
@@ -17,7 +16,6 @@ def sw2_site_add(args, env):
         'name': args.name,
         'uri': args.uri,
         'directory': args.directory,
-        'metadata': args.metadata[0],
         'enabled': 'true' if not args.disable else 'false'
     }
 
