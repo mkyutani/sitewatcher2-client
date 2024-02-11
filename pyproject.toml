@@ -1,0 +1,24 @@
+[project]
+name = "sitewatcher2-client"
+version = "0.1.0"
+description = "Sitewatcher2 Client Tools"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["sitewatcher", "web", "site", "watch"]
+authors = [
+    { name = "Miki Yutani", email = "mkyutani@gmail.com"}
+]
+requires-python = ">=3.10"
+dependencies = [
+    "requests"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/mkyutani/sitewatcher2-client"
+"Source" = "https://github.com/mkyutani/sitewatcher2-client/"
+
+[project.scripts]
+sw2 = "sw2.main:main"
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]

@@ -1,8 +1,8 @@
 import argparse
 import io
 import sys
-from sw2.directory import directory_function_map
 from sw2.env import Environment
+from sw2.directory import directory_function_map
 from sw2.site import site_function_map
 
 function_map = {
