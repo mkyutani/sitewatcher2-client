@@ -12,9 +12,9 @@ def sw2_parser_directory_variables(subparser):
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
 
 def sw2_directory_variables(args):
-    args_id = args['id']
-    args_json = args['json']
-    args_strict = args['strict']
+    args_id = args.get('id')
+    args_json = args.get('json')
+    args_strict = args.get('strict')
 
     if is_uuid(args_id):
         query = urljoin(Environment().apiDirectories(), f'{args_id}/metadata')

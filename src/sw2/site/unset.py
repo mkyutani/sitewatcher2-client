@@ -12,9 +12,9 @@ def sw2_parser_site_unset(subparser):
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
 
 def sw2_site_unset(args):
-    args_id = args['id']
-    args_key = args['key']
-    args_strict = args['strict']
+    args_id = args.get('id')
+    args_key = args.get('key')
+    args_strict = args.get('strict')
 
     headers = { 'Content-Type': 'application/json' }
     if is_uuid(args_id):

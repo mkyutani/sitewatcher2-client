@@ -52,12 +52,12 @@ def get_directories(name, strict=False, all=False, single=False):
     return directories
 
 def sw2_directory_list(args):
-    args_name = args['name']
-    args_strict = args['strict']
-    args_all = args['all']
-    args_sort = args['sort']
-    args_json = args['json']
-    args_delimiter = args['delimiter'][0]
+    args_name = args.get('name')
+    args_strict = args.get('strict')
+    args_all = args.get('all')
+    args_sort = args.get('sort')
+    args_json = args.get('json')
+    args_delimiter = args.get('delimiter')[0]
 
     directories = get_directories(args_name, args_strict, args_all)
 

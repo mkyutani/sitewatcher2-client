@@ -9,7 +9,7 @@ def sw2_parser_site_delete(subparser):
     sp_list.add_argument('id', metavar='ID', help='id')
 
 def sw2_site_delete(args):
-    args_id = args['id']
+    args_id = args.get('id')
 
     headers = {}
     query = urljoin(Environment().apiSites(), args_id)

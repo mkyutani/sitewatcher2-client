@@ -9,7 +9,7 @@ def sw2_parser_directory_delete(subparser):
     sp_list.add_argument('id', metavar='ID', help='id')
 
 def sw2_directory_delete(args):
-    args_id = args['id']
+    args_id = args.get('id')
 
     headers = {}
     query = urljoin(Environment().apiDirectories(), args_id)

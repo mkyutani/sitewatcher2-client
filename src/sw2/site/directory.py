@@ -11,8 +11,8 @@ def sw2_parser_site_directory(subparser):
     parser.add_argument('directory', metavar='DIR', help='directory id or name')
 
 def sw2_site_directory(args):
-    args_id = args['id']
-    args_directory = args['directory']
+    args_id = args.get('id')
+    args_directory = args.get('directory')
 
     if is_uuid(args_directory):
         directory = args_directory

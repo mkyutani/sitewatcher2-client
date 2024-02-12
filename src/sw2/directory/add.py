@@ -11,8 +11,8 @@ def sw2_parser_directory_add(subparser):
     sp_list.add_argument('--disable', action='store_true', help='set disabled')
 
 def sw2_directory_add(args):
-    args_name = args['name']
-    args_disable = args['disable']
+    args_name = args.get('name')
+    args_disable = args.get('disable')
 
     headers = { 'Content-Type': 'application/json' }
     contents = {

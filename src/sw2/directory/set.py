@@ -14,11 +14,11 @@ def sw2_parser_directory_set(subparser):
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
 
 def sw2_directory_set(args):
-    args_id = args['id']
-    args_key = args['key']
-    args_value = args['value'] if args['value'] else ''
-    args_json = args['json']
-    args_strict = args['strict']
+    args_id = args.get('id')
+    args_key = args.get('key')
+    args_value = args.get('value') if args.get('value') else ''
+    args_json = args.get('json')
+    args_strict = args.get('strict')
 
     headers = { 'Content-Type': 'application/json' }
     contents = {

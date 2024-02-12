@@ -12,9 +12,9 @@ def sw2_parser_site_variables(subparser):
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
 
 def sw2_site_variables(args):
-    args_id = args['id']
-    args_json = args['json']
-    args_strict = args['strict']
+    args_id = args.get('id')
+    args_json = args.get('json')
+    args_strict = args.get('strict')
 
     if is_uuid(args_id):
         query = urljoin(Environment().apiSites(), f'{args_id}/metadata')

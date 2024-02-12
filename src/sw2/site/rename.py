@@ -10,8 +10,8 @@ def sw2_parser_site_rename(subparser):
     sp_list.add_argument('name', metavar='NAME', help='name')
 
 def sw2_site_rename(args):
-    args_id = args['id']
-    args_name = args['name']
+    args_id = args.get('id')
+    args_name = args.get('name')
 
     headers = { 'Content-Type': 'application/json' }
     contents = {

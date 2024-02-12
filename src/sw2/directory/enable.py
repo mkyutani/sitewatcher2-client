@@ -9,7 +9,7 @@ def sw2_parser_directory_enable(subparser):
     sp_list.add_argument('id', metavar='ID', help='id')
 
 def sw2_directory_enable(args):
-    args_id = args['id']
+    args_id = args.get('id')
 
     headers = { 'Content-Type': 'application/json' }
     contents = {

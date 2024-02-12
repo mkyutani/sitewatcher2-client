@@ -112,10 +112,10 @@ def push(site, link, reason):
     print(resource['uri'], link_name, site_name)
 
 def sw2_task_list(args):
-    args_name = args['name']
-    args_strict = args['strict']
-    args_push = args['push']
-    args_delimiter = args['delimiter'][0]
+    args_name = args.get('name')
+    args_strict = args.get('strict')
+    args_push = args.get('push')
+    args_delimiter = args.get('delimiter')[0]
 
     sites = get_sites(args_name, args_strict)
     for site in sites:

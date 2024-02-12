@@ -51,11 +51,11 @@ def get_sites(name, strict=False, all=False, single=False):
     return sites
 
 def sw2_site_list(args):
-    args_name = args['name']
-    args_strict = args['strict']
-    args_delimiter = args['delimiter'][0]
-    args_json = args['json']
-    args_sort = args['sort']
+    args_name = args.get('name')
+    args_strict = args.get('strict')
+    args_delimiter = args.get('delimiter')[0]
+    args_json = args.get('json')
+    args_sort = args.get('sort')
 
     sites = get_sites(args_name, args_strict)
 
