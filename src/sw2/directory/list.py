@@ -1,7 +1,7 @@
 import json
-import sys
-from urllib.parse import urljoin
+import json
 import requests
+import sys
 
 from sw2.env import Environment
 
@@ -14,7 +14,7 @@ def sw2_parser_directory_list(subparser):
     sp_list.add_argument('--all', action='store_true', help='include disabled directories')
     sp_list.add_argument('--sort', action='store_true', help='sort by name')
 
-def list_directories(name, strict, all):
+def get_directories(name, strict=False, all=False):
     headers = { 'Cache-Control': 'no-cache' }
     options = []
     if name:
@@ -49,7 +49,7 @@ def sw2_directory_list(args):
     args_json = args['json']
     args_delimiter = args['delimiter'][0]
 
-    directories = list_directories(args_name, args_strict, args_all)
+    directories = get_directories(args_name, args_strict, args_all)
 
     if args_sort:
         directories.sort(key=lambda x: x['name'])

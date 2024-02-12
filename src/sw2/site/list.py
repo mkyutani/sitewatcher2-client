@@ -1,7 +1,7 @@
 import json
-import sys
-from urllib.parse import urljoin
+import json
 import requests
+import sys
 
 from sw2.env import Environment
 
@@ -13,7 +13,7 @@ def sw2_parser_site_list(subparser):
     sp_list.add_argument('--json', action='store_true', help='in json format')
     sp_list.add_argument('--sort', action='store_true', help='sort by name')
 
-def list_sites(name, strict):
+def get_sites(name, strict=False):
     headers = { 'Cache-Control': 'no-cache' }
     options = []
     if name:
@@ -45,7 +45,7 @@ def sw2_site_list(args):
     args_json = args['json']
     args_sort = args['sort']
 
-    sites = list_sites(args_name, args_strict)
+    sites = get_sites(args_name, args_strict)
 
     if args_sort:
         sites.sort(key=lambda x: x['name'])

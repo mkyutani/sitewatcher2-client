@@ -3,7 +3,7 @@ import re
 import sys
 from urllib.parse import urljoin, urlparse
 import requests
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup
 
 from sw2.env import Environment
 

@@ -2,9 +2,8 @@ import json
 import sys
 from urllib.parse import urljoin
 import requests
-
+from sw2.directory.list import get_directories
 from sw2.env import Environment
-from sw2.func import get_directories
 from sw2.util import is_uuid
 
 def sw2_parser_site_add(subparser):
