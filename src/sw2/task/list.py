@@ -6,14 +6,14 @@ import requests
 from bs4 import BeautifulSoup
 
 from sw2.env import Environment
-from sw2.site.list import get_sites
+from sw2.site.list import get_sites_by_name
+from sw2.site.resources import get_site_resources
 
 def sw2_parser_task_list(subparser):
     sp_list = subparser.add_parser('list', help='list links')
     sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
     sp_list.add_argument('--push', action='store_true', help='push to remote')
-    sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
 
 def get_list_links(source):
     headers = { 'Cache-Control': 'no-cache' }
@@ -109,21 +109,40 @@ def push(site, link, reason):
         return 1
 
     resource = json.loads(res.text)
-    print(resource['uri'], link_name, site_name)
 
 def sw2_task_list(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
     args_push = args.get('push')
-    args_delimiter = args.get('delimiter')[0]
 
-    sites = get_sites(args_name, args_strict)
+    sites = get_sites_by_name(args_name, args_strict)
     for site in sites:
+        resources = get_site_resources(site['id'])
+        resource_dict = {}
+        for resource in resources:
+            resource_dict[resource['uri']] = resource
+
+        messages = []
+
         links = get_list_links(site['uri'])
         for link in links:
+            message = ' '.join([link['uri'], link['name']])
             if args_push:
-                push(site, link, "new")
+                if resource_dict.pop(link['uri'], None) is None:
+                    push(site, link, "new")
+                    messages.append({'message': message, 'op': '+'})
             else:
-                print(link['uri'], link['name'], sep=args_delimiter)
+                if resource_dict.pop(link['uri'], None) is None:
+                    messages.append({'message': message, 'op': '+'})
+                else:
+                    messages.append({'message': message, 'op': ' '})
+        if not args_push:
+            for resource in resource_dict.values():
+                message = ' '.join([resource['uri'], resource['name']])
+                messages.append({'message': message, 'op': '-'})
+
+        messages.sort(key=lambda x: x['message'])
+        for message in messages:
+            print(message['op'], message['message'])
 
     return 0

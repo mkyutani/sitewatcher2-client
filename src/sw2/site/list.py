@@ -1,5 +1,6 @@
 import json
 import json
+from urllib.parse import urljoin
 import requests
 import sys
 
@@ -13,7 +14,28 @@ def sw2_parser_site_list(subparser):
     sp_list.add_argument('--json', action='store_true', help='in json format')
     sp_list.add_argument('--sort', action='store_true', help='sort by name')
 
-def get_sites(name, strict=False, all=False, single=False):
+def get_site(id):
+    headers = { 'Cache-Control': 'no-cache' }
+
+    query = urljoin(Environment().apiSites(), id)
+
+    res = None
+    try:
+        res = requests.get(query, headers=headers)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return None
+
+    if res.status_code >= 400:
+        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+        print(f'{message} ', file=sys.stderr)
+        return None
+
+    site = json.loads(res.text)
+
+    return site
+
+def get_sites_by_name(name, strict=False, all=False, single=False):
     headers = { 'Cache-Control': 'no-cache' }
     options = []
     if name:
@@ -57,7 +79,7 @@ def sw2_site_list(args):
     args_json = args.get('json')
     args_sort = args.get('sort')
 
-    sites = get_sites(args_name, args_strict)
+    sites = get_sites_by_name(args_name, args_strict)
 
     if args_sort:
         sites.sort(key=lambda x: x['name'])

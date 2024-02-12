@@ -1,7 +1,7 @@
 import sys
 from urllib.parse import urljoin
 import requests
-from sw2.directory.list import get_directories
+from sw2.directory.list import get_directories_by_name
 from sw2.env import Environment
 from sw2.util import is_uuid
 
@@ -17,7 +17,7 @@ def sw2_site_directory(args):
     if is_uuid(args_directory):
         directory = args_directory
     else:
-        directories = get_directories(args_directory)
+        directories = get_directories_by_name(args_directory)
         if len(directories) == 0:
             print('Directory not found', file=sys.stderr)
             return 1
