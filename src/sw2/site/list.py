@@ -13,13 +13,15 @@ def sw2_parser_site_list(subparser):
     sp_list.add_argument('--json', action='store_true', help='in json format')
     sp_list.add_argument('--sort', action='store_true', help='sort by name')
 
-def get_sites(name, strict=False):
+def get_sites(name, strict=False, all=False, single=False):
     headers = { 'Cache-Control': 'no-cache' }
     options = []
     if name:
         options.append('='.join(['name', name]))
     if strict:
         options.append('='.join(['strict', 'true']))
+    if not all:
+        options.append('='.join(['enabled', 'true']))
     query = '?'.join([Environment().apiSites(), '&'.join(options)])
 
     res = None
@@ -35,6 +37,16 @@ def get_sites(name, strict=False):
         return None
 
     sites = json.loads(res.text)
+
+    if single:
+        if len(sites) == 0:
+            print(f'No directory found', file=sys.stderr)
+            return None
+        elif len(sites) > 1:
+            print(f'Multiple directories found', file=sys.stderr)
+            return None
+        else:
+            return sites[0]
 
     return sites
 

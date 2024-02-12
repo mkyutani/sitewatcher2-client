@@ -6,6 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from sw2.env import Environment
+from sw2.site.list import get_sites
 
 def sw2_parser_task_list(subparser):
     sp_list = subparser.add_parser('list', help='list links')
@@ -81,30 +82,15 @@ def get_list_links(source) -> list[str]:
     return links
 
 def sw2_task_list(args):
-    headers = { 'Cache-Control': 'no-cache' }
-    options = [ 'enabled=true' ]
-    if args['name']:
-        options.append('='.join(['name', args['name']]))
-    if args['strict']:
-        options.append('='.join(['strict', 'true']))
-    query = '?'.join([Environment().apiSites(), '&'.join(options)])
+    args_name = args['name']
+    args_strict = args['strict']
+    args_push = args['push']
+    args_delimiter = args['delimiter'][0]
 
-    res = None
-    try:
-        res = requests.get(query, headers=headers)
-    except Exception as e:
-        print(str(e), file=sys.stderr)
-        return 1
-
-    if res.status_code >= 400:
-        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'{message} ', file=sys.stderr)
-        return 1
-
-    sites = json.loads(res.text)
+    sites = get_sites(args_name, args_strict)
     for site in sites:
         links = get_list_links(site['uri'])
         for link in links:
-            print(link['uri'], link['name'], sep=args['delimiter'][0])
+            print(link['uri'], link['name'], sep=args_delimiter)
 
     return 0

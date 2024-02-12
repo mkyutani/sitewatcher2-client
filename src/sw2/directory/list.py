@@ -14,7 +14,7 @@ def sw2_parser_directory_list(subparser):
     sp_list.add_argument('--all', action='store_true', help='include disabled directories')
     sp_list.add_argument('--sort', action='store_true', help='sort by name')
 
-def get_directories(name, strict=False, all=False):
+def get_directories(name, strict=False, all=False, single=False):
     headers = { 'Cache-Control': 'no-cache' }
     options = []
     if name:
@@ -38,6 +38,16 @@ def get_directories(name, strict=False, all=False):
         return None
 
     directories = json.loads(res.text)
+
+    if single:
+        if len(directories) == 0:
+            print(f'No directory found', file=sys.stderr)
+            return None
+        elif len(directories) > 1:
+            print(f'Multiple directories found', file=sys.stderr)
+            return None
+        else:
+            return directories[0]
 
     return directories
 
