@@ -11,6 +11,7 @@ def sw2_parser_site_list(subparser):
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     sp_list.add_argument('--json', action='store_true', help='in json format')
+    sp_list.add_argument('--sort', action='store_true', help='sort by name')
 
 def list_sites(name, strict):
     headers = { 'Cache-Control': 'no-cache' }
@@ -42,13 +43,17 @@ def sw2_site_list(args):
     args_strict = args['strict']
     args_delimiter = args['delimiter'][0]
     args_json = args['json']
+    args_sort = args['sort']
 
     sites = list_sites(args_name, args_strict)
+
+    if args_sort:
+        sites.sort(key=lambda x: x['name'])
 
     if args_json:
         print(json.dumps(sites))
     else:
         for site in sites:
-            print(str(site['id']), site['name'], site["uri"], 'enabled' if site['enabled'] else 'disabled', sep=args_delimiter)
+            print(str(site['id']), site['name'], site['directory_name'], site["uri"], 'enabled' if site['enabled'] else 'disabled', sep=args_delimiter)
 
     return 0
