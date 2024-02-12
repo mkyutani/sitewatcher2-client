@@ -3,6 +3,8 @@ import sys
 from urllib.parse import urljoin
 import requests
 
+from sw2.env import Environment
+
 def sw2_parser_site_list(subparser):
     sp_list = subparser.add_parser('list', help='list sites')
     sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
@@ -10,32 +12,43 @@ def sw2_parser_site_list(subparser):
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     sp_list.add_argument('--json', action='store_true', help='in json format')
 
-def sw2_site_list(args, env):
+def list_sites(name, strict):
     headers = { 'Cache-Control': 'no-cache' }
     options = []
-    if args.name:
-        options.append('='.join(['name', args.name]))
-    if args.strict:
+    if name:
+        options.append('='.join(['name', name]))
+    if strict:
         options.append('='.join(['strict', 'true']))
-    query = '?'.join([env.apiSites(), '&'.join(options)])
+    query = '?'.join([Environment().apiSites(), '&'.join(options)])
 
     res = None
     try:
         res = requests.get(query, headers=headers)
     except Exception as e:
         print(str(e), file=sys.stderr)
-        return 1
+        return None
 
     if res.status_code >= 400:
         message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
         print(f'{message} ', file=sys.stderr)
-        return 1
+        return None
 
-    if args.json:
-        print(res.text)
+    sites = json.loads(res.text)
+
+    return sites
+
+def sw2_site_list(args):
+    args_name = args['name']
+    args_strict = args['strict']
+    args_delimiter = args['delimiter'][0]
+    args_json = args['json']
+
+    sites = list_sites(args_name, args_strict)
+
+    if args_json:
+        print(json.dumps(sites))
     else:
-        sites = json.loads(res.text)
         for site in sites:
-            print(args.delimiter[0].join([str(site['id']), site['name'], site["uri"], 'enabled' if site['enabled'] else 'disabled']))
+            print(str(site['id']), site['name'], site["uri"], 'enabled' if site['enabled'] else 'disabled', sep=args_delimiter)
 
     return 0

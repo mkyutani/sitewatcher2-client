@@ -5,6 +5,8 @@ from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup, NavigableString
 
+from sw2.env import Environment
+
 def sw2_parser_task_list(subparser):
     sp_list = subparser.add_parser('list', help='list links')
     sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
@@ -78,14 +80,14 @@ def get_list_links(source) -> list[str]:
 
     return links
 
-def sw2_task_list(args, env):
+def sw2_task_list(args):
     headers = { 'Cache-Control': 'no-cache' }
     options = [ 'enabled=true' ]
-    if args.name:
-        options.append('='.join(['name', args.name]))
-    if args.strict:
+    if args['name']:
+        options.append('='.join(['name', args['name']]))
+    if args['strict']:
         options.append('='.join(['strict', 'true']))
-    query = '?'.join([env.apiSites(), '&'.join(options)])
+    query = '?'.join([Environment().apiSites(), '&'.join(options)])
 
     res = None
     try:
@@ -103,6 +105,6 @@ def sw2_task_list(args, env):
     for site in sites:
         links = get_list_links(site['uri'])
         for link in links:
-            print(link['uri'], link['name'], sep=args.delimiter[0])
+            print(link['uri'], link['name'], sep=args['delimiter'][0])
 
     return 0

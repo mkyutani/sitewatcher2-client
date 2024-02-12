@@ -3,25 +3,47 @@ import sys
 from urllib.parse import urljoin
 import requests
 
+from sw2.env import Environment
+from sw2.func import get_directories
+from sw2.util import is_uuid
+
 def sw2_parser_site_add(subparser):
     sp_list = subparser.add_parser('add', help='add site')
-    sp_list.add_argument('directory', metavar='DIR', help='directory id')
+    sp_list.add_argument('directory', metavar='DIR', help='directory id or name')
     sp_list.add_argument('name', metavar='NAME', help='name')
     sp_list.add_argument('uri', metavar='URI', help='source uri')
     sp_list.add_argument('--disable', action='store_true', help='set disabled')
 
-def sw2_site_add(args, env):
+def sw2_site_add(args):
+    args_directory = args.get('directory')
+    args_name = args.get('name')
+    args_uri = args.get('uri')
+    args_disable = args.get('disable')
+
+    if is_uuid(args_directory):
+        directory = args_directory
+    else:
+        directories = get_directories(args_directory)
+        if len(directories) == 0:
+            print('Directory not found', file=sys.stderr)
+            return 1
+        elif len(directories) > 1:
+            print('Directory is not unique', file=sys.stderr)
+            return 1
+
+        directory = directories[0]['id']
+
     headers = { 'Content-Type': 'application/json' }
     contents = {
-        'name': args.name,
-        'uri': args.uri,
-        'directory': args.directory,
-        'enabled': 'true' if not args.disable else 'false'
+        'name': args_name,
+        'uri': args_uri,
+        'directory': directory,
+        'enabled': 'true' if not args_disable else 'false'
     }
 
     res = None
     try:
-        res = requests.post(env.apiSites(), json=contents, headers=headers)
+        res = requests.post(Environment().apiSites(), json=contents, headers=headers)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return 1

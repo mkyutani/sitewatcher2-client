@@ -2,17 +2,22 @@ import sys
 from urllib.parse import urljoin
 import requests
 
+from sw2.env import Environment
+
 def sw2_parser_site_rename(subparser):
     sp_list = subparser.add_parser('rename', help='rename site')
     sp_list.add_argument('id', metavar='ID', help='id')
     sp_list.add_argument('name', metavar='NAME', help='name')
 
-def sw2_site_rename(args, env):
+def sw2_site_rename(args):
+    args_id = args['id']
+    args_name = args['name']
+
     headers = { 'Content-Type': 'application/json' }
     contents = {
-        'name': args.name
+        'name': args_name
     }
-    query = urljoin(env.apiSites(), args.id)
+    query = urljoin(Environment().apiSites(), args_id)
 
     res = None
     try:

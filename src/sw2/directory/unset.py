@@ -2,8 +2,8 @@ import json
 import sys
 from urllib.parse import urljoin
 import requests
-
-from sw2.util import isUuid
+from sw2.env import Environment
+from sw2.util import is_uuid
 
 def sw2_parser_directory_unset(subparser):
     parser = subparser.add_parser('unset', help='unset metadata of directory')
@@ -11,17 +11,17 @@ def sw2_parser_directory_unset(subparser):
     parser.add_argument('key', nargs='?', metavar='KEY', default=None, help='metadata key')
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
 
-def sw2_directory_unset(args, env):
-    id_or_name = args.id
-    strict = args.strict
-    key = args.key
+def sw2_directory_unset(args):
+    args_id = args['id']
+    args_key = args['key']
+    args_strict = args['strict']
 
     headers = { 'Content-Type': 'application/json' }
-    if isUuid(id_or_name):
-        query = urljoin(env.apiDirectories(), f'{id_or_name}/metadata/{key}')
+    if is_uuid(args_id):
+        query = urljoin(Environment().apiDirectories(), f'{args_id}/metadata/{args_key}')
     else:
-        query = urljoin(env.apiDirectories(), f'metadata/{key}?name={id_or_name}')
-        if strict:
+        query = urljoin(Environment().apiDirectories(), f'metadata/{args_key}?name={args_id}')
+        if args_strict:
             query = urljoin(query, '&strict=true')
 
     res = None

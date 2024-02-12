@@ -2,13 +2,17 @@ import sys
 from urllib.parse import urljoin
 import requests
 
+from sw2.env import Environment
+
 def sw2_parser_site_delete(subparser):
     sp_list = subparser.add_parser('delete', help='add site')
     sp_list.add_argument('id', metavar='ID', help='id')
 
-def sw2_site_delete(args, env):
+def sw2_site_delete(args):
+    args_id = args['id']
+
     headers = {}
-    query = urljoin(env.apiSites(), args.id)
+    query = urljoin(Environment().apiSites(), args_id)
 
     res = None
     try:

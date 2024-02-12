@@ -2,8 +2,8 @@ import json
 import sys
 from urllib.parse import urljoin
 import requests
-
-from sw2.util import isUuid
+from sw2.env import Environment
+from sw2.util import is_uuid
 
 def sw2_parser_directory_set(subparser):
     parser = subparser.add_parser('set', help='set metadata of directory')
@@ -13,24 +13,22 @@ def sw2_parser_directory_set(subparser):
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
 
-def sw2_directory_set(args, env):
-    id_or_name = args.id
-    strict = args.strict
-    key = args.key
-    if args.value is not None:
-        value = args.value
-    else:
-        value = ''
+def sw2_directory_set(args):
+    args_id = args['id']
+    args_key = args['key']
+    args_value = args['value'] if args['value'] else ''
+    args_json = args['json']
+    args_strict = args['strict']
 
     headers = { 'Content-Type': 'application/json' }
     contents = {
-        key: value
+        args_key: args_value
     }
-    if isUuid(id_or_name):
-        query = urljoin(env.apiDirectories(), f'{id_or_name}/metadata')
+    if is_uuid(args_id):
+        query = urljoin(Environment().apiDirectories(), f'{args_id}/metadata')
     else:
-        query = urljoin(env.apiDirectories(), f'metadata?name={id_or_name}')
-        if strict:
+        query = urljoin(Environment().apiDirectories(), f'metadata?name={args_id}')
+        if args_strict:
             query = urljoin(query, '&strict=true')
 
     res = None
@@ -46,7 +44,7 @@ def sw2_directory_set(args, env):
         return 1
 
     metadata = json.loads(res.text)
-    if args.json:
+    if args_json:
         print(res.text)
     else:
         for m in metadata:

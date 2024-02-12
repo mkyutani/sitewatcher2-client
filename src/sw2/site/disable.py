@@ -2,16 +2,20 @@ import sys
 from urllib.parse import urljoin
 import requests
 
+from sw2.env import Environment
+
 def sw2_parser_site_disable(subparser):
     sp_list = subparser.add_parser('disable', help='disable site')
     sp_list.add_argument('id', metavar='ID', help='id')
 
-def sw2_site_disable(args, env):
+def sw2_site_disable(args):
+    args_id = args['id']
+
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'enabled': False
     }
-    query = urljoin(env.apiSites(), args.id)
+    query = urljoin(Environment().apiSites(), args_id)
 
     res = None
     try:

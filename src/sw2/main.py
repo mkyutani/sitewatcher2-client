@@ -27,8 +27,7 @@ def main():
         for method in function_map[category].values():
             method['parser'](ssp)
 
-    env = Environment()
     args = parser.parse_args()
     function = function_map[args.category][args.method]['function']
 
-    return function(args, env)
+    return function(vars(args))
