@@ -15,7 +15,7 @@ def sw2_parser_task_list(subparser):
     sp_list.add_argument('--push', action='store_true', help='push to remote')
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
 
-def get_list_links(source) -> list[str]:
+def get_list_links(source):
     headers = { 'Cache-Control': 'no-cache' }
     res = requests.get(source, headers=headers)
     if res.status_code >= 400:
@@ -81,6 +81,36 @@ def get_list_links(source) -> list[str]:
 
     return links
 
+def push(site, link, reason):
+    site_id = site['id']
+    site_name = site['name']
+    link_uri = link['uri']
+    link_name = link['name']
+
+    headers = { 'Content-Type': 'application/json' }
+    contents = {
+        'uri': link_uri,
+        'name': link_name,
+        'reason': reason,
+    }
+
+    query = urljoin(Environment().apiSites(), f'{site_id}/resources')
+
+    res = None
+    try:
+        res = requests.post(query, json=contents, headers=headers)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return 1
+
+    if res.status_code >= 400:
+        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+        print(f'{message} ', file=sys.stderr)
+        return 1
+
+    resource = json.loads(res.text)
+    print(resource['uri'], link_name, site_name)
+
 def sw2_task_list(args):
     args_name = args['name']
     args_strict = args['strict']
@@ -91,6 +121,9 @@ def sw2_task_list(args):
     for site in sites:
         links = get_list_links(site['uri'])
         for link in links:
-            print(link['uri'], link['name'], sep=args_delimiter)
+            if args_push:
+                push(site, link, "new")
+            else:
+                print(link['uri'], link['name'], sep=args_delimiter)
 
     return 0
