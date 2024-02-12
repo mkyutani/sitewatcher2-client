@@ -10,7 +10,8 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "requests"
+    "requests",
+    "BeautifulSoup4",
 ]
 
 [project.urls]
