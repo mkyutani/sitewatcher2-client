@@ -4,19 +4,22 @@ import sys
 from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
-
+from sw2.directory.list import get_directories_by_name
+from sw2.directory.sites import get_sites_by_directory
 from sw2.env import Environment
 from sw2.site.list import get_sites_by_name
 from sw2.site.resources import get_site_resources
 
 def sw2_parser_task_list(subparser):
     sp_list = subparser.add_parser('list', help='list links')
-    sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
+    target_group = sp_list.add_mutually_exclusive_group()
+    target_group.add_argument('--name', nargs=1, metavar='NAME', help='site name')
+    target_group.add_argument('--directory', nargs=1, help='directory name')
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
     sp_list.add_argument('--push', action='store_true', help='push to remote')
 
 def get_list_links(source):
-    headers = { 'Cache-Control': 'no-cache' }
+    headers = { 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36' }
     res = requests.get(source, headers=headers)
     if res.status_code >= 400:
         message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
@@ -112,10 +115,24 @@ def push(site, link, reason):
 
 def sw2_task_list(args):
     args_name = args.get('name')
+    args_directory = args.get('directory')
     args_strict = args.get('strict')
     args_push = args.get('push')
 
-    sites = get_sites_by_name(args_name, args_strict)
+    if args_name is not None:
+        sites = get_sites_by_name(args_name[0], args_strict)
+    elif args_directory is not None:
+        directories = get_directories_by_name(args_directory[0], args_strict)
+        for directory in directories:
+            sites = get_sites_by_directory(directory['id'])
+    else:
+        print('name or directory must be specified', file=sys.stderr)
+        return 1
+
+    if len(sites) == 0:
+        print(f'No such a site', file=sys.stderr)
+        return 1
+
     for site in sites:
         resources = get_site_resources(site['id'])
         resource_dict = {}
@@ -124,6 +141,7 @@ def sw2_task_list(args):
 
         messages = []
 
+        print(f'{site["name"]} ({site["uri"]})', file=sys.stderr)
         links = get_list_links(site['uri'])
         for link in links:
             message = ' '.join([link['uri'], link['name']])

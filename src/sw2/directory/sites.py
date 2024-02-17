@@ -2,6 +2,7 @@ import json
 import json
 import requests
 import sys
+from sw2.directory.list import get_directories_by_name
 
 from sw2.env import Environment
 
@@ -13,43 +14,6 @@ def sw2_parser_directory_sites(subparser):
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
     sp_list.add_argument('--all', action='store_true', help='include disabled directories')
     sp_list.add_argument('--sort', action='store_true', help='sort by name')
-
-def get_directories_by_name(name, strict=False, all=False, single=False):
-    headers = { 'Cache-Control': 'no-cache' }
-    options = []
-    if name:
-        options.append('='.join(['name', name]))
-    if strict:
-        options.append('='.join(['strict', 'true']))
-    if not all:
-        options.append('='.join(['enabled', 'true']))
-    query = '?'.join([Environment().apiDirectories(), '&'.join(options)])
-
-    res = None
-    try:
-        res = requests.get(query, headers=headers)
-    except Exception as e:
-        print(str(e), file=sys.stderr)
-        return None
-
-    if res.status_code >= 400:
-        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'{message} ', file=sys.stderr)
-        return None
-
-    directories = json.loads(res.text)
-
-    if single:
-        if len(directories) == 0:
-            print(f'No directory found', file=sys.stderr)
-            return None
-        elif len(directories) > 1:
-            print(f'Multiple directories found', file=sys.stderr)
-            return None
-        else:
-            return directories[0]
-
-    return directories
 
 def get_sites_by_directory(directory_id):
     headers = { 'Cache-Control': 'no-cache' }
