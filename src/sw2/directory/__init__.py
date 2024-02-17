@@ -3,6 +3,7 @@ from sw2.directory.delete import sw2_directory_delete, sw2_parser_directory_dele
 from sw2.directory.disable import sw2_directory_disable, sw2_parser_directory_disable
 from sw2.directory.enable import sw2_directory_enable, sw2_parser_directory_enable
 from sw2.directory.list import sw2_directory_list, sw2_parser_directory_list
+from sw2.directory.sites import sw2_directory_sites, sw2_parser_directory_sites
 from sw2.directory.variables import sw2_directory_variables, sw2_parser_directory_variables
 from sw2.directory.rename import sw2_directory_rename, sw2_parser_directory_rename
 from sw2.directory.set import sw2_directory_set, sw2_parser_directory_set
@@ -15,6 +16,7 @@ directory_function_map = {
     'rename': { 'function': sw2_directory_rename, 'parser': sw2_parser_directory_rename },
     'enable': { 'function': sw2_directory_enable, 'parser': sw2_parser_directory_enable },
     'disable': { 'function': sw2_directory_disable, 'parser': sw2_parser_directory_disable },
+    'sites': { 'function': sw2_directory_sites, 'parser': sw2_parser_directory_sites },
     'set': { 'function': sw2_directory_set, 'parser': sw2_parser_directory_set },
     'unset': { 'function': sw2_directory_unset, 'parser': sw2_parser_directory_unset },
     'variables': { 'function': sw2_directory_variables, 'parser': sw2_parser_directory_variables }
