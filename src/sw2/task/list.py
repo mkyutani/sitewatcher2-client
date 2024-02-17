@@ -141,19 +141,23 @@ def sw2_task_list(args):
 
         messages = []
 
-        print(f'{site["name"]} ({site["uri"]})', file=sys.stderr)
         links = get_list_links(site['uri'])
+        unique_uris = []
         for link in links:
             message = ' '.join([link['uri'], link['name']])
-            if args_push:
-                if resource_dict.pop(link['uri'], None) is None:
-                    push(site, link, "new")
-                    messages.append({'message': message, 'op': '+'})
+            if link['uri'] in unique_uris:
+                messages.append({'message': message, 'op': ' '})
             else:
-                if resource_dict.pop(link['uri'], None) is None:
-                    messages.append({'message': message, 'op': '+'})
+                unique_uris.append(link['uri'])
+                if args_push:
+                    if resource_dict.pop(link['uri'], None) is None:
+                        push(site, link, "new")
+                        messages.append({'message': message, 'op': '+'})
                 else:
-                    messages.append({'message': message, 'op': ' '})
+                    if resource_dict.pop(link['uri'], None) is None:
+                        messages.append({'message': message, 'op': '+'})
+                    else:
+                        messages.append({'message': message, 'op': ' '})
         if not args_push:
             for resource in resource_dict.values():
                 message = ' '.join([resource['uri'], resource['name']])
