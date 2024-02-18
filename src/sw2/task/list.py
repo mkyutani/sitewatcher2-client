@@ -52,6 +52,12 @@ def get_list_links(source):
 
     bs = BeautifulSoup(res.content, 'html.parser')
     for a in bs.find_all('a'):
+        parent_tag_text = ''
+        for anc in a.parents:
+            if anc.name == 'li' or anc.name == 'td':
+                tag_texts = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
+                if len(tag_texts) > 1:
+                    parent_tag_text = tag_texts[0].strip()
         href = a.get('href')
         if href is not None:
             ref = ''.join(filter(lambda c: c >= ' ', href))
@@ -67,11 +73,13 @@ def get_list_links(source):
                 else:
                     uri = urljoin(source, ref)
 
-                name = ''
-                name_strings = a.strings
-                if name_strings is not None:
-                    name = '::'.join(filter(lambda x: len(x) > 0, [s.strip() for s in name_strings]))
-                    name = ''.join(filter(lambda c: c >= ' ', name))
+                tag_text = a.text.strip()
+                if tag_text is None:
+                    tag_text = ''
+                if tag_text == parent_tag_text:
+                    parent_tag_text = ''
+                name = parent_tag_text + '::' + tag_text if len(parent_tag_text) > 0 else tag_text
+                name = ''.join(filter(lambda c: c >= ' ', name))
                 if len(name) == 0:
                     name = '----'
 
