@@ -4,10 +4,10 @@ import sys
 from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
-from sw2.directory.list import get_directories_by_name
+from sw2.directory.list import get_directories
 from sw2.directory.sites import get_sites_by_directory
 from sw2.env import Environment
-from sw2.site.list import get_sites_by_name
+from sw2.site.list import get_sites
 from sw2.site.resources import get_site_resources
 
 def sw2_parser_task_list(subparser):
@@ -122,9 +122,9 @@ def sw2_task_list(args):
     args_push = args.get('push')
 
     if args_site is not None:
-        sites = get_sites_by_name(args_site[0], args_strict)
+        sites = get_sites(args_site[0], args_strict)
     elif args_directory is not None:
-        directories = get_directories_by_name(args_directory[0], args_strict)
+        directories = get_directories(args_directory[0], args_strict)
         for directory in directories:
             sites = get_sites_by_directory(directory['id'])
     else:

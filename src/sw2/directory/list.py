@@ -4,6 +4,7 @@ import requests
 import sys
 
 from sw2.env import Environment
+from sw2.util import is_uuid
 
 def sw2_parser_directory_list(subparser):
     parser = subparser.add_parser('list', help='list directories')
@@ -13,16 +14,20 @@ def sw2_parser_directory_list(subparser):
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='strict name check')
 
-def get_directories_by_name(name, strict=False, all=False, single=False):
+def get_directories(name, strict=False, all=False, single=False):
     headers = { 'Cache-Control': 'no-cache' }
+    id = ''
     options = []
     if name:
-        options.append('='.join(['name', name]))
+        if is_uuid(name):
+            id = name
+        else:
+            options.append('='.join(['name', name]))
     if strict:
         options.append('='.join(['strict', 'true']))
     if not all:
         options.append('='.join(['enabled', 'true']))
-    query = '?'.join([Environment().apiDirectories(), '&'.join(options)])
+    query = '?'.join([Environment().apiDirectories() + id, '&'.join(options)])
 
     res = None
     try:
@@ -47,8 +52,10 @@ def get_directories_by_name(name, strict=False, all=False, single=False):
             return None
         else:
             return directories[0]
-
-    return directories
+    else:
+        if type(directories) is dict:
+            directories = [directories]
+        return directories
 
 def sw2_directory_list(args):
     args_name = args.get('name')
@@ -57,7 +64,7 @@ def sw2_directory_list(args):
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
 
-    directories = get_directories_by_name(args_name, args_strict, args_all)
+    directories = get_directories(args_name, args_strict, args_all)
     if directories is None:
         return 1
 

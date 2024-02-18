@@ -5,6 +5,7 @@ import requests
 import sys
 
 from sw2.env import Environment
+from sw2.util import is_uuid
 
 def sw2_parser_site_list(subparser):
     parser = subparser.add_parser('list', help='list sites')
@@ -35,16 +36,20 @@ def get_site(id):
 
     return site
 
-def get_sites_by_name(name, strict=False, all=False, single=False):
+def get_sites(name, strict=False, all=False, single=False):
     headers = { 'Cache-Control': 'no-cache' }
+    id = ''
     options = []
     if name:
-        options.append('='.join(['name', name]))
+        if is_uuid(name):
+            id = name
+        else:
+            options.append('='.join(['name', name]))
     if strict:
         options.append('='.join(['strict', 'true']))
     if not all:
         options.append('='.join(['enabled', 'true']))
-    query = '?'.join([Environment().apiSites(), '&'.join(options)])
+    query = '?'.join([Environment().apiSites() + id, '&'.join(options)])
 
     res = None
     try:
@@ -69,8 +74,10 @@ def get_sites_by_name(name, strict=False, all=False, single=False):
             return None
         else:
             return sites[0]
-
-    return sites
+    else:
+        if type(sites) is dict:
+            sites = [sites]
+        return sites
 
 def sw2_site_list(args):
     args_name = args.get('name')
@@ -79,7 +86,7 @@ def sw2_site_list(args):
     args_json = args.get('json')
     args_all = args.get('all')
 
-    sites = get_sites_by_name(args_name, args_strict, args_all)
+    sites = get_sites(args_name, args_strict, args_all)
     if sites is None:
         return 1
 

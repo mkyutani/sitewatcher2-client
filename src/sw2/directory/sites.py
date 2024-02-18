@@ -2,7 +2,7 @@ import json
 import json
 import requests
 import sys
-from sw2.directory.list import get_directories_by_name
+from sw2.directory.list import get_directories
 
 from sw2.env import Environment
 
@@ -41,7 +41,7 @@ def sw2_directory_sites(args):
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
 
-    directories = get_directories_by_name(args_name, args_strict, args_all)
+    directories = get_directories(args_name, args_strict, args_all)
 
     sites = []
     for directory in directories:

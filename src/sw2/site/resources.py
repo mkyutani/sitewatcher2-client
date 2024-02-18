@@ -3,7 +3,7 @@ import sys
 from urllib.parse import urljoin
 import requests
 from sw2.env import Environment
-from sw2.site.list import get_sites_by_name
+from sw2.site.list import get_sites
 from sw2.util import is_uuid
 
 def sw2_parser_site_resources(subparser):
@@ -36,7 +36,7 @@ def sw2_site_resources(args):
     if is_uuid(args_id):
         ids = [args_id]
     else:
-        sites = get_sites_by_name(args_id)
+        sites = get_sites(args_id)
         if len(sites) == 0:
             print('Site not found', file=sys.stderr)
             return 1
