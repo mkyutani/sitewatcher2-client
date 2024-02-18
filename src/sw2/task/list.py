@@ -4,19 +4,16 @@ import sys
 from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
-from sw2.directory.list import get_directories
-from sw2.directory.sites import get_sites_by_directory
 from sw2.env import Environment
-from sw2.site.list import get_sites
+from sw2.site.list import get_sites_by_directory_and_site_name
 from sw2.site.resources import get_site_resources
 
 def sw2_parser_task_list(subparser):
     parser = subparser.add_parser('list', help='list links')
-    name_group = parser.add_mutually_exclusive_group()
-    parser.add_argument('--all', action='store_true', help='include not changed links')
-    name_group.add_argument('--directory', '-d', nargs=1, help='directory name')
+    parser.add_argument('directory', nargs=1, help='directory id, name or "all"')
+    parser.add_argument('site', nargs='?', default=None, help='site id, name or "all"')
+    parser.add_argument('--all', action='store_true', help='print not changed links')
     parser.add_argument('--push', action='store_true', help='push to remote')
-    name_group.add_argument('--site', '-s', nargs=1, help='site name')
     parser.add_argument('--strict', action='store_true', help='strict name check')
 
 def get_list_links(source):
@@ -115,20 +112,14 @@ def push(site, link, reason):
     resource = json.loads(res.text)
 
 def sw2_task_list(args):
+    args_directory = args.get('directory')[0]
+    args_site = args.get('site')[0] if args.get('site') else None
     args_all = args.get('all')
-    args_site = args.get('site')
-    args_directory = args.get('directory')
     args_strict = args.get('strict')
     args_push = args.get('push')
 
-    if args_site is not None:
-        sites = get_sites(args_site[0], args_strict)
-    elif args_directory is not None:
-        directories = get_directories(args_directory[0], args_strict)
-        for directory in directories:
-            sites = get_sites_by_directory(directory['id'])
-    else:
-        print('name or directory must be specified', file=sys.stderr)
+    sites = get_sites_by_directory_and_site_name(args_directory, args_site, args_strict, args_all)
+    if sites is None:
         return 1
 
     if len(sites) == 0:

@@ -15,6 +15,9 @@ def sw2_parser_directory_list(subparser):
     parser.add_argument('--strict', action='store_true', help='strict name check')
 
 def get_directories(name, strict=False, all=False, single=False):
+    if name and name.lower() == 'all':
+        name = None
+
     headers = { 'Cache-Control': 'no-cache' }
     id = ''
     options = []

@@ -3,7 +3,7 @@ import json
 from urllib.parse import urljoin
 import requests
 import sys
-
+from sw2.directory.list import get_directories
 from sw2.env import Environment
 from sw2.util import is_uuid
 
@@ -36,7 +36,10 @@ def get_site(id):
 
     return site
 
-def get_sites(name, strict=False, all=False, single=False):
+def get_sites(name, directory=None, strict=False, all=False, single=False):
+    if name and name.lower() == 'all':
+        name = None
+
     headers = { 'Cache-Control': 'no-cache' }
     id = ''
     options = []
@@ -45,6 +48,11 @@ def get_sites(name, strict=False, all=False, single=False):
             id = name
         else:
             options.append('='.join(['name', name]))
+            if directory:
+                options.append('='.join(['directory', directory]))
+    else:
+        if directory:
+            options.append('='.join(['directory', directory]))
     if strict:
         options.append('='.join(['strict', 'true']))
     if not all:
@@ -66,18 +74,33 @@ def get_sites(name, strict=False, all=False, single=False):
     sites = json.loads(res.text)
 
     if single:
-        if len(sites) == 0:
-            print(f'No directory found', file=sys.stderr)
-            return None
-        elif len(sites) > 1:
-            print(f'Multiple directories found', file=sys.stderr)
-            return None
+        if type(sites) is dict:
+            return sites
         else:
-            return sites[0]
+            if len(sites) == 0:
+                print(f'No directory found', file=sys.stderr)
+                return None
+            elif len(sites) > 1:
+                print(f'Multiple directories found', file=sys.stderr)
+                return None
+            else:
+                return sites[0]
     else:
         if type(sites) is dict:
             sites = [sites]
         return sites
+
+def get_sites_by_directory_and_site_name(directory_name, site_name, strict=False, all=False):
+    sites = []
+    if directory_name is None:
+        sites = get_sites(site_name, strict=strict, all=all)
+    else:
+        directories = get_directories(directory_name, strict=strict, all=all)
+        for directory in directories:
+            s =  get_sites(site_name, directory=directory['id'])
+            if s is not None:
+                sites.extend(s)
+    return sites
 
 def sw2_site_list(args):
     args_name = args.get('name')
@@ -86,7 +109,7 @@ def sw2_site_list(args):
     args_json = args.get('json')
     args_all = args.get('all')
 
-    sites = get_sites(args_name, args_strict, args_all)
+    sites = get_sites(args_name, strict=args_strict, all=args_all)
     if sites is None:
         return 1
 
