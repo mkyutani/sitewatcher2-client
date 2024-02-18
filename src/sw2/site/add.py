@@ -7,11 +7,11 @@ from sw2.env import Environment
 from sw2.util import is_uuid
 
 def sw2_parser_site_add(subparser):
-    sp_list = subparser.add_parser('add', help='add site')
-    sp_list.add_argument('directory', metavar='DIR', help='directory id or name')
-    sp_list.add_argument('name', metavar='NAME', help='name')
-    sp_list.add_argument('uri', metavar='URI', help='source uri')
-    sp_list.add_argument('--disable', action='store_true', help='set disabled')
+    parser = subparser.add_parser('add', help='add site')
+    parser.add_argument('directory', metavar='DIR', help='directory id or name')
+    parser.add_argument('name', metavar='NAME', help='name')
+    parser.add_argument('uri', metavar='URI', help='source uri')
+    parser.add_argument('--disable', action='store_true', help='set disabled')
 
 def sw2_site_add(args):
     args_directory = args.get('directory')

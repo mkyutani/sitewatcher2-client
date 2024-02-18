@@ -11,13 +11,13 @@ from sw2.site.list import get_sites_by_name
 from sw2.site.resources import get_site_resources
 
 def sw2_parser_task_list(subparser):
-    sp_list = subparser.add_parser('list', help='list links')
-    target_group = sp_list.add_mutually_exclusive_group()
-    target_group.add_argument('--name', nargs=1, metavar='NAME', help='site name')
-    target_group.add_argument('--directory', nargs=1, help='directory name')
-    sp_list.add_argument('--all', action='store_true', help='include not changed links')
-    sp_list.add_argument('--strict', action='store_true', help='strict name check')
-    sp_list.add_argument('--push', action='store_true', help='push to remote')
+    parser = subparser.add_parser('list', help='list links')
+    name_group = parser.add_mutually_exclusive_group()
+    parser.add_argument('--all', action='store_true', help='include not changed links')
+    name_group.add_argument('--directory', '-d', nargs=1, help='directory name')
+    parser.add_argument('--push', action='store_true', help='push to remote')
+    name_group.add_argument('--site', '-s', nargs=1, help='site name')
+    parser.add_argument('--strict', action='store_true', help='strict name check')
 
 def get_list_links(source):
     headers = { 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36' }
@@ -116,13 +116,13 @@ def push(site, link, reason):
 
 def sw2_task_list(args):
     args_all = args.get('all')
-    args_name = args.get('name')
+    args_site = args.get('site')
     args_directory = args.get('directory')
     args_strict = args.get('strict')
     args_push = args.get('push')
 
-    if args_name is not None:
-        sites = get_sites_by_name(args_name[0], args_strict)
+    if args_site is not None:
+        sites = get_sites_by_name(args_site[0], args_strict)
     elif args_directory is not None:
         directories = get_directories_by_name(args_directory[0], args_strict)
         for directory in directories:

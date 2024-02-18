@@ -6,12 +6,12 @@ import sys
 from sw2.env import Environment
 
 def sw2_parser_directory_list(subparser):
-    sp_list = subparser.add_parser('list', help='list directories')
-    sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory name')
-    sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    sp_list.add_argument('--json', action='store_true', help='in json format')
-    sp_list.add_argument('--strict', action='store_true', help='strict name check')
-    sp_list.add_argument('--all', action='store_true', help='include disabled directories')
+    parser = subparser.add_parser('list', help='list directories')
+    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory name')
+    parser.add_argument('--all', action='store_true', help='include disabled directories')
+    parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
+    parser.add_argument('--json', action='store_true', help='in json format')
+    parser.add_argument('--strict', action='store_true', help='strict name check')
 
 def get_directories_by_name(name, strict=False, all=False, single=False):
     headers = { 'Cache-Control': 'no-cache' }

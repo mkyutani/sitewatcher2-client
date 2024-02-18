@@ -6,9 +6,9 @@ import requests
 from sw2.env import Environment
 
 def sw2_parser_directory_add(subparser):
-    sp_list = subparser.add_parser('add', help='add directory')
-    sp_list.add_argument('name', metavar='NAME', help='name')
-    sp_list.add_argument('--disable', action='store_true', help='set disabled')
+    praser = subparser.add_parser('add', help='add directory')
+    praser.add_argument('name', metavar='NAME', help='name')
+    praser.add_argument('--disable', action='store_true', help='set disabled')
 
 def sw2_directory_add(args):
     args_name = args.get('name')

@@ -5,8 +5,8 @@ import requests
 from sw2.env import Environment
 
 def sw2_parser_site_delete(subparser):
-    sp_list = subparser.add_parser('delete', help='add site')
-    sp_list.add_argument('id', metavar='ID', help='id')
+    parser = subparser.add_parser('delete', help='add site')
+    parser.add_argument('id', metavar='ID', help='id')
 
 def sw2_site_delete(args):
     args_id = args.get('id')

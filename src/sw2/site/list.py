@@ -7,12 +7,12 @@ import sys
 from sw2.env import Environment
 
 def sw2_parser_site_list(subparser):
-    sp_list = subparser.add_parser('list', help='list sites')
-    sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
-    sp_list.add_argument('--all', action='store_true', help='include disabled sites')
-    sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    sp_list.add_argument('--json', action='store_true', help='in json format')
-    sp_list.add_argument('--strict', action='store_true', help='strict name check')
+    parser = subparser.add_parser('list', help='list sites')
+    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
+    parser.add_argument('--all', action='store_true', help='include disabled sites')
+    parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
+    parser.add_argument('--json', action='store_true', help='in json format')
+    parser.add_argument('--strict', action='store_true', help='strict name check')
 
 def get_site(id):
     headers = { 'Cache-Control': 'no-cache' }

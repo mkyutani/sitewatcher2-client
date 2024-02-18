@@ -5,9 +5,9 @@ import requests
 from sw2.env import Environment
 
 def sw2_parser_site_rename(subparser):
-    sp_list = subparser.add_parser('rename', help='rename site')
-    sp_list.add_argument('id', metavar='ID', help='id')
-    sp_list.add_argument('name', metavar='NAME', help='name')
+    parser = subparser.add_parser('rename', help='rename site')
+    parser.add_argument('id', metavar='ID', help='id')
+    parser.add_argument('name', metavar='NAME', help='name')
 
 def sw2_site_rename(args):
     args_id = args.get('id')

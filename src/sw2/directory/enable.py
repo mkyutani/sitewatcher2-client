@@ -5,8 +5,8 @@ import requests
 from sw2.env import Environment
 
 def sw2_parser_directory_enable(subparser):
-    sp_list = subparser.add_parser('enable', help='enable directory')
-    sp_list.add_argument('id', metavar='ID', help='id')
+    parser = subparser.add_parser('enable', help='enable directory')
+    parser.add_argument('id', metavar='ID', help='id')
 
 def sw2_directory_enable(args):
     args_id = args.get('id')
