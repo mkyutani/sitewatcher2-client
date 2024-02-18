@@ -127,10 +127,11 @@ def sw2_task_list(args):
         return 1
 
     for site in sites:
-        resources = get_site_resources(site['id'])
         resource_dict = {}
-        for resource in resources:
-            resource_dict[resource['uri']] = resource
+        resources = get_site_resources(site['id'])
+        if resources is not None:
+            for resource in resources:
+                resource_dict[resource['uri']] = resource
 
         messages = []
 
