@@ -10,7 +10,7 @@ from sw2.site.resources import get_site_resources
 
 def sw2_parser_task_list(subparser):
     parser = subparser.add_parser('list', help='list links')
-    parser.add_argument('directory', nargs=1, help='directory id, name or "all"')
+    parser.add_argument('directory', nargs=1, help='directory id, name, "all" or "test:url"')
     parser.add_argument('site', nargs='?', default=None, help='site id, name or "all"')
     parser.add_argument('--all', action='store_true', help='print not changed links')
     parser.add_argument('--push', action='store_true', help='push to remote')
@@ -117,6 +117,12 @@ def sw2_task_list(args):
     args_all = args.get('all')
     args_strict = args.get('strict')
     args_push = args.get('push')
+
+    if args_directory.lower().startswith('test:'):
+        links = get_list_links(args_directory[5:])
+        for link in links:
+            print(link['uri'], link['name'])
+        return 0
 
     sites = get_sites_by_directory_and_site_name(args_directory, args_site, args_strict, args_all)
     if sites is None:
