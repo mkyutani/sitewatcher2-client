@@ -15,6 +15,7 @@ def sw2_parser_task_list(subparser):
     target_group = sp_list.add_mutually_exclusive_group()
     target_group.add_argument('--name', nargs=1, metavar='NAME', help='site name')
     target_group.add_argument('--directory', nargs=1, help='directory name')
+    sp_list.add_argument('--all', action='store_true', help='include not changed links')
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
     sp_list.add_argument('--push', action='store_true', help='push to remote')
 
@@ -114,6 +115,7 @@ def push(site, link, reason):
     resource = json.loads(res.text)
 
 def sw2_task_list(args):
+    args_all = args.get('all')
     args_name = args.get('name')
     args_directory = args.get('directory')
     args_strict = args.get('strict')
@@ -165,6 +167,7 @@ def sw2_task_list(args):
 
         messages.sort(key=lambda x: x['message'])
         for message in messages:
-            print(message['op'], message['message'])
+            if args_all or message['op'] != ' ':
+                print(message['op'], message['message'])
 
     return 0
