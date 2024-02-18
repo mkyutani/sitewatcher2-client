@@ -54,10 +54,11 @@ def get_list_links(source):
     for a in bs.find_all('a'):
         parent_tag_text = ''
         for anc in a.parents:
-            if anc.name == 'li' or anc.name == 'td':
+            if anc.name == 'li' or anc.name == 'tr':
                 tag_texts = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
                 if len(tag_texts) > 1:
                     parent_tag_text = tag_texts[0].strip()
+                break
         href = a.get('href')
         if href is not None:
             ref = ''.join(filter(lambda c: c >= ' ', href))
