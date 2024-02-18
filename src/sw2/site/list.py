@@ -9,10 +9,10 @@ from sw2.env import Environment
 def sw2_parser_site_list(subparser):
     sp_list = subparser.add_parser('list', help='list sites')
     sp_list.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
-    sp_list.add_argument('--strict', action='store_true', help='strict name check')
+    sp_list.add_argument('--all', action='store_true', help='include disabled sites')
     sp_list.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     sp_list.add_argument('--json', action='store_true', help='in json format')
-    sp_list.add_argument('--sort', action='store_true', help='sort by name')
+    sp_list.add_argument('--strict', action='store_true', help='strict name check')
 
 def get_site(id):
     headers = { 'Cache-Control': 'no-cache' }
@@ -77,12 +77,13 @@ def sw2_site_list(args):
     args_strict = args.get('strict')
     args_delimiter = args.get('delimiter')[0]
     args_json = args.get('json')
-    args_sort = args.get('sort')
+    args_all = args.get('all')
 
-    sites = get_sites_by_name(args_name, args_strict)
+    sites = get_sites_by_name(args_name, args_strict, args_all)
+    if sites is None:
+        return 1
 
-    if args_sort:
-        sites.sort(key=lambda x: x['name'])
+    sites.sort(key=lambda x: x['id'])
 
     if args_json:
         print(json.dumps(sites))

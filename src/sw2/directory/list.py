@@ -12,7 +12,6 @@ def sw2_parser_directory_list(subparser):
     sp_list.add_argument('--json', action='store_true', help='in json format')
     sp_list.add_argument('--strict', action='store_true', help='strict name check')
     sp_list.add_argument('--all', action='store_true', help='include disabled directories')
-    sp_list.add_argument('--sort', action='store_true', help='sort by name')
 
 def get_directories_by_name(name, strict=False, all=False, single=False):
     headers = { 'Cache-Control': 'no-cache' }
@@ -55,14 +54,14 @@ def sw2_directory_list(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
     args_all = args.get('all')
-    args_sort = args.get('sort')
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
 
     directories = get_directories_by_name(args_name, args_strict, args_all)
+    if directories is None:
+        return 1
 
-    if args_sort:
-        directories.sort(key=lambda x: x['name'])
+    directories.sort(key=lambda x: x['id'])
 
     if args_json:
         print(json.dumps(directories))
