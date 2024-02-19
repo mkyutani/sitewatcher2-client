@@ -7,14 +7,14 @@ from sw2.util import is_uuid
 
 def sw2_parser_site_set(subparser):
     parser = subparser.add_parser('set', help='set metadata of site')
-    parser.add_argument('id', metavar='ID', help='site id or name')
+    parser.add_argument('name', metavar='NAME', help='site id or name')
     parser.add_argument('key', metavar='KEY', default=None, help='metadata key')
     parser.add_argument('value', nargs='?', metavar='VALUE', default=None, help='metadata value')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
 
 def sw2_site_set(args):
-    args_id = args.get('id')
+    args_name = args.get('name')
     args_key = args.get('key')
     args_value = args.get('value') if args.get('value') else ''
     args_json = args.get('json')
@@ -24,10 +24,10 @@ def sw2_site_set(args):
     contents = {
         args_key: args_value
     }
-    if is_uuid(args_id):
-        query = urljoin(Environment().apiSites(), f'{args_id}/metadata')
+    if is_uuid(args_name):
+        query = urljoin(Environment().apiSites(), f'{args_name}/metadata')
     else:
-        query = urljoin(Environment().apiSites(), f'metadata?name={args_id}')
+        query = urljoin(Environment().apiSites(), f'metadata?name={args_name}')
         if args_strict:
             query = urljoin(query, '&strict=true')
 
