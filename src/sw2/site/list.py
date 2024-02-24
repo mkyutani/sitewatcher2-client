@@ -13,6 +13,7 @@ def sw2_parser_site_list(subparser):
     parser.add_argument('--all', action='store_true', help='include disabled sites')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
+    parser.add_argument('--metadata', action='store_true', help='include metadata')
     parser.add_argument('--strict', action='store_true', help='strict name check')
 
 def get_site(id):
@@ -36,7 +37,7 @@ def get_site(id):
 
     return site
 
-def get_sites(name, directory=None, strict=False, all=False, single=False):
+def get_sites(name, directory=None, strict=False, all=False, metadata=False, single=False):
     if name and name.lower() == 'all':
         name = None
 
@@ -55,8 +56,10 @@ def get_sites(name, directory=None, strict=False, all=False, single=False):
             options.append('='.join(['directory', directory]))
     if strict:
         options.append('='.join(['strict', 'true']))
-    if not all:
-        options.append('='.join(['enabled', 'true']))
+    if all:
+        options.append('='.join(['all', 'true']))
+    if metadata:
+        options.append('='.join(['metadata', 'true']))
     query = '?'.join([Environment().apiSites() + id, '&'.join(options)])
 
     res = None
@@ -90,14 +93,14 @@ def get_sites(name, directory=None, strict=False, all=False, single=False):
             sites = [sites]
         return sites
 
-def get_sites_by_directory_and_site_name(directory_name, site_name, strict=False, all=False):
+def get_sites_by_directory_and_site_name(directory_name, site_name, strict=False, all=False, metadata=False):
     sites = []
     if directory_name is None:
-        sites = get_sites(site_name, strict=strict, all=all)
+        sites = get_sites(site_name, strict=strict, all=all, metadata=metadata)
     else:
         directories = get_directories(directory_name, strict=strict, all=all)
         for directory in directories:
-            s =  get_sites(site_name, directory=directory['id'])
+            s =  get_sites(site_name, directory=directory['id'], strict=strict, all=all, metadata=metadata)
             if s is not None:
                 sites.extend(s)
     return sites
@@ -107,9 +110,10 @@ def sw2_site_list(args):
     args_strict = args.get('strict')
     args_delimiter = args.get('delimiter')[0]
     args_json = args.get('json')
+    args_metadata = args.get('metadata')
     args_all = args.get('all')
 
-    sites = get_sites(args_name, strict=args_strict, all=args_all)
+    sites = get_sites(args_name, strict=args_strict, all=args_all, metadata=args_metadata)
     if sites is None:
         return 1
 

@@ -12,9 +12,10 @@ def sw2_parser_directory_list(subparser):
     parser.add_argument('--all', action='store_true', help='include disabled directories')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
+    parser.add_argument('--metadata', action='store_true', help='include metadata')
     parser.add_argument('--strict', action='store_true', help='strict name check')
 
-def get_directories(name, strict=False, all=False, single=False):
+def get_directories(name, strict=False, all=False, metadata=False, single=False):
     if name and name.lower() == 'all':
         name = None
 
@@ -28,8 +29,10 @@ def get_directories(name, strict=False, all=False, single=False):
             options.append('='.join(['name', name]))
     if strict:
         options.append('='.join(['strict', 'true']))
-    if not all:
-        options.append('='.join(['enabled', 'true']))
+    if all:
+        options.append('='.join(['all', 'true']))
+    if metadata:
+        options.append('='.join(['metadata', 'true']))
     query = '?'.join([Environment().apiDirectories() + id, '&'.join(options)])
 
     res = None
@@ -65,9 +68,10 @@ def sw2_directory_list(args):
     args_strict = args.get('strict')
     args_all = args.get('all')
     args_json = args.get('json')
+    args_metadata = args.get('metadata')
     args_delimiter = args.get('delimiter')[0]
 
-    directories = get_directories(args_name, args_strict, args_all)
+    directories = get_directories(args_name, args_strict, args_all, args_metadata)
     if directories is None:
         return 1
 
