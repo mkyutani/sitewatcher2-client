@@ -133,7 +133,7 @@ def sw2_task_list(args):
             print(link['uri'], link['name'])
         return 0
 
-    sites = get_sites_by_directory_and_site_name(args_directory, args_site, args_strict, args_all)
+    sites = get_sites_by_directory_and_site_name(args_directory, args_site, strict=args_strict, all=args_all, metadata=True)
     if sites is None:
         return 1
 
@@ -151,30 +151,32 @@ def sw2_task_list(args):
         messages = []
 
         links = get_list_links(site['uri'])
+        excludes = [kv['value'] for kv in site['metadata'] if kv['key'] == 'exclude']
         unique_uris = []
         for link in links:
             message = ' '.join([link['uri'], link['name']])
-            if link['uri'] in unique_uris:
-                messages.append({'message': message, 'op': ' '})
+            for exclude in excludes:
+                if re.match(exclude, link['uri']):
+                    messages.append({'message': message, 'op': 'S'})
+                    break
             else:
-                unique_uris.append(link['uri'])
-                if args_push:
-                    if resource_dict.pop(link['uri'], None) is None:
-                        push(site, link, "new")
-                        messages.append({'message': message, 'op': '+'})
+                if link['uri'] in unique_uris:
+                    messages.append({'message': message, 'op': 'D'})
                 else:
+                    unique_uris.append(link['uri'])
                     if resource_dict.pop(link['uri'], None) is None:
+                        if args_push:
+                            push(site, link, "new")
                         messages.append({'message': message, 'op': '+'})
                     else:
                         messages.append({'message': message, 'op': ' '})
-        if not args_push:
-            for resource in resource_dict.values():
-                message = ' '.join([resource['uri'], resource['name']])
-                messages.append({'message': message, 'op': '-'})
+        for resource in resource_dict.values():
+            message = ' '.join([resource['uri'], resource['name']])
+            messages.append({'message': message, 'op': '-'})
 
         messages.sort(key=lambda x: x['message'])
         for message in messages:
-            if args_all or message['op'] != ' ':
+            if args_all or message['op'] in '+-':
                 print(message['op'], message['message'])
 
     return 0
