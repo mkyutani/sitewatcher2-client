@@ -5,8 +5,8 @@ from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
 from sw2.env import Environment
-from sw2.site.list import get_sites_by_directory_and_site_name
-from sw2.site.resources import get_site_resources
+from sw2.site.func_resources import get_site_resources
+from sw2.task.site_structure import get_site_structure
 
 def sw2_parser_task_list(subparser):
     parser = subparser.add_parser('list', help='list links')
@@ -133,7 +133,7 @@ def sw2_task_list(args):
             print(link['uri'], link['name'])
         return 0
 
-    sites = get_sites_by_directory_and_site_name(args_directory, args_site, strict=args_strict, all=args_all, metadata=True)
+    sites = get_site_structure(args_directory, args_site, strict=args_strict, all=args_all, metadata=True)
     if sites is None:
         return 1
 

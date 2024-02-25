@@ -1,41 +1,9 @@
 import json
 import json
-from urllib.parse import urljoin
 import requests
 import sys
-from sw2.directory.list import get_directories
 from sw2.env import Environment
 from sw2.util import is_uuid
-
-def sw2_parser_site_list(subparser):
-    parser = subparser.add_parser('list', help='list sites')
-    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='site name')
-    parser.add_argument('--all', action='store_true', help='include disabled sites')
-    parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    parser.add_argument('--json', action='store_true', help='in json format')
-    parser.add_argument('--metadata', action='store_true', help='include metadata')
-    parser.add_argument('--strict', action='store_true', help='strict name check')
-
-def get_site(id):
-    headers = { 'Cache-Control': 'no-cache' }
-
-    query = urljoin(Environment().apiSites(), id)
-
-    res = None
-    try:
-        res = requests.get(query, headers=headers)
-    except Exception as e:
-        print(str(e), file=sys.stderr)
-        return None
-
-    if res.status_code >= 400:
-        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'{message} ', file=sys.stderr)
-        return None
-
-    site = json.loads(res.text)
-
-    return site
 
 def get_sites(name, directory=None, strict=False, all=False, metadata=False, single=False):
     if name and name.lower() == 'all':
@@ -92,37 +60,3 @@ def get_sites(name, directory=None, strict=False, all=False, metadata=False, sin
         if type(sites) is dict:
             sites = [sites]
         return sites
-
-def get_sites_by_directory_and_site_name(directory_name, site_name, strict=False, all=False, metadata=False):
-    sites = []
-    if directory_name is None:
-        sites = get_sites(site_name, strict=strict, all=all, metadata=metadata)
-    else:
-        directories = get_directories(directory_name, strict=strict, all=all)
-        for directory in directories:
-            s =  get_sites(site_name, directory=directory['id'], strict=strict, all=all, metadata=metadata)
-            if s is not None:
-                sites.extend(s)
-    return sites
-
-def sw2_site_list(args):
-    args_name = args.get('name')
-    args_strict = args.get('strict')
-    args_delimiter = args.get('delimiter')[0]
-    args_json = args.get('json')
-    args_metadata = args.get('metadata')
-    args_all = args.get('all')
-
-    sites = get_sites(args_name, strict=args_strict, all=args_all, metadata=args_metadata)
-    if sites is None:
-        return 1
-
-    sites.sort(key=lambda x: x['id'])
-
-    if args_json:
-        print(json.dumps(sites))
-    else:
-        for site in sites:
-            print(str(site['id']), site['name'], site['directory_name'], site["uri"], 'enabled' if site['enabled'] else 'disabled', sep=args_delimiter)
-
-    return 0

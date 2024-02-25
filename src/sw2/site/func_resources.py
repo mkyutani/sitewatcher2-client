@@ -1,33 +1,13 @@
 import json
 import sys
-from urllib.parse import urljoin
-import requests
-from sw2.env import Environment
 from sw2.site.list import get_sites
+from sw2.site.resource import get_site_resources
 from sw2.util import is_uuid
 
 def sw2_parser_site_resources(subparser):
     parser = subparser.add_parser('resources', help='print resources of site')
     parser.add_argument('site', metavar='SITE', help='site id or name')
     parser.add_argument('--json', action='store_true', help='in json format')
-
-def get_site_resources(id):
-    query = urljoin(Environment().apiSites(), f'{id}/resources')
-
-    res = None
-    try:
-        res = requests.get(query)
-    except Exception as e:
-        print(str(e), file=sys.stderr)
-        return None
-
-    if res.status_code >= 400:
-        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'{message} ', file=sys.stderr)
-        return None
-
-    resources = json.loads(res.text)
-    return resources
 
 def sw2_site_resources(args):
     args_id = args.get('site')
