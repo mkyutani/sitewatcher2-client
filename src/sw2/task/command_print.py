@@ -1,5 +1,4 @@
 import json
-from sw2.task.list_links import get_list_links
 from sw2.task.site_structure import get_site_structure
 
 def sw2_parser_task_print(subparser):

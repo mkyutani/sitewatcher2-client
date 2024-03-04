@@ -1,13 +1,13 @@
-from sw2.directory.func_add import sw2_directory_add, sw2_parser_directory_add
-from sw2.directory.func_delete import sw2_directory_delete, sw2_parser_directory_delete
-from sw2.directory.func_disable import sw2_directory_disable, sw2_parser_directory_disable
-from sw2.directory.func_enable import sw2_directory_enable, sw2_parser_directory_enable
-from sw2.directory.func_list import sw2_directory_list, sw2_parser_directory_list
-from sw2.directory.func_sites import sw2_directory_sites, sw2_parser_directory_sites
-from sw2.directory.func_variables import sw2_directory_variables, sw2_parser_directory_variables
-from sw2.directory.func_rename import sw2_directory_rename, sw2_parser_directory_rename
-from sw2.directory.func_set import sw2_directory_set, sw2_parser_directory_set
-from sw2.directory.func_unset import sw2_directory_unset, sw2_parser_directory_unset
+from sw2.directory.command_add import sw2_directory_add, sw2_parser_directory_add
+from sw2.directory.command_delete import sw2_directory_delete, sw2_parser_directory_delete
+from sw2.directory.command_disable import sw2_directory_disable, sw2_parser_directory_disable
+from sw2.directory.command_enable import sw2_directory_enable, sw2_parser_directory_enable
+from sw2.directory.command_list import sw2_directory_list, sw2_parser_directory_list
+from sw2.directory.command_sites import sw2_directory_sites, sw2_parser_directory_sites
+from sw2.directory.command_variables import sw2_directory_variables, sw2_parser_directory_variables
+from sw2.directory.command_rename import sw2_directory_rename, sw2_parser_directory_rename
+from sw2.directory.command_set import sw2_directory_set, sw2_parser_directory_set
+from sw2.directory.command_unset import sw2_directory_unset, sw2_parser_directory_unset
 
 directory_function_map = {
     'add': { 'function': sw2_directory_add, 'parser': sw2_parser_directory_add },

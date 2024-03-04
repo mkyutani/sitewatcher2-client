@@ -1,11 +1,8 @@
-import json
 import re
 import sys
-from urllib.parse import urljoin
-import requests
-from sw2.env import Environment
-from sw2.site.func_resources import get_site_resources
-from sw2.task.list_links import get_list_links
+from sw2.site.resource import get_site_resources
+from sw2.task.link_lists import get_list_links
+from sw2.task.site_resource import push_site_resource
 from sw2.task.site_structure import get_site_structure
 
 def sw2_parser_task_update(subparser):
@@ -15,35 +12,6 @@ def sw2_parser_task_update(subparser):
     parser.add_argument('--all', action='store_true', help='print not changed links')
     parser.add_argument('--push', action='store_true', help='push to remote')
     parser.add_argument('--strict', action='store_true', help='strict name check')
-
-def push(site, link, reason):
-    site_id = site['id']
-    site_name = site['name']
-    link_uri = link['uri']
-    link_name = link['name']
-
-    headers = { 'Content-Type': 'application/json' }
-    contents = {
-        'uri': link_uri,
-        'name': link_name,
-        'reason': reason,
-    }
-
-    query = urljoin(Environment().apiSites(), f'{site_id}/resources')
-
-    res = None
-    try:
-        res = requests.post(query, json=contents, headers=headers)
-    except Exception as e:
-        print(str(e), file=sys.stderr)
-        return 1
-
-    if res.status_code >= 400:
-        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'{message} ', file=sys.stderr)
-        return 1
-
-    resource = json.loads(res.text)
 
 def update_sites(sites, do_push=False, all=False):
     for site in sites:
@@ -71,7 +39,7 @@ def update_sites(sites, do_push=False, all=False):
                     unique_uris.append(link['uri'])
                     if resource_dict.pop(link['uri'], None) is None:
                         if do_push:
-                            push(site, link, "new")
+                            push_site_resource(site, link, "new")
                         messages.append({'message': message, 'op': '+'})
                     else:
                         messages.append({'message': message, 'op': ' '})

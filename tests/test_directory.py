@@ -3,7 +3,7 @@ import unittest
 
 from sw2.env import Environment
 
-from sw2.directory.func_list import sw2_directory_list
+from sw2.directory.command_list import sw2_directory_list
 
 class DirectoryTest(unittest.TestCase):
     """
