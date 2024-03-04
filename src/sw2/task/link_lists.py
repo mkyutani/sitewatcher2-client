@@ -6,7 +6,13 @@ import requests
 
 def get_list_links(source):
     headers = { 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36' }
-    res = requests.get(source, headers=headers)
+
+    try:
+        res = requests.get(source, headers=headers, timeout=10)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return []
+
     if res.status_code >= 400:
         message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
         print(f'{message} ', file=sys.stderr)
