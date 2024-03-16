@@ -18,7 +18,9 @@ def sw2_site_unset(args):
         ids = [args_id]
     else:
         sites = get_sites(args_id, strict=args_strict)
-        if len(sites) == 0:
+        if sites is None:
+            return 1
+        elif len(sites) == 0:
             print('Site not found', file=sys.stderr)
             return 1
 

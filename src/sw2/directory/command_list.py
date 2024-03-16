@@ -1,10 +1,11 @@
 import json
+import sys
 
 from sw2.directory.list import get_directories
 
 def sw2_parser_directory_list(subparser):
     parser = subparser.add_parser('list', help='list directories')
-    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory name')
+    parser.add_argument('name', help='directory id, name or "all"')
     parser.add_argument('--all', action='store_true', help='include disabled directories')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
@@ -21,6 +22,9 @@ def sw2_directory_list(args):
 
     directories = get_directories(args_name, args_strict, args_all, args_metadata)
     if directories is None:
+        return 1
+    elif len(directories) == 0:
+        print('directory not found', file=sys.stderr)
         return 1
 
     directories.sort(key=lambda x: x['id'])

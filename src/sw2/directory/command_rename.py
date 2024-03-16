@@ -1,34 +1,32 @@
 import sys
-from urllib.parse import urljoin
-import requests
 
-from sw2.env import Environment
+from sw2.directory.list import get_directories
+from sw2.directory.rename import rename_directory
+from sw2.util import is_uuid
 
 def sw2_parser_directory_rename(subparser):
     parser = subparser.add_parser('rename', help='rename directory')
-    parser.add_argument('id', metavar='ID', help='id')
-    parser.add_argument('name', metavar='NAME', help='name')
+    parser.add_argument('name', help='directory id, name or "all"')
+    parser.add_argument('new', help='new name')
+    parser.add_argument('--strict', action='store_true', help='directory name strict mode')
 
 def sw2_directory_rename(args):
-    args_id = args.get('id')
     args_name = args.get('name')
+    args_new = args.get('new')
+    args_strict = args.get('strict')
 
-    headers = { 'Content-Type': 'application/json' }
-    contents = {
-        'name': args_name
-    }
-    query = urljoin(Environment().apiDirectories(), args_id)
+    if is_uuid(args_name):
+        id = args_name
+    else:
+        directory = get_directories(args_name, strict=args_strict, single=True)
+        if directory is None:
+            return 1
 
-    res = None
-    try:
-        res = requests.put(query, json=contents, headers=headers)
-    except Exception as e:
-        print(str(e), file=sys.stderr)
+        id = directory['id']
+
+    result = rename_directory(id, args_new)
+    if result is False:
+        print('failed to rename {id}', file=sys.stderr)
         return 1
-
-    if res.status_code >= 400:
-        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'{message} ', file=sys.stderr)
-        return 1
-
-    return 0
+    else:
+        return 0

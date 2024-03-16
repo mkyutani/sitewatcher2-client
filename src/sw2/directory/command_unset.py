@@ -5,20 +5,22 @@ from sw2.util import is_uuid
 
 def sw2_parser_directory_unset(subparser):
     parser = subparser.add_parser('unset', help='unset metadata of directory')
-    parser.add_argument('id', help='directory id or name')
+    parser.add_argument('name', help='directory id, name or "all"')
     parser.add_argument('key', nargs='?', default=None, help='metadata key')
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
 
 def sw2_directory_unset(args):
-    args_id = args.get('id')
+    args_name = args.get('name')
     args_key = args.get('key')
     args_strict = args.get('strict')
 
-    if is_uuid(args_id):
-        ids = [args_id]
+    if is_uuid(args_name):
+        ids = [args_name]
     else:
-        directories = get_directories(args_id, strict=args_strict)
-        if len(directories) == 0:
+        directories = get_directories(args_name, strict=args_strict)
+        if directories is None:
+            return 1
+        elif len(directories) == 0:
             print('directory not found', file=sys.stderr)
             return 1
 

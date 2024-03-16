@@ -1,30 +1,40 @@
 import json
 import json
+import sys
 from sw2.directory.list import get_directories
 from sw2.directory.sites import get_sites_by_directory
+from sw2.util import is_uuid
 
 def sw2_parser_directory_sites(subparser):
     parser = subparser.add_parser('sites', help='list sites in directory')
-    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory name')
+    parser.add_argument('name', help='directory id, name or "all"')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='strict name check')
-    parser.add_argument('--all', action='store_true', help='include disabled directories')
     parser.add_argument('--sort', action='store_true', help='sort by name')
 
 def sw2_directory_sites(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_all = args.get('all')
     args_sort = args.get('sort')
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
 
-    directories = get_directories(args_name, args_strict, args_all)
+    if is_uuid(args_name):
+        ids = [args_name]
+    else:
+        directories = get_directories(args_name, strict=args_strict)
+        if directories is None:
+            return 1
+        elif len(directories) == 0:
+            print('directory not found', file=sys.stderr)
+            return 1
+
+        ids = [s['id'] for s in directories]
 
     sites = []
-    for directory in directories:
-        sites.extend(get_sites_by_directory(directory['id']))
+    for id in ids:
+        sites.extend(get_sites_by_directory(id))
 
     if args_sort:
         sites.sort(key=lambda x: x['name'])
