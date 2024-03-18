@@ -6,21 +6,17 @@ from sw2.directory.list import get_directories
 def sw2_parser_directory_list(subparser):
     parser = subparser.add_parser('list', help='list directories')
     parser.add_argument('name', help='directory id, name or "all"')
-    parser.add_argument('--all', action='store_true', help='include disabled directories')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
-    parser.add_argument('--metadata', action='store_true', help='include metadata')
     parser.add_argument('--strict', action='store_true', help='strict name check')
 
 def sw2_directory_list(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_all = args.get('all')
     args_json = args.get('json')
-    args_metadata = args.get('metadata')
     args_delimiter = args.get('delimiter')[0]
 
-    directories = get_directories(args_name, args_strict, args_all, args_metadata)
+    directories = get_directories(args_name, strict=args_strict)
     if directories is None:
         return 1
     elif len(directories) == 0:

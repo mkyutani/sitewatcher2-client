@@ -6,7 +6,7 @@ import sys
 from sw2.env import Environment
 from sw2.util import is_uuid
 
-def get_directories(name, strict=False, all=False, metadata=False, single=False):
+def get_directories(name, strict=False, single=False):
     if name and name.lower() == 'all':
         name = None
 
@@ -20,10 +20,6 @@ def get_directories(name, strict=False, all=False, metadata=False, single=False)
             options.append('='.join(['name', name]))
     if strict:
         options.append('='.join(['strict', 'true']))
-    if all:
-        options.append('='.join(['all', 'true']))
-    if metadata:
-        options.append('='.join(['metadata', 'true']))
     query = '?'.join([Environment().apiDirectories() + id, '&'.join(options)])
 
     res = None
