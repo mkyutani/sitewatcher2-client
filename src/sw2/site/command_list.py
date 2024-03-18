@@ -29,6 +29,6 @@ def sw2_site_list(args):
         print(json.dumps(sites))
     else:
         for site in sites:
-            print(str(site['id']), site['name'], site['directory_name'], site["uri"], 'enabled' if site['enabled'] else 'disabled', sep=args_delimiter)
+            print(str(site['id']), site['name'], site['directory_name'], site["uri"], sep=args_delimiter)
 
     return 0

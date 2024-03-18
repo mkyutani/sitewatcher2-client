@@ -22,6 +22,6 @@ def sw2_task_print(args):
         print(json.dumps(structure))
     else:
         for site in structure:
-            print(str(site['id']), site['name'], site['directory_name'], site["uri"], 'enabled' if site['enabled'] else 'disabled', sep=args_delimiter)
+            print(str(site['id']), site['name'], site['directory_name'], site["uri"], sep=args_delimiter)
 
     return 0

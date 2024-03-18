@@ -36,8 +36,7 @@ def sw2_site_add(args):
     contents = {
         'name': args_name,
         'uri': args_uri,
-        'directory': directory,
-        'enabled': 'true' if not args_disable else 'false'
+        'directory': directory
     }
 
     res = None

@@ -8,7 +8,6 @@ from sw2.env import Environment
 def sw2_parser_directory_add(subparser):
     parser = subparser.add_parser('add', help='add directory')
     parser.add_argument('name', metavar='NAME', help='name')
-    parser.add_argument('--disable', action='store_true', help='set disabled')
 
 def sw2_directory_add(args):
     args_name = args.get('name')
@@ -17,7 +16,6 @@ def sw2_directory_add(args):
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'name': args_name,
-        'enabled': 'true' if not args_disable else 'false'
     }
 
     res = None

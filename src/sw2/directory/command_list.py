@@ -33,6 +33,6 @@ def sw2_directory_list(args):
         print(json.dumps(directories))
     else:
         for directory in directories:
-            print(str(directory['id']), directory['name'], 'enabled' if directory['enabled'] else 'disabled', sep=args_delimiter)
+            print(str(directory['id']), directory['name'], sep=args_delimiter)
 
     return 0
