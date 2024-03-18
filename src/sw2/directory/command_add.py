@@ -11,7 +11,6 @@ def sw2_parser_directory_add(subparser):
 
 def sw2_directory_add(args):
     args_name = args.get('name')
-    args_disable = args.get('disable')
 
     headers = { 'Content-Type': 'application/json' }
     contents = {
