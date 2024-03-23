@@ -22,15 +22,18 @@ def get_site_resources(id):
     resources = json.loads(res.text)
     return resources
 
-def push_site_resource(site, link, name, reason):
+def push_site_resource(site, link, name, reason, initial=False):
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'uri': link,
         'name': name,
         'reason': reason,
     }
+    options = []
+    if initial:
+        options.append('initial')
 
-    query = urljoin(Environment().apiSites(), f'{site}/resources')
+    query = '?'.join([urljoin(Environment().apiSites(), f'{site}/resources'), '&'.join(options)])
 
     res = None
     try:
