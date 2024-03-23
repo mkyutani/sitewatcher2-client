@@ -1,4 +1,4 @@
-from sw2.task.link_lists import get_list_links
+from sw2.site.link_list import get_list_links
 
 def sw2_parser_site_test(subparser):
     parser = subparser.add_parser('test', help='test links from uri')

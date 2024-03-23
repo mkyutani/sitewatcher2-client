@@ -1,15 +1,12 @@
 import argparse
 import io
 import sys
-from sw2.env import Environment
 from sw2.directory import directory_function_map
 from sw2.site import site_function_map
-from sw2.task import task_function_map
 
 function_map = {
     'directory': directory_function_map,
-    'site': site_function_map,
-    'task': task_function_map
+    'site': site_function_map
 }
 
 def set_io_buffers():
