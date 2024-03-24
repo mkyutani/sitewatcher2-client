@@ -55,13 +55,13 @@ def sw2_site_add(args):
         if message['op'] in '+-':
             messages_diff.append(message)
 
-        site_info = get_sites(site['id'], single=True)
-        if site_info:
-            site = site_info
-        else:
-            site['name'] = args_name
-            site['uri'] = args_uri
-            site['directory_name'] = directory_name
+    site_info = get_sites(site['id'], single=True)
+    if site_info:
+        site = site_info
+    else:
+        site['name'] = args_name
+        site['uri'] = args_uri
+        site['directory_name'] = directory_name
 
     if args_json: 
         print(json.dumps({
