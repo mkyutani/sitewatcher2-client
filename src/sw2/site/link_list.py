@@ -50,7 +50,9 @@ def get_list_links(source):
     for tag in bs.find_all(['a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']):
         if tag.name[0] == 'h':
             level = int(tag.name[1])
-            sections[level - 1] = tag.text.strip()
+            section_text = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
+            section_text = re.sub('<.*?>', '', section_text)
+            sections[level - 1] = section_text
             for i in range(level, 6):
                 sections[i] = None
         else:
