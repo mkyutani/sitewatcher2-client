@@ -3,8 +3,8 @@ import json
 import sys
 
 from sw2.directory.list import get_directories
-from sw2.directory.update import update_directory_resources
-from sw2.site.resource import push_site_resource
+from sw2.directory.sites import get_sites_by_directory
+from sw2.site.update import update_site_resources
 
 def sw2_parser_directory_update(subparser):
     parser = subparser.add_parser('update', help='update site resources in directory')
@@ -31,20 +31,20 @@ def sw2_directory_update(args):
         print('directory not found', file=sys.stderr)
         return 1
 
-    all_messages_for_json = []
+    all_messages = []
     for directory in directories:
-        messages = update_directory_resources(directory['id'])
-        for message in messages:
-            if args_push and message['op'] == '+':
-                push_site_resource(message['site'], message['uri'], message['name'], "new", initial=args_initial)
-            if args_all or message['op'] in '+-':
-                if args_json:
-                    message.update({ 'directory': directory['id'], 'directory_name': directory['name'] })
-                    all_messages_for_json.append(message)
-                else:
-                    print(message['op'], message['message'])
+        sites = get_sites_by_directory(directory['id'])
+        if sites is not None:
+            for site in sites:
+                messages = update_site_resources(site, push=args_push, initial=args_initial)
+                for message in messages:
+                    if args_all or message['op'] in '+-':
+                        if args_json:
+                            all_messages.append(message)
+                        else:
+                            print(message['op'], message['message'])
 
     if args_json:
-        print(json.dumps(all_messages_for_json))
+        print(json.dumps(all_messages))
 
     return 0

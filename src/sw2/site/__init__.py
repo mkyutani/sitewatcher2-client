@@ -11,6 +11,8 @@ from sw2.site.command_test import sw2_parser_site_test, sw2_site_test
 from sw2.site.command_unset import sw2_parser_site_unset, sw2_site_unset
 from sw2.site.command_variables import sw2_parser_site_variables, sw2_site_variables
 
+from sw2.site.command_update import sw2_parser_site_update, sw2_site_update
+
 site_function_map = {
     'add': { 'function': sw2_site_add, 'parser': sw2_parser_site_add },
     'delete': { 'function': sw2_site_delete, 'parser': sw2_parser_site_delete },
@@ -23,5 +25,6 @@ site_function_map = {
     'set': { 'function': sw2_site_set, 'parser': sw2_parser_site_set },
     'test': { 'function': sw2_site_test, 'parser': sw2_parser_site_test },
     'unset': { 'function': sw2_site_unset, 'parser': sw2_parser_site_unset },
+    'update': { 'function': sw2_site_update, 'parser': sw2_parser_site_update },
     'variables': { 'function': sw2_site_variables, 'parser': sw2_parser_site_variables }
 }
