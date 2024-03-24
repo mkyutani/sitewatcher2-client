@@ -1,7 +1,6 @@
 import json
 import sys
-from sw2.site.list import get_sites
-from sw2.site.resource import get_site_resources
+from sw2.site.list import get_site_resources, get_sites
 from sw2.util import is_uuid
 
 def sw2_parser_site_resources(subparser):

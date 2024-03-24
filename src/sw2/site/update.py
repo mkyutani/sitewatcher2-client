@@ -5,8 +5,7 @@ from urllib.parse import urljoin
 import requests
 
 from sw2.site.link_list import get_list_links
-from sw2.site.resource import get_site_resources
-from sw2.site.list import get_sites
+from sw2.site.list import get_site_resources, get_sites
 
 from sw2.env import Environment
 
