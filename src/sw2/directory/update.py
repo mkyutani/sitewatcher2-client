@@ -29,11 +29,11 @@ def update_directory_resources(directory_id):
             op = ' '
             for exclude in excludes:
                 if re.match(exclude, link['uri']):
-                    op = 'S'
+                    op = 'X'
                     break
             else:
                 if link['uri'] in unique_uris:
-                    op = 'D'
+                    op = '='
                 else:
                     unique_uris.append(link['uri'])
                     if resource_dict.pop(link['uri'], None) is None:
