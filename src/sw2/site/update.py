@@ -9,11 +9,12 @@ from sw2.site.list import get_site_resources, get_sites
 
 from sw2.env import Environment
 
-def push_site_resource(site, link, name, reason, initial=False):
+def push_site_resource(site, link, name, sections, reason, initial=False):
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'uri': link,
         'name': name,
+        'sections': sections,
         'reason': reason,
     }
     options = []
@@ -35,6 +36,8 @@ def push_site_resource(site, link, name, reason, initial=False):
         return 1
 
     resource = json.loads(res.text)
+
+    return resource
 
 def update_site_resources(site, push=False, initial=False):
     if type(site) is dict:
@@ -70,7 +73,7 @@ def update_site_resources(site, push=False, initial=False):
                 if resource_dict.pop(link['uri'], None) is None:
                     op = '+'
                     if push:
-                        push_site_resource(site['id'], link['uri'], link['name'], "new", initial=initial)
+                        push_site_resource(site['id'], link['uri'], link['name'], link['sections'], "new", initial=initial)
 
         messages.append({
             'message': message,

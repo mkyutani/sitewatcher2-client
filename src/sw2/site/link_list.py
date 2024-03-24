@@ -1,3 +1,4 @@
+import copy
 import re
 import sys
 from urllib.parse import urljoin, urlparse
@@ -45,19 +46,22 @@ def get_list_links(source):
     links = []
 
     bs = BeautifulSoup(res.content, 'html.parser')
-    section = None
-    for a in bs.find_all(['a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']):
-        if a.name[0] == 'h':
-            section = a.text.strip()
+    sections = [None] * 6
+    for tag in bs.find_all(['a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']):
+        if tag.name[0] == 'h':
+            level = int(tag.name[1])
+            sections[level - 1] = tag.text.strip()
+            for i in range(level, 6):
+                sections[i] = None
         else:
             parent_tag_text = ''
-            for anc in a.parents:
+            for anc in tag.parents:
                 if anc.name == 'li' or anc.name == 'tr':
                     tag_texts = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
                     if len(tag_texts) > 1:
                         parent_tag_text = tag_texts[0].strip()
                     break
-            href = a.get('href')
+            href = tag.get('href')
             if href is not None:
                 ref = ''.join(filter(lambda c: c >= ' ', href))
                 ref = re.sub('<.*?>', '', ref)
@@ -72,7 +76,7 @@ def get_list_links(source):
                     else:
                         uri = urljoin(source, ref)
 
-                    tag_text = a.text.strip()
+                    tag_text = tag.text.strip()
                     if tag_text is None:
                         tag_text = ''
                     if tag_text == parent_tag_text:
@@ -83,7 +87,8 @@ def get_list_links(source):
                         name = '----'
 
                     links.append({
-                        'section': section,
+                        'sections': copy.deepcopy(sections),
+                        'section': ':'.join(list(map(lambda x: x if x is not None else '', sections))),
                         'uri': uri,
                         'name': name
                     })
