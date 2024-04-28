@@ -31,16 +31,18 @@ def sw2_site_variables(args):
 
     ids.sort()
 
+    all_metadata = []
     for id in ids:
         metadata = get_site_variables(id, args_key)
         if metadata is None:
             return 1
 
-        if args_json:
-            print(json.dumps(metadata))
-        else:
-            for m in metadata:
-                message = ' '.join([m['site'], m['key'], m['value']])
-                print(message)
+        all_metadata.extend(metadata)
 
+    if args_json:
+        print(json.dumps(all_metadata))
+    else:
+        for m in all_metadata:
+            message = ' '.join([m['site'], m['site_name'], m['key'], m['value']])
+            print(message)
     return 0
