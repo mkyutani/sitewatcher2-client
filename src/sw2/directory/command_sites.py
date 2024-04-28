@@ -1,7 +1,7 @@
 import json
 import json
 import sys
-from sw2.directory.list import get_directories
+from sw2.directory.list import list_directories
 from sw2.directory.sites import get_sites_by_directory
 from sw2.util import is_uuid
 
@@ -21,14 +21,14 @@ def sw2_directory_sites(args):
     if is_uuid(args_name):
         ids = [args_name]
     else:
-        directories = get_directories(args_name, strict=args_strict)
-        if directories is None:
+        directory_id_names = list_directories(args_name, strict=args_strict)
+        if directory_id_names is None:
             return 1
-        elif len(directories) == 0:
+        elif len(directory_id_names) == 0:
             print('directory not found', file=sys.stderr)
             return 1
 
-        ids = [s['id'] for s in directories]
+        ids = [s['id'] for s in directory_id_names]
 
     sites = []
     for id in ids:

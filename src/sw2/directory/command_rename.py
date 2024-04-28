@@ -18,11 +18,18 @@ def sw2_directory_rename(args):
     if is_uuid(args_name):
         id = args_name
     else:
-        directory = get_directories(args_name, strict=args_strict, single=True)
-        if directory is None:
+        directories = get_directories(args_name, strict=args_strict)
+        if directories is None:
             return 1
 
-        id = directory['id']
+        if len(directories) == 0:
+            print('directory not found', file=sys.stderr)
+            return 1
+        elif len(directories) > 1:
+            print('multiple directories found', file=sys.stderr)
+            return 1
+
+        id = directories[0]['id']
 
     result = rename_directory(id, args_new)
     if result is False:

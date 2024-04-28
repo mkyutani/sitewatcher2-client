@@ -1,7 +1,7 @@
 import json
 import sys
 import requests
-from sw2.directory.list import get_directories
+from sw2.directory.list import list_directories
 from sw2.env import Environment
 from sw2.site.update import update_site_resources
 from sw2.site.list import get_sites
@@ -21,18 +21,22 @@ def sw2_site_add(args):
     args_delimiter = args.get('delimiter')[0]
     args_json = args.get('json')
 
-    directories = get_directories(args_directory, single=True)
+    directories = list_directories(args_directory)
     if directories is None:
         return 1
+    if len(directories) == 0:
+        print(f'no such directory: {args_directory}', file=sys.stderr)
+        return 1
 
-    directory = directories['id']
-    directory_name = directories['name']
+    directory = directories[0]
+    directory_id = directory['id']
+    directory_name = directory['name']
 
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'name': args_name,
         'uri': args_uri,
-        'directory': directory
+        'directory': directory_id
     }
 
     res = None

@@ -1,5 +1,5 @@
 import sys
-from sw2.directory.list import get_directories
+from sw2.directory.list import list_directories
 from sw2.directory.unset import unset_directory_variables
 from sw2.util import is_uuid
 
@@ -17,7 +17,7 @@ def sw2_directory_unset(args):
     if is_uuid(args_name):
         ids = [args_name]
     else:
-        directories = get_directories(args_name, strict=args_strict)
+        directories = list_directories(args_name, strict=args_strict)
         if directories is None:
             return 1
         elif len(directories) == 0:
