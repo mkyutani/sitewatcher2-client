@@ -52,30 +52,6 @@ def sw2_site_add(args):
         return 1
 
     site = json.loads(res.text)
-
-    messages_diff = []
-    messages = update_site_resources(site['id'], push=True, initial=True)
-    for message in messages:
-        if message['op'] in '+-':
-            messages_diff.append(message)
-
-    site_info = get_sites(site['id'], single=True)
-    if site_info:
-        site = site_info
-    else:
-        site['name'] = args_name
-        site['uri'] = args_uri
-        site['directory_name'] = directory_name
-
-    if args_json: 
-        print(json.dumps({
-            'site': site,
-            'resources': messages_diff
-        }))
-    else:
-        print(str(site['id']), site['name'], site['directory_name'], site["uri"], sep=args_delimiter)
-        for message in messages:
-            if message['op'] in '+-':
-                print(message['op'], message['message'])
+    print(str(site['id']))
 
     return 0
