@@ -34,6 +34,6 @@ def sw2_site_resources(args):
             print(json.dumps(resources))
         else:
             for r in resources:
-                print(r['site_name'], r['uri'], r['name'])
+                print(r['uri'], ';'.join([f'{x["key"]}={x["value"]}' for x in r['properties']]))
 
     return result

@@ -33,10 +33,10 @@ def sw2_site_update(args):
             print(json.dumps(resources))
         else:
             if args_push:
-                for resource in resources:
-                    print(resource['uri'], ';'.join([f'{x["key"]}={x["value"]}' for x in resource['properties']]))
+                for r in resources:
+                    print(r['uri'], ';'.join([f'{x["key"]}={x["value"]}' for x in r['properties']]))
             else:
-                for resource in resources:
-                    print(resource['uri'], ';'.join(list(map(lambda x: f'{x}={resource["properties"][x]}', resource['properties'].keys()))))
+                for r in resources:
+                    print(r['uri'], ';'.join(list(map(lambda x: f'{x}={r["properties"][x]}', r['properties'].keys()))))
 
     return 0
