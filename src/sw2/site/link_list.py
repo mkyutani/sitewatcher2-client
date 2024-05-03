@@ -48,6 +48,7 @@ def get_list_links(source):
     bs = BeautifulSoup(res.content, 'html.parser')
     sections = [None] * 6
     title = None
+    name = None
     for tag in bs.find_all(['title', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']):
         if tag.name[0] == 'h':
             level = int(tag.name[1])
@@ -89,9 +90,11 @@ def get_list_links(source):
                     name = parent_tag_text + ':' + tag_text if len(parent_tag_text) > 0 else tag_text
                     name = ''.join(filter(lambda c: c >= ' ', name))
                     if len(name) == 0:
-                        name = '----'
+                        name = 'No name'
 
                     properties = {}
+                    if name is not None:
+                        properties['name'] = name
                     if title is not None:
                         properties['title'] = title
                     for i in range(6):
@@ -100,7 +103,6 @@ def get_list_links(source):
 
                     links.append({
                         'uri': uri,
-                        'name': name,
                         'properties': properties
                     })
 

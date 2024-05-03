@@ -7,7 +7,6 @@ from sw2.site.update import update_site_resources
 def sw2_parser_site_update(subparser):
     parser = subparser.add_parser('update', help='update site resources')
     parser.add_argument('name', help='site id, name or "all"')
-    parser.add_argument('--all', action='store_true', help='print not changed links')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--push', action='store_true', help='push to remote')
     parser.add_argument('--strict', action='store_true', help='strict name check')
@@ -15,8 +14,6 @@ def sw2_parser_site_update(subparser):
 def sw2_site_update(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_all = args.get('all')
-    args_initial = args.get('initial')
     args_json = args.get('json')
     args_push = args.get('push')
 
@@ -35,6 +32,11 @@ def sw2_site_update(args):
         if args_json:
             print(json.dumps(resources))
         else:
-            for resource in resources:
-                print(resource['name'], resource['uri'], ';'.join(list(map(lambda x: f'{x}={resource["properties"][x]}', resource['properties'].keys()))))
+            if args_push:
+                for resource in resources:
+                    print(resource['uri'], ';'.join([f'{x["key"]}={x["value"]}' for x in resource['properties']]))
+            else:
+                for resource in resources:
+                    print(resource['uri'], ';'.join(list(map(lambda x: f'{x}={resource["properties"][x]}', resource['properties'].keys()))))
+
     return 0

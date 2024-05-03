@@ -7,11 +7,10 @@ from sw2.site.link_list import get_list_links
 from sw2.site.list import get_sites
 from sw2.env import Environment
 
-def push_site_resource(site, uri, name, properties):
+def push_site_resource(site, uri, properties):
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'uri': uri,
-        'name': name,
         'properties': properties
     }
 
@@ -45,7 +44,7 @@ def update_site_resources(site, push=False):
     else:
         resources = []
         for link in links:
-            resource = push_site_resource(site['id'], link['uri'], link['name'], link['properties'])
+            resource = push_site_resource(site['id'], link['uri'], link['properties'])
             if resource is not None:
                 resources.append(resource)
         return resources
