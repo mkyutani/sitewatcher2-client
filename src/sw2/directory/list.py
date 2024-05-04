@@ -66,9 +66,6 @@ def get_directories(name, strict=False):
         else:
             directories.append(directory)
     else:
-        if name and name.islower() == 'all':
-            name = None
-
         directories = []
         directory_id_names = list_directories(name, strict=strict)
         for id_name in directory_id_names:
