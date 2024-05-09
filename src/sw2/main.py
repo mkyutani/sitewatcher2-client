@@ -24,7 +24,8 @@ def main():
     for category in function_map.keys():
         ssp = sp.add_parser(category).add_subparsers(dest='method', title='methods', required=True)
         for method in function_map[category].values():
-            method['parser'](ssp)
+            if method['parser']:
+                method['parser'](ssp)
 
     args = parser.parse_args()
     function = function_map[args.category][args.method]['function']

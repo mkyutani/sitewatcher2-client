@@ -4,7 +4,7 @@ import sys
 from sw2.channel.list import get_channels
 
 def sw2_parser_channel_list(subparser):
-    parser = subparser.add_parser('list', help='list channels')
+    parser = subparser.add_parser('list', aliases=['l'], help='list channels')
     parser.add_argument('name', help='channel id, name or "all"')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')

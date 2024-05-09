@@ -9,7 +9,7 @@ from sw2.util import is_uuid
 from sw2.channel.list import get_channel, get_channels
 
 def sw2_parser_channel_delete_site(subparser):
-    parser = subparser.add_parser('delete-site', help='delete channel site')
+    parser = subparser.add_parser('delete-site', aliases=['sd', 'ds'], help='delete channel site')
     parser.add_argument('channel', help='channel')
     parser.add_argument('site', help='channel')
     parser.add_argument('--strict-channel', action='store_true', help='channel name strict mode')

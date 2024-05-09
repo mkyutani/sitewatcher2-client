@@ -9,7 +9,7 @@ from sw2.channel.list import get_channels
 from sw2.directory.list import get_directories
 
 def sw2_parser_channel_add_directory(subparser):
-    parser = subparser.add_parser('add-directory', help='add channel directory')
+    parser = subparser.add_parser('add-directory', aliases=['ad', 'da'], help='add channel directory')
     parser.add_argument('channel', help='channel')
     parser.add_argument('directory', help='channel')
     parser.add_argument('title', help='title template')

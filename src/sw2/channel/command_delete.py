@@ -5,7 +5,7 @@ from sw2.channel.list import get_channels
 from sw2.util import is_uuid
 
 def sw2_parser_channel_delete(subparser):
-    parser = subparser.add_parser('delete', help='add channel')
+    parser = subparser.add_parser('delete', aliases=['d'], help='add channel')
     parser.add_argument('name', help='channel id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='channel name strict mode')
 
