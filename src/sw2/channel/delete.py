@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 import requests
 from sw2.env import Environment
 
-def delete_directory(id):
+def delete_channel(id):
     headers = {}
     query = urljoin(Environment().apiChannels(), id)
 

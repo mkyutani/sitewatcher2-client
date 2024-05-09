@@ -3,13 +3,16 @@ from urllib.parse import urljoin
 import requests
 from sw2.env import Environment
 
-def delete_directory(id):
-    headers = {}
+def rename_channel(id, new_name):
+    headers = { 'Content-Type': 'application/json' }
+    contents = {
+        'name': new_name
+    }
     query = urljoin(Environment().apiChannels(), id)
 
     res = None
     try:
-        res = requests.delete(query, headers=headers)
+        res = requests.put(query, json=contents, headers=headers)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return False
