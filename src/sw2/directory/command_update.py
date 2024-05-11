@@ -3,7 +3,6 @@ import json
 import sys
 
 from sw2.directory.list import get_directories
-from sw2.directory.sites import get_sites_by_directory
 from sw2.site.update import update_site_resources
 
 def sw2_parser_directory_update(subparser):
@@ -33,16 +32,14 @@ def sw2_directory_update(args):
 
     all_messages = []
     for directory in directories:
-        sites = get_sites_by_directory(directory['id'])
-        if sites is not None:
-            for site in sites:
-                messages = update_site_resources(site, push=args_push, initial=args_initial)
-                for message in messages:
-                    if args_all or message['op'] in '+-':
-                        if args_json:
-                            all_messages.append(message)
-                        else:
-                            print(message['op'], message['message'])
+        for site in directory['sites']:
+            messages = update_site_resources(site, push=args_push, initial=args_initial)
+            for message in messages:
+                if args_all or message['op'] in '+-':
+                    if args_json:
+                        all_messages.append(message)
+                    else:
+                        print(message['op'], message['message'])
 
     if args_json:
         print(json.dumps(all_messages))
