@@ -3,8 +3,6 @@ import sys
 import requests
 from sw2.directory.list import list_directories
 from sw2.env import Environment
-from sw2.site.update import update_site_resources
-from sw2.site.list import get_sites
 
 def sw2_parser_site_add(subparser):
     parser = subparser.add_parser('add', help='add site')

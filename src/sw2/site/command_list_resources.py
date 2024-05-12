@@ -1,10 +1,11 @@
 import json
 import sys
-from sw2.site.list import get_site_resources, get_sites
+from sw2.site.list import get_sites
+from sw2.site.resources import get_resources
 from sw2.util import is_uuid
 
 def sw2_parser_site_resources(subparser):
-    parser = subparser.add_parser('resources', help='print resources of site')
+    parser = subparser.add_parser('list-resources', help='list resources of site')
     parser.add_argument('site', metavar='SITE', help='site id or name')
     parser.add_argument('--json', action='store_true', help='in json format')
 
@@ -25,7 +26,7 @@ def sw2_site_resources(args):
     result = 0
 
     for id in ids:
-        resources = get_site_resources(id)
+        resources = get_resources(id)
         if resources is None:
             result = 1
             continue

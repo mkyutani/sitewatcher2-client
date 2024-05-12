@@ -2,10 +2,10 @@ import json
 import sys
 
 from sw2.site.list import get_sites
-from sw2.site.update import update_site_resources
+from sw2.site.resources import update_resources
 
 def sw2_parser_site_update(subparser):
-    parser = subparser.add_parser('update', help='update site resources')
+    parser = subparser.add_parser('update-resources', help='update site resources')
     parser.add_argument('name', help='site id, name or "all"')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--push', action='store_true', help='push to remote')
@@ -25,7 +25,7 @@ def sw2_site_update(args):
         return 1
 
     for site in sites:
-        resources = update_site_resources(site, push=args_push)
+        resources = update_resources(site, push=args_push)
         if resources is None:
             return 1
 

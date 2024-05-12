@@ -7,7 +7,7 @@ from sw2.site.link_list import get_list_links
 from sw2.site.list import get_sites
 from sw2.env import Environment
 
-def push_site_resource(site, uri, properties):
+def push_resource(site, uri, properties):
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'uri': uri,
@@ -32,7 +32,7 @@ def push_site_resource(site, uri, properties):
 
     return resource
 
-def update_site_resources(site, push=False):
+def update_resources(site, push=False):
     if type(site) is not dict:
         site = get_sites(site, single=True)
         if site is None:
@@ -44,7 +44,25 @@ def update_site_resources(site, push=False):
     else:
         resources = []
         for link in links:
-            resource = push_site_resource(site['id'], link['uri'], link['properties'])
+            resource = push_resource(site['id'], link['uri'], link['properties'])
             if resource is not None:
                 resources.append(resource)
         return resources
+
+def get_resources(id):
+    query = urljoin(Environment().apiSites(), f'{id}/resources')
+
+    res = None
+    try:
+        res = requests.get(query)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return None
+
+    if res.status_code >= 400:
+        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+        print(f'{message} ', file=sys.stderr)
+        return None
+
+    resources = json.loads(res.text)
+    return resources
