@@ -28,9 +28,11 @@ def push_resource(site, uri, properties):
         print(f'{message} ', file=sys.stderr)
         return None
 
-    resource = json.loads(res.text)
-
-    return resource
+    if res.status_code == 204:
+        return None
+    else:
+        resource = json.loads(res.text)
+        return resource
 
 def update_resources(site, push=False):
     if type(site) is not dict:
