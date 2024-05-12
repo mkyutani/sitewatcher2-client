@@ -5,7 +5,7 @@ from sw2.directory.list import get_directories
 
 def sw2_parser_directory_list(subparser):
     parser = subparser.add_parser('list', help='list directories')
-    parser.add_argument('name', help='directory id, name or "all"')
+    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory id, name or "all"')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--sites', action='store_true', help='list sites')

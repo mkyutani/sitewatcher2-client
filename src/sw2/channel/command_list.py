@@ -5,7 +5,7 @@ from sw2.channel.list import get_channels
 
 def sw2_parser_channel_list(subparser):
     parser = subparser.add_parser('list', aliases=['l'], help='list channels')
-    parser.add_argument('name', help='channel id, name or "all"')
+    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='channel id, name or "all"')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--sites', action='store_true', help='list sites')
@@ -33,6 +33,8 @@ def sw2_channel_list(args):
         for channel in channels:
             print(str(channel['id']), channel['name'], sep=args_delimiter)
             if args_sites:
+                for directory in channel['directories']:
+                    print(' ', str(directory['id']), directory['name'], sep=args_delimiter)
                 for site in channel['sites']:
                     print(' ', str(site['id']), site['name'], sep=args_delimiter)
 
