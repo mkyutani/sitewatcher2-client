@@ -5,11 +5,13 @@ from sw2.site.list import get_sites
 from sw2.site.resources import update_resources
 
 def sw2_parser_site_update(subparser):
-    parser = subparser.add_parser('update-resources', help='update site resources')
+    aliases = ['ur']
+    parser = subparser.add_parser('update-resources', aliases=aliases, help='update site resources')
     parser.add_argument('name', help='site id, name or "all"')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--push', action='store_true', help='push to remote')
     parser.add_argument('--strict', action='store_true', help='strict name check')
+    return aliases
 
 def sw2_site_update(args):
     args_name = args.get('name')

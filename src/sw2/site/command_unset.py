@@ -8,6 +8,7 @@ def sw2_parser_site_unset(subparser):
     parser.add_argument('id', help='site id or name')
     parser.add_argument('key', nargs='?', default=None, help='metadata key')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
+    return []
 
 def sw2_site_unset(args):
     args_id = args.get('id')

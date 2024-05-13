@@ -11,6 +11,7 @@ def sw2_parser_site_rename(subparser):
     parser.add_argument('name', metavar='NAME', help='old name')
     parser.add_argument('new', metavar='NEW', help='new name')
     parser.add_argument('--strict', action='store_true', help='strict name check')
+    return []
 
 def sw2_site_rename(args):
     args_name = args.get('name')

@@ -6,8 +6,9 @@ import requests
 from sw2.env import Environment
 
 def sw2_parser_channel_add(subparser):
-    parser = subparser.add_parser('add', aliases=['a'], help='add channel')
+    parser = subparser.add_parser('add', help='add channel')
     parser.add_argument('name', metavar='NAME', help='name')
+    return []
 
 def sw2_channel_add(args):
     args_name = args.get('name')

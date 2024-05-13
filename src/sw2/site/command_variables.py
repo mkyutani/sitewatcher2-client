@@ -10,6 +10,7 @@ def sw2_parser_site_variables(subparser):
     parser.add_argument('key', nargs='?', default=None, help='metadata key')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
+    return []
 
 def sw2_site_variables(args):
     args_id = args.get('id')

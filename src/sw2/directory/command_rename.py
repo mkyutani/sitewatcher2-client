@@ -9,6 +9,7 @@ def sw2_parser_directory_rename(subparser):
     parser.add_argument('name', help='directory id, name or "all"')
     parser.add_argument('new', help='new name')
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
+    return []
 
 def sw2_directory_rename(args):
     args_name = args.get('name')

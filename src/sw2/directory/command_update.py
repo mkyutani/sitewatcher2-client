@@ -6,12 +6,14 @@ from sw2.directory.list import get_directories
 from sw2.site.resources import update_resources
 
 def sw2_parser_directory_update(subparser):
-    parser = subparser.add_parser('update', help='update site resources in directory')
+    aliases = ['u']
+    parser = subparser.add_parser('update', aliases=aliases, help='update site resources in directory')
     parser.add_argument('name', help='directory id, name or "all"')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--push', action='store_true', help='push to remote')
     parser.add_argument('--strict', action='store_true', help='strict name check')
+    return aliases
 
 def sw2_directory_update(args):
     args_name = args.get('name')

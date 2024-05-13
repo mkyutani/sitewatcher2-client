@@ -11,6 +11,7 @@ def sw2_parser_directory_set(subparser):
     parser.add_argument('value', default=None, help='metadata value')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
+    return []
 
 def sw2_directory_set(args):
     args_name = args.get('name')

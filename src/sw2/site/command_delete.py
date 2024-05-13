@@ -8,6 +8,7 @@ def sw2_parser_site_delete(subparser):
     parser = subparser.add_parser('delete', help='add site')
     parser.add_argument('name', help='site id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
+    return []
 
 def sw2_site_delete(args):
     args_name = args.get('name')

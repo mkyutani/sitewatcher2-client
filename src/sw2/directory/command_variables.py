@@ -10,6 +10,7 @@ def sw2_parser_directory_variables(subparser):
     parser.add_argument('key', nargs='?', default=None, help='metadata key')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
+    return []
 
 def sw2_directory_variables(args):
     args_name = args.get('name')

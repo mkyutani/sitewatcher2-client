@@ -5,9 +5,11 @@ from sw2.site.resources import get_resources
 from sw2.util import is_uuid
 
 def sw2_parser_site_resources(subparser):
-    parser = subparser.add_parser('list-resources', help='list resources of site')
+    aliases = ['lr']
+    parser = subparser.add_parser('list-resources', aliases=aliases, help='list resources of site')
     parser.add_argument('site', metavar='SITE', help='site id or name')
     parser.add_argument('--json', action='store_true', help='in json format')
+    return aliases
 
 def sw2_site_resources(args):
     args_id = args.get('site')

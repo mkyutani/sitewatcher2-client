@@ -5,10 +5,11 @@ from sw2.channel.rename import rename_channel
 from sw2.util import is_uuid
 
 def sw2_parser_channel_rename(subparser):
-    parser = subparser.add_parser('rename', aliases=['r'], help='rename channel')
+    parser = subparser.add_parser('rename', help='rename channel')
     parser.add_argument('name', help='channel id, name or "all"')
     parser.add_argument('new', help='new name')
     parser.add_argument('--strict', action='store_true', help='channel name strict mode')
+    return []
 
 def sw2_channel_rename(args):
     args_name = args.get('name')

@@ -7,11 +7,13 @@ from sw2.site.list import get_sites
 from sw2.util import is_uuid
 
 def sw2_parser_site_directory(subparser):
-    parser = subparser.add_parser('directory', help='change directory of site')
+    aliases = ['dir']
+    parser = subparser.add_parser('directory', aliases=aliases, help='change directory of site')
     parser.add_argument('name', help='site id, name or "all"')
     parser.add_argument('directory', metavar='DIR', help='directory id or name')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
     parser.add_argument('--strict-directory', action='store_true', help='directory name strict mode')
+    return aliases
 
 def sw2_site_directory(args):
     args_name = args.get('name')

@@ -8,6 +8,7 @@ def sw2_parser_directory_delete(subparser):
     parser = subparser.add_parser('delete', help='add directory')
     parser.add_argument('name', help='directory id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
+    return []
 
 def sw2_directory_delete(args):
     args_name = args.get('name')

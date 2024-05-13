@@ -8,6 +8,7 @@ def sw2_parser_directory_unset(subparser):
     parser.add_argument('name', help='directory id, name or "all"')
     parser.add_argument('key', nargs='?', default=None, help='metadata key')
     parser.add_argument('--strict', action='store_true', help='directory name strict mode')
+    return []
 
 def sw2_directory_unset(args):
     args_name = args.get('name')

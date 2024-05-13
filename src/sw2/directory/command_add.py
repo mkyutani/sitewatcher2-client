@@ -8,6 +8,7 @@ from sw2.env import Environment
 def sw2_parser_directory_add(subparser):
     parser = subparser.add_parser('add', help='add directory')
     parser.add_argument('name', metavar='NAME', help='name')
+    return []
 
 def sw2_directory_add(args):
     args_name = args.get('name')

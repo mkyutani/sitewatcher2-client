@@ -9,13 +9,15 @@ from sw2.channel.list import get_channels
 from sw2.site.list import get_sites
 
 def sw2_parser_channel_add_site(subparser):
-    parser = subparser.add_parser('add-site', aliases=['as', 'sa'], help='add channel site')
+    aliases = ['as']
+    parser = subparser.add_parser('add-site', aliases=aliases, help='add channel site')
     parser.add_argument('channel', help='channel')
     parser.add_argument('site', help='channel')
     parser.add_argument('title', help='title template')
     parser.add_argument('description', help='description template')
     parser.add_argument('--strict-channel', action='store_true', help='channel name strict mode')
     parser.add_argument('--strict-site', action='store_true', help='site name strict mode')
+    return aliases
 
 def sw2_channel_add_site(args):
     args_channel = args.get('channel')
