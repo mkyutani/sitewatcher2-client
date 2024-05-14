@@ -40,6 +40,6 @@ def main():
 
     category = args.category
     method = args.method
-    function = function_map[category]['map'][method]['function']
+    function = runtime_function_map[category]['map'][method]['function']
 
     return function(vars(args))
