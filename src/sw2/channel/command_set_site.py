@@ -91,8 +91,8 @@ def sw2_channel_set_site_title(args):
     args_channel = args.get('channel')
     args_site = args.get('site')
     args_title = args.get('title')
-    args_strict_channel = args.get('strict-channel')
-    args_strict_site = args.get('strict-site')
+    args_strict_channel = args.get('strict_channel')
+    args_strict_site = args.get('strict_site')
 
     channel_id, site_id = get_channel_site(args_channel, args_site, args_strict_channel, args_strict_site)
     if channel_id is None or site_id is None:
@@ -114,8 +114,8 @@ def sw2_channel_set_site_description(args):
     args_channel = args.get('channel')
     args_site = args.get('site')
     args_description = args.get('description')
-    args_strict_channel = args.get('strict-channel')
-    args_strict_site = args.get('strict-site')
+    args_strict_channel = args.get('strict_channel')
+    args_strict_site = args.get('strict_site')
 
     channel_id, site_id = get_channel_site(args_channel, args_site, args_strict_channel, args_strict_site)
     if channel_id is None or site_id is None:
@@ -137,8 +137,8 @@ def sw2_channel_set_site_priority(args):
     args_channel = args.get('channel')
     args_site = args.get('site')
     args_priority = args.get('priority')
-    args_strict_channel = args.get('strict-channel')
-    args_strict_site = args.get('strict-site')
+    args_strict_channel = args.get('strict_channel')
+    args_strict_site = args.get('strict_site')
 
     channel_id, site_id = get_channel_site(args_channel, args_site, args_strict_channel, args_strict_site)
     if channel_id is None or site_id is None:

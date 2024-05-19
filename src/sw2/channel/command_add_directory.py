@@ -24,8 +24,8 @@ def sw2_channel_add_directory(args):
     args_directory = args.get('directory')
     args_title = args.get('title')
     args_description = args.get('description')
-    args_strict_channel = args.get('strict-channel')
-    args_strict_directory = args.get('strict-directory')
+    args_strict_channel = args.get('strict_channel')
+    args_strict_directory = args.get('strict_directory')
 
     if is_uuid(args_channel):
         channel_id = args_channel

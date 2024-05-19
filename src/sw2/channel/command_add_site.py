@@ -24,8 +24,8 @@ def sw2_channel_add_site(args):
     args_site = args.get('site')
     args_title = args.get('title')
     args_description = args.get('description')
-    args_strict_channel = args.get('strict-channel')
-    args_strict_site = args.get('strict-site')
+    args_strict_channel = args.get('strict_channel')
+    args_strict_site = args.get('strict_site')
 
     if is_uuid(args_channel):
         channel_id = args_channel

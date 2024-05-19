@@ -20,8 +20,8 @@ def sw2_parser_channel_delete_directory(subparser):
 def sw2_channel_delete_directory(args):
     args_channel = args.get('channel')
     args_directory = args.get('directory')
-    args_strict_channel = args.get('strict-channel')
-    args_strict_directory = args.get('strict-directory')
+    args_strict_channel = args.get('strict_channel')
+    args_strict_directory = args.get('strict_directory')
 
     if is_uuid(args_channel):
         channel = get_channel(args_channel)

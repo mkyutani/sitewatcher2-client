@@ -91,8 +91,8 @@ def sw2_channel_set_directory_title(args):
     args_channel = args.get('channel')
     args_directory = args.get('directory')
     args_title = args.get('title')
-    args_strict_channel = args.get('strict-channel')
-    args_strict_directory = args.get('strict-directory')
+    args_strict_channel = args.get('strict_channel')
+    args_strict_directory = args.get('strict_directory')
 
     channel_id, directory_id = get_channel_directory(args_channel, args_directory, args_strict_channel, args_strict_directory)
     if channel_id is None or directory_id is None:
@@ -114,8 +114,8 @@ def sw2_channel_set_directory_description(args):
     args_channel = args.get('channel')
     args_directory = args.get('directory')
     args_description = args.get('description')
-    args_strict_channel = args.get('strict-channel')
-    args_strict_directory = args.get('strict-directory')
+    args_strict_channel = args.get('strict_channel')
+    args_strict_directory = args.get('strict_directory')
 
     channel_id, directory_id = get_channel_directory(args_channel, args_directory, args_strict_channel, args_strict_directory)
     if channel_id is None or directory_id is None:
@@ -137,8 +137,8 @@ def sw2_channel_set_directory_priority(args):
     args_channel = args.get('channel')
     args_directory = args.get('directory')
     args_priority = args.get('priority')
-    args_strict_channel = args.get('strict-channel')
-    args_strict_directory = args.get('strict-directory')
+    args_strict_channel = args.get('strict_channel')
+    args_strict_directory = args.get('strict_directory')
 
     channel_id, directory_id = get_channel_directory(args_channel, args_directory, args_strict_channel, args_strict_directory)
     if channel_id is None or directory_id is None:
