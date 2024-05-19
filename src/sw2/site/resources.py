@@ -34,14 +34,9 @@ def push_resource(site, uri, properties):
         resource = json.loads(res.text)
         return resource
 
-def update_resources(site, push=False):
-    if type(site) is not dict:
-        site = get_sites(site, single=True)
-        if site is None:
-            return None
-
+def update_resources(site, test=False):
     links = get_list_links(site['uri'])
-    if not push:
+    if test:
         return links
     else:
         resources = []

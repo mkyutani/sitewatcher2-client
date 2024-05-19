@@ -6,12 +6,12 @@ from sw2.directory.list import get_directories
 from sw2.site.resources import update_resources
 
 def sw2_parser_directory_update(subparser):
-    aliases = ['u']
+    aliases = []
     parser = subparser.add_parser('update', aliases=aliases, help='update site resources in directory')
     parser.add_argument('name', help='directory id, name or "all"')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
-    parser.add_argument('--push', action='store_true', help='push to remote')
+    parser.add_argument('--test', action='store_true', help='test locally')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     return aliases
 
@@ -19,7 +19,8 @@ def sw2_directory_update(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
     args_json = args.get('json')
-    args_push = args.get('push')
+    args_delimiter = args.get('delimiter')[0]
+    args_test = args.get('test')
 
     directories = get_directories(args_name, strict=args_strict)
     if directories is None:
@@ -30,18 +31,24 @@ def sw2_directory_update(args):
 
     for directory in directories:
         for site in directory['sites']:
-            resources = update_resources(site, push=args_push)
+            resources = update_resources(site, test=args_test)
             if resources is None:
                 return 1
 
             if args_json:
                 print(json.dumps(resources))
             else:
-                if args_push:
+                if args_test:
                     for r in resources:
-                        print(r['uri'], ';'.join([f'{x["key"]}={x["value"]}' for x in r['properties']]))
+                        print(r['uri'])
+                        properties = r['properties']
+                        for key in properties.keys():
+                            print('-', key, properties[key], sep=args_delimiter)
                 else:
                     for r in resources:
-                        print(r['uri'], ';'.join(list(map(lambda x: f'{x}={r["properties"][x]}', r['properties'].keys()))))
+                        print(r['uri'])
+                        properties = r['properties']
+                        for kv in properties:
+                            print('-', kv['key'], kv['value'], sep=args_delimiter)
 
     return 0

@@ -5,15 +5,17 @@ from sw2.site.resources import get_resources
 from sw2.util import is_uuid
 
 def sw2_parser_site_resources(subparser):
-    aliases = ['lr']
-    parser = subparser.add_parser('list-resources', aliases=aliases, help='list resources of site')
+    aliases = []
+    parser = subparser.add_parser('resources', aliases=aliases, help='get resources of site')
     parser.add_argument('site', metavar='SITE', help='site id or name')
     parser.add_argument('--json', action='store_true', help='in json format')
+    parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     return aliases
 
 def sw2_site_resources(args):
     args_id = args.get('site')
     args_json = args.get('json')
+    args_delimiter = args.get('delimiter')[0]
 
     if is_uuid(args_id):
         ids = [args_id]
@@ -37,6 +39,9 @@ def sw2_site_resources(args):
             print(json.dumps(resources))
         else:
             for r in resources:
-                print(r['uri'], ';'.join([f'{x["key"]}={x["value"]}' for x in r['properties']]))
+                print(r['uri'])
+                properties = r['properties']
+                for kv in properties:
+                    print('-', kv['key'], kv['value'], sep=args_delimiter)
 
     return result
