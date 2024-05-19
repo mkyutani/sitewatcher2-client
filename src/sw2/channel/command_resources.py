@@ -45,7 +45,10 @@ def sw2_channel_resources(args):
         if args_json:
             print(res.text)
         else:
-            for channel in channels:
-                print(str(channel['id']), channel['name'], sep=args_delimiter)
+            channel_resources = json.loads(res.text)
+            for channel_resource in channel_resources:
+                print(channel_resource['channel'])
+                for kv in channel_resource['kv']:
+                    print('-', kv['key'], kv['value'], sep=args_delimiter)
 
     return 0
