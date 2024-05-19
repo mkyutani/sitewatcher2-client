@@ -68,6 +68,8 @@ def get_channels(name, strict=False):
     else:
         channels = []
         channel_id_names = list_channels(name, strict=strict)
+        if channel_id_names is None:
+            return None
         for id_name in channel_id_names:
             channel = get_channel(id_name['id'])
             if channel is None:
