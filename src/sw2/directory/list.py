@@ -68,6 +68,8 @@ def get_directories(name, strict=False):
     else:
         directories = []
         directory_id_names = list_directories(name, strict=strict)
+        if directory_id_names is None:
+            return None
         for id_name in directory_id_names:
             directory = get_directory(id_name['id'])
             if directory is None:
