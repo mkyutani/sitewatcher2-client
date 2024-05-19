@@ -45,11 +45,9 @@ def sw2_channel_timestamps(args):
         if args_json:
             print(res.text)
         else:
-            result = json.loads(res.text)
-            print(result['id'])
-            n = 0
-            for timestamp in result['timestamps']:
-                print('-', n, timestamp['timestamp'], sep=args_delimiter)
-                n = n + 1
+            channel_timestamps = json.loads(res.text)
+            print(channel['id'], channel['name'], sep=args_delimiter)
+            for timestamp in channel_timestamps['timestamps']:
+                print('-', timestamp['timestamp'], sep=args_delimiter)
 
     return 0
