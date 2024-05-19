@@ -67,8 +67,10 @@ def get_sites(name, strict=False):
             sites.append(site)
     else:
         sites = []
-        directory_id_names = list_sites(name, strict=strict)
-        for id_name in directory_id_names:
+        site_id_names = list_sites(name, strict=strict)
+        if site_id_names is None:
+            return None
+        for id_name in site_id_names:
             site = get_site(id_name['id'])
             if site is None:
                 return None
