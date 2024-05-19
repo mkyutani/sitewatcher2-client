@@ -6,15 +6,15 @@ from urllib.parse import urljoin
 from sw2.channel.list import get_channels
 from sw2.env import Environment
 
-def sw2_parser_channel_collect(subparser):
-    parser = subparser.add_parser('collect', help='collect resources of channels')
+def sw2_parser_channel_resources(subparser):
+    parser = subparser.add_parser('resources', help='get resources of channels')
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='channel id, name or "all"')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     return []
 
-def sw2_channel_collect(args):
+def sw2_channel_resources(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
     args_json = args.get('json')
@@ -32,7 +32,7 @@ def sw2_channel_collect(args):
 
         res = None
         try:
-            res = requests.post(urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources'])), headers=headers)
+            res = requests.get(urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources'])), headers=headers)
         except Exception as e:
             print(str(e), file=sys.stderr)
             return 1
