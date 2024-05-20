@@ -1,3 +1,4 @@
+import json
 import requests
 import sys
 from urllib.parse import urljoin
@@ -5,22 +6,19 @@ from urllib.parse import urljoin
 from sw2.env import Environment
 from sw2.site.list import get_sites
 
-def sw2_parser_site_set(subparser):
-    parser = subparser.add_parser('set', help='set rule of site')
-    parser.add_argument('name', default=None, help='site id or name')
+def sw2_parser_site_rules(subparser):
+    parser = subparser.add_parser('rules', help='update metadata of site')
+    parser.add_argument('name', help='site id or name')
     parser.add_argument('rule', default=None, help='rule name')
-    parser.add_argument('weight', default=None, help='rule weight')
-    parser.add_argument('value', default=None, help='rule value')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
     return []
 
-def sw2_site_set(args):
+def sw2_site_rules(args):
     args_name = args.get('name')
     args_rule = args.get('rule')
     args_weight = args.get('weight')
-    args_value = args.get('value')
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
     args_strict = args.get('strict')
@@ -33,17 +31,11 @@ def sw2_site_set(args):
         return 1
 
     for site in sites:
-        headers = { 'Content-Type': 'application/json' }
-        contents = {
-            'weight': args_weight,
-            'value': args_value
-        }
-
         query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', args_rule]))
 
         res = None
         try:
-            res = requests.post(query, json=contents, headers=headers)
+            res = requests.get(query)
         except Exception as e:
             print(str(e), file=sys.stderr)
             return 1
@@ -56,6 +48,8 @@ def sw2_site_set(args):
         if args_json:
             print(res.json)
         else:
-            print(site['id'], site['name'], args_weight, args_value, sep=args_delimiter)
+            rules = json.loads(res.text)
+            for rule in rules:
+                print(rule['site'], rule['name'], rule['weight'], rule['value'], sep=args_delimiter)
 
     return 0
