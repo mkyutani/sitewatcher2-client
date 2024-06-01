@@ -7,9 +7,8 @@ from sw2.env import Environment
 from sw2.site.list import get_sites
 
 def sw2_parser_site_rules(subparser):
-    parser = subparser.add_parser('rules', help='update metadata of site')
+    parser = subparser.add_parser('rules', help='get rules of site')
     parser.add_argument('name', help='site id or name')
-    parser.add_argument('rule', default=None, help='rule name')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
@@ -17,8 +16,6 @@ def sw2_parser_site_rules(subparser):
 
 def sw2_site_rules(args):
     args_name = args.get('name')
-    args_rule = args.get('rule')
-    args_weight = args.get('weight')
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
     args_strict = args.get('strict')
@@ -31,7 +28,7 @@ def sw2_site_rules(args):
         return 1
 
     for site in sites:
-        query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', args_rule]))
+        query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules']))
 
         res = None
         try:
@@ -46,7 +43,7 @@ def sw2_site_rules(args):
             return 1
 
         if args_json:
-            print(res.json)
+            print(res.text)
         else:
             rules = json.loads(res.text)
             for rule in rules:
