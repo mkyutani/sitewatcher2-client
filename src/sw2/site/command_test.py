@@ -20,7 +20,7 @@ def sw2_site_test(args):
         print(json.dumps(links))
     else:
         for link in links:
-            print(link['uri'], link['properties']['name'])
+            print(link['uri'], link['name'])
             for key in link['properties'].keys():
                 print('-', key, link['properties'][key], sep=args_delimiter)
 

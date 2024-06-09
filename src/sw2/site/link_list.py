@@ -93,8 +93,8 @@ def get_list_links(source):
                         name = 'No name'
 
                     properties = {}
-                    if name is not None:
-                        properties['name'] = name
+                    properties['uri'] = uri
+                    properties['name'] = name
                     if title is not None:
                         properties['title'] = title
                     for i in range(6):
@@ -103,6 +103,7 @@ def get_list_links(source):
 
                     links.append({
                         'uri': uri,
+                        'name': name,
                         'properties': properties
                     })
 
