@@ -55,7 +55,7 @@ def sw2_channel_resources(args):
                         if kv['key'] == 'name':
                             name = kv['value']
                             break
-                    print(channel_resource['channel_name'], channel_resource['site_name'], name, sep=args_delimiter)
+                    print(channel_resource['timestamp'], channel_resource['channel_name'], channel_resource['site_name'], name, sep=args_delimiter)
             else:
                 for channel_resource in channel_resources:
                     print(channel_resource['channel'])
