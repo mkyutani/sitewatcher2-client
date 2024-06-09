@@ -1,4 +1,5 @@
 from sw2.channel.command_add import sw2_channel_add, sw2_parser_channel_add
+from sw2.channel.command_add_device import sw2_channel_add_device, sw2_parser_channel_add_device
 from sw2.channel.command_add_directory import sw2_channel_add_directory, sw2_parser_channel_add_directory
 from sw2.channel.command_add_site import sw2_channel_add_site, sw2_parser_channel_add_site
 from sw2.channel.command_collect import sw2_channel_collect, sw2_parser_channel_collect
@@ -14,6 +15,7 @@ from sw2.channel.command_timestamps import sw2_channel_timestamps, sw2_parser_ch
 
 channel_function_map = {
     'add': { 'function': sw2_channel_add, 'parser': sw2_parser_channel_add },
+    'add-device': { 'function': sw2_channel_add_device, 'parser': sw2_parser_channel_add_device },
     'add-directory': { 'function': sw2_channel_add_directory, 'parser': sw2_parser_channel_add_directory },
     'add-site': { 'function': sw2_channel_add_site, 'parser': sw2_parser_channel_add_site },
     'collect': { 'function': sw2_channel_collect, 'parser': sw2_parser_channel_collect },
