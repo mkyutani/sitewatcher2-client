@@ -9,6 +9,7 @@ from sw2.env import Environment
 def sw2_parser_channel_resources(subparser):
     parser = subparser.add_parser('resources', help='get resources of channels')
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='channel id, name or "all"')
+    parser.add_argument('--compact', action='store_true', help='in compact format')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='strict name check')
@@ -17,6 +18,7 @@ def sw2_parser_channel_resources(subparser):
 def sw2_channel_resources(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
+    args_compact = args.get('compact')
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
 
@@ -46,9 +48,18 @@ def sw2_channel_resources(args):
             print(res.text)
         else:
             channel_resources = json.loads(res.text)
-            for channel_resource in channel_resources:
-                print(channel_resource['channel'])
-                for kv in channel_resource['kv']:
-                    print('-', kv['key'], kv['value'], sep=args_delimiter)
+            if args_compact:
+                name = None
+                for channel_resource in channel_resources:
+                    for kv in channel_resource['kv']:
+                        if kv['key'] == 'name':
+                            name = kv['value']
+                            break
+                    print(channel_resource['channel'], name, sep=args_delimiter)
+            else:
+                for channel_resource in channel_resources:
+                    print(channel_resource['channel'])
+                    for kv in channel_resource['kv']:
+                        print('-', kv['key'], kv['value'], sep=args_delimiter)
 
     return 0
