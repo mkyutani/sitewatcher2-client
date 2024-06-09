@@ -7,16 +7,16 @@ def sw2_parser_channel_list(subparser):
     aliases = ['l']
     parser = subparser.add_parser('list', aliases=aliases, help='list channels')
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='channel id, name or "all"')
+    parser.add_argument('--compact', action='store_true', help='in compact format')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
-    parser.add_argument('--sites', action='store_true', help='list sites')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     return aliases
 
 def sw2_channel_list(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_sites = args.get('sites')
+    args_compact = args.get('compact')
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
 
@@ -34,10 +34,14 @@ def sw2_channel_list(args):
     else:
         for channel in channels:
             print(str(channel['id']), channel['name'], sep=args_delimiter)
-            if args_sites:
+            if not args_compact:
                 for directory in channel['directories']:
-                    print('D', str(directory['id']), directory['name'], sep=args_delimiter)
+                    print(f'- directory {str(directory["id"])} {directory["name"]}')
                 for site in channel['sites']:
-                    print('S', str(site['id']), site['name'], sep=args_delimiter)
+                    print(f'- site {str(site["id"])} {site["name"]}')
+                for device in channel['devices']:
+                    print(f'- device {device["name"]} {device["interface"]}')
+                for timestamp in channel['timestamps']:
+                    print(f'- timestamp {timestamp["timestamp"]}')
 
     return 0
