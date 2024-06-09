@@ -47,6 +47,6 @@ def sw2_site_rules(args):
         else:
             rules = json.loads(res.text)
             for rule in rules:
-                print(rule['site'], rule['name'], rule['weight'], rule['value'], sep=args_delimiter)
+                print(rule['site'], rule['rule_category_name'], rule['weight'], rule['value'], sep=args_delimiter)
 
     return 0
