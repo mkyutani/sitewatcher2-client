@@ -60,6 +60,6 @@ def sw2_channel_resources(args):
                 for channel_resource in channel_resources:
                     print(channel_resource['channel'])
                     for kv in channel_resource['kv']:
-                        print('-', kv['key'], kv['value'], sep=args_delimiter)
+                        print(f'- {kv["key"]}:{kv["value"]}')
 
     return 0

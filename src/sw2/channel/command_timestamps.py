@@ -48,6 +48,6 @@ def sw2_channel_timestamps(args):
             channel_timestamps = json.loads(res.text)
             print(channel['id'], channel['name'], sep=args_delimiter)
             for timestamp in channel_timestamps['timestamps']:
-                print('-', timestamp['timestamp'], sep=args_delimiter)
+                print(f'- {timestamp["timestamp"]}')
 
     return 0

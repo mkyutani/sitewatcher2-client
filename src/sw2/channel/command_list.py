@@ -36,8 +36,8 @@ def sw2_channel_list(args):
             print(str(channel['id']), channel['name'], sep=args_delimiter)
             if args_sites:
                 for directory in channel['directories']:
-                    print(' ', str(directory['id']), directory['name'], sep=args_delimiter)
+                    print('D', str(directory['id']), directory['name'], sep=args_delimiter)
                 for site in channel['sites']:
-                    print(' ', str(site['id']), site['name'], sep=args_delimiter)
+                    print('S', str(site['id']), site['name'], sep=args_delimiter)
 
     return 0
