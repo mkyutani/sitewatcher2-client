@@ -10,14 +10,12 @@ def sw2_parser_channel_collect(subparser):
     parser = subparser.add_parser('collect', help='collect resources of channels')
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='channel id, name or "all"')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     return []
 
 def sw2_channel_collect(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
 
     channels = get_channels(args_name, strict=args_strict)
@@ -42,10 +40,6 @@ def sw2_channel_collect(args):
             print(f'{message} ', file=sys.stderr)
             return 1
 
-        if args_json:
-            print(res.text)
-        else:
-            for channel in channels:
-                print(str(channel['id']), channel['name'], sep=args_delimiter)
+        print(str(channel['id']), channel['name'], sep=args_delimiter)
 
     return 0
