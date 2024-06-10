@@ -4,6 +4,7 @@ from sw2.channel.command_add_directory import sw2_channel_add_directory, sw2_par
 from sw2.channel.command_add_site import sw2_channel_add_site, sw2_parser_channel_add_site
 from sw2.channel.command_collect import sw2_channel_collect, sw2_parser_channel_collect
 from sw2.channel.command_delete import sw2_channel_delete, sw2_parser_channel_delete
+from sw2.channel.command_delete_device import sw2_channel_delete_device, sw2_parser_channel_delete_device
 from sw2.channel.command_delete_directory import sw2_channel_delete_directory, sw2_parser_channel_delete_directory
 from sw2.channel.command_delete_site import sw2_channel_delete_site, sw2_parser_channel_delete_site
 from sw2.channel.command_list import sw2_channel_list, sw2_parser_channel_list
@@ -19,6 +20,7 @@ channel_function_map = {
     'add-site': { 'function': sw2_channel_add_site, 'parser': sw2_parser_channel_add_site },
     'collect': { 'function': sw2_channel_collect, 'parser': sw2_parser_channel_collect },
     'delete': { 'function': sw2_channel_delete, 'parser': sw2_parser_channel_delete },
+    'delete-device': { 'function': sw2_channel_delete_device, 'parser': sw2_parser_channel_delete_device },
     'delete-directory': { 'function': sw2_channel_delete_directory, 'parser': sw2_parser_channel_delete_directory },
     'delete-site': { 'function': sw2_channel_delete_site, 'parser': sw2_parser_channel_delete_site },
     'list': { 'function': sw2_channel_list, 'parser': sw2_parser_channel_list },
