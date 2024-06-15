@@ -11,13 +11,13 @@ from sw2.channel.list import get_channel, get_channels
 def sw2_parser_channel_delete_device(subparser):
     parser = subparser.add_parser('delete-device', help='delete channel device')
     parser.add_argument('channel', help='channel')
-    parser.add_argument('device', help='device name')
+    parser.add_argument('name', help='device name')
     parser.add_argument('--strict', action='store_true', help='strict mode')
     return []
 
 def sw2_channel_delete_device(args):
     args_channel = args.get('channel')
-    args_device = args.get('device')
+    args_name = args.get('name')
     args_strict = args.get('strict')
 
     if is_uuid(args_channel):
@@ -39,7 +39,7 @@ def sw2_channel_delete_device(args):
 
     res = None
     try:
-        res = requests.delete(urljoin(Environment().apiChannels(), '/'.join([channel_id, 'devices', args_device])), headers=headers)
+        res = requests.delete(urljoin(Environment().apiChannels(), '/'.join([channel_id, 'devices', args_name])), headers=headers)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return 1
@@ -50,6 +50,6 @@ def sw2_channel_delete_device(args):
         return 1
 
     channel_device_pair = json.loads(res.text)
-    print(str(channel_device_pair['channel']), str(channel_device_pair['device']))
+    print(str(channel_device_pair['channel']), str(channel_device_pair['name']))
 
     return 0

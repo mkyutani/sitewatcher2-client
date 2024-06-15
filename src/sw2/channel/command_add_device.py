@@ -11,19 +11,21 @@ from sw2.site.list import get_sites
 def sw2_parser_channel_add_device(subparser):
     parser = subparser.add_parser('add-device', help='add channel device')
     parser.add_argument('channel', help='channel')
-    parser.add_argument('device', help='device name')
+    parser.add_argument('name', help='device name')
     parser.add_argument('interface', help='interface name')
-    parser.add_argument('header', help='header template')
-    parser.add_argument('body', help='body template')
+    parser.add_argument('apikey', help='API key')
+    parser.add_argument('tag', help='tag')
+    parser.add_argument('template', help='template')
     parser.add_argument('--strict', action='store_true', help='strict mode')
     return []
 
 def sw2_channel_add_device(args):
     args_channel = args.get('channel')
-    args_device = args.get('device')
+    args_name = args.get('name')
     args_interface = args.get('interface')
-    args_header = args.get('header')
-    args_body = args.get('body')
+    args_apikey = args.get('apikey')
+    args_tag = args.get('tag')
+    args_template = args.get('template')
     args_strict = args.get('strict')
 
     if is_uuid(args_channel):
@@ -44,13 +46,14 @@ def sw2_channel_add_device(args):
     headers = { 'Content-Type': 'application/json' }
     contents = {
         'interface': args_interface,
-        'header': args_header,
-        'body': args_body
+        'apikey': args_apikey,
+        'tag': args_tag,
+        'template': args_template
     }
 
     res = None
     try:
-        res = requests.post(urljoin(Environment().apiChannels(), '/'.join([channel_id, 'devices', args_device])), json=contents, headers=headers)
+        res = requests.post(urljoin(Environment().apiChannels(), '/'.join([channel_id, 'devices', args_name])), json=contents, headers=headers)
     except Exception as e:
         print(str(e), file=sys.stderr)
         return 1
@@ -61,6 +64,6 @@ def sw2_channel_add_device(args):
         return 1
 
     channel_device_pair = json.loads(res.text)
-    print(str(channel_device_pair['channel']), str(channel_device_pair['device']))
+    print(str(channel_device_pair['channel']), str(channel_device_pair['name']))
 
     return 0
