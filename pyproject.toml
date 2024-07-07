@@ -12,6 +12,7 @@ requires-python = ">=3.10"
 dependencies = [
     "requests",
     "BeautifulSoup4",
+    "slack_sdk"
 ]
 
 [project.urls]

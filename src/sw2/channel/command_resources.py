@@ -3,6 +3,7 @@ import requests
 import sys
 from urllib.parse import urljoin
 
+from sw2.channel.device import output_to_device
 from sw2.channel.list import get_channels
 from sw2.env import Environment
 
@@ -10,6 +11,7 @@ def sw2_parser_channel_resources(subparser):
     parser = subparser.add_parser('resources', help='get resources of channels')
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='channel id, name or "all"')
     parser.add_argument('--compact', action='store_true', help='in compact format')
+    parser.add_argument('--device', nargs=1, default=[None], help='device name')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='strict name check')
@@ -17,6 +19,7 @@ def sw2_parser_channel_resources(subparser):
 
 def sw2_channel_resources(args):
     args_name = args.get('name')
+    args_device = args.get('device')[0]
     args_strict = args.get('strict')
     args_compact = args.get('compact')
     args_json = args.get('json')
@@ -32,9 +35,14 @@ def sw2_channel_resources(args):
     for channel in channels:
         headers = {}
 
+        if args_device:
+            query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources', args_device]))
+        else:
+            query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources']))
+
         res = None
         try:
-            res = requests.get(urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources'])), headers=headers)
+            res = requests.get(query, headers=headers)
         except Exception as e:
             print(str(e), file=sys.stderr)
             return 1
@@ -44,7 +52,20 @@ def sw2_channel_resources(args):
             print(f'{message} ', file=sys.stderr)
             return 1
 
-        if args_json:
+        if args_device:
+            device_info = None
+            for device in channel['devices']:
+                if device['name'] == args_device:
+                    device_info = device
+                    break
+            else:
+                print(f'device not found: {args_device}', file=sys.stderr)
+                return 1
+
+            channel_resources = json.loads(res.text)
+            output_to_device(device_info, channel_resources)
+            return 0
+        elif args_json:
             print(res.text)
         else:
             channel_resources = json.loads(res.text)
