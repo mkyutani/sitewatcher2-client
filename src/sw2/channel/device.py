@@ -23,11 +23,10 @@ def create_message(template, channel_resource):
     return vars.m(template)
 
 def output_to_device(device_info, channel_resources):
-
     if device_info['interface'] == 'slack':
         slack_api_key = device_info['apikey']
         slack_channel = device_info['tag']
-        slack_template = device_info['template']
+        slack_template = eval('"' + device_info['template'] + '"') # convert raw string to string
 
         client = WebClient(token=slack_api_key)
         channel = '#' + slack_channel
