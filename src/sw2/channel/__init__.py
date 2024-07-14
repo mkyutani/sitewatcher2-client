@@ -10,6 +10,7 @@ from sw2.channel.command_delete_site import sw2_channel_delete_site, sw2_parser_
 from sw2.channel.command_list import sw2_channel_list, sw2_parser_channel_list
 from sw2.channel.command_rename import sw2_channel_rename, sw2_parser_channel_rename
 from sw2.channel.command_resources import sw2_channel_resources, sw2_parser_channel_resources
+from sw2.channel.command_set_device import sw2_channel_set_device, sw2_parser_channel_set_device
 from sw2.channel.command_set_directory import sw2_channel_set_directory_description, sw2_channel_set_directory_priority, sw2_channel_set_directory_title, sw2_parser_channel_set_directory_description, sw2_parser_channel_set_directory_priority, sw2_parser_channel_set_directory_title
 from sw2.channel.command_set_site import sw2_channel_set_site_description, sw2_channel_set_site_priority, sw2_channel_set_site_title, sw2_parser_channel_set_site_description, sw2_parser_channel_set_site_priority, sw2_parser_channel_set_site_title
 
@@ -26,6 +27,7 @@ channel_function_map = {
     'list': { 'function': sw2_channel_list, 'parser': sw2_parser_channel_list },
     'rename': { 'function': sw2_channel_rename, 'parser': sw2_parser_channel_rename },
     'resources': { 'function': sw2_channel_resources, 'parser': sw2_parser_channel_resources },
+    'set-device': { 'function': sw2_channel_set_device, 'parser': sw2_parser_channel_set_device },
     'set-directory-description': { 'function': sw2_channel_set_directory_description, 'parser': sw2_parser_channel_set_directory_description },
     'set-directory-priority': { 'function': sw2_channel_set_directory_priority, 'parser': sw2_parser_channel_set_directory_priority },
     'set-directory-title': { 'function': sw2_channel_set_directory_title, 'parser': sw2_parser_channel_set_directory_title },
