@@ -6,6 +6,22 @@ from urllib.parse import urljoin
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackClientError, SlackApiError
 
+def create_message(template, channel_resource):
+    class Vars:
+        def __init__(self):
+            pass
+        def s(self, k, v):
+            setattr(self, k, v)
+        def g(self, k):
+            return getattr(self, k)
+        def m(self, t):
+            return t.format(**self.__dict__)
+
+    vars = Vars()
+    for kv in channel_resource['kv']:
+        vars.s(kv['key'], kv['value'])
+    return vars.m(template)
+
 def output_to_device(device_info, channel_resources):
 
     if device_info['interface'] == 'slack':
@@ -18,7 +34,7 @@ def output_to_device(device_info, channel_resources):
 
         for channel_resource in channel_resources:
             try:
-                slack_message =  slack_template.format(site_name=channel_resource['site_name'], name='name', uri='uri')
+                slack_message =  create_message(slack_template, channel_resource)
                 client.chat_postMessage(channel=channel, text=slack_message)
             except SlackApiError as e:
                 if e.response.status_code == 429:
