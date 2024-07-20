@@ -1,4 +1,5 @@
 import json
+import re
 import requests
 import sys
 from urllib.parse import urljoin
@@ -16,8 +17,31 @@ def sw2_parser_channel_resources(subparser):
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--send', action='store_true', help='send to device')
     parser.add_argument('--strict', action='store_true', help='strict name check')
-    parser.add_argument('--timestamp', nargs=1, default=[None], help='timestamp specified')
+    parser.add_argument('--timestamp', nargs=1, default=[None], help='timestamp or "latest"')
     return []
+
+def get_timestamp(channel, args_timestamp):
+    if args_timestamp is None:
+        return None
+    elif args_timestamp == 'latest':
+        latest = None
+        for timestamp in channel['timestamps']:
+            if latest is None or timestamp['timestamp'] > latest:
+                latest = timestamp['timestamp']
+        return latest
+    else:
+        pattern = args_timestamp
+        matched = None
+        for timestamp in channel['timestamps']:
+            if timestamp['timestamp'].startswith(pattern):
+                if matched is not None:
+                    print(f'Multiple timestamps matched', file=sys.stderr)
+                    return None
+                matched = timestamp['timestamp']
+        if matched is None:
+            print(f'No timestamps matched', file=sys.stderr)
+            return None
+        return matched
 
 def sw2_channel_resources(args):
     args_name = args.get('name')
@@ -46,7 +70,10 @@ def sw2_channel_resources(args):
         else:
             query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources']))
             if args_timestamp:
-                query = query + f'?t={args_timestamp}'
+                timestamp = get_timestamp(channel, args_timestamp)
+                if timestamp is None:
+                    return 1
+                query = query + f'?t={timestamp}'
 
         res = None
         try:
