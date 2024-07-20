@@ -16,6 +16,7 @@ def sw2_parser_channel_resources(subparser):
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--send', action='store_true', help='send to device')
     parser.add_argument('--strict', action='store_true', help='strict name check')
+    parser.add_argument('--timestamp', nargs=1, default=[None], help='timestamp specified')
     return []
 
 def sw2_channel_resources(args):
@@ -26,6 +27,7 @@ def sw2_channel_resources(args):
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
     args_send = args.get('send')
+    args_timestamp = args.get('timestamp')[0]
 
     channels = get_channels(args_name, strict=args_strict)
     if channels is None:
@@ -43,6 +45,8 @@ def sw2_channel_resources(args):
                 query = query + '?log=true'
         else:
             query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources']))
+            if args_timestamp:
+                query = query + f'?t={args_timestamp}'
 
         res = None
         try:
