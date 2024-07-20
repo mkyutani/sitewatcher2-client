@@ -22,7 +22,7 @@ def create_message(template, channel_resource):
         vars.s(kv['key'], kv['value'])
     return vars.m(template)
 
-def output_to_device(device_info, channel_resources):
+def output_to_device(device_info, channel_resources, sending=False):
     if device_info['interface'] == 'slack':
         slack_api_key = device_info['apikey']
         slack_channel = device_info['tag']
@@ -31,19 +31,29 @@ def output_to_device(device_info, channel_resources):
         client = WebClient(token=slack_api_key)
         channel = '#' + slack_channel
 
-        for channel_resource in channel_resources:
-            try:
+        if not sending:
+            lf_flag = False
+            for channel_resource in channel_resources:
+                if lf_flag:
+                    print('\n')
+                else:
+                    lf_flag = True
                 slack_message =  create_message(slack_template, channel_resource)
-                client.chat_postMessage(channel=channel, text=slack_message)
-            except SlackApiError as e:
-                if e.response.status_code == 429:
-                    delay = int(e.response.headers['Retry-After'])
-                    print('Rate limited. Retrying in {} seconds'.format(delay), file=sys.stderr)
-                    time.sleep(delay)
+                print(slack_message)
+        else:
+            for channel_resource in channel_resources:
+                try:
+                    slack_message =  create_message(slack_template, channel_resource)
                     client.chat_postMessage(channel=channel, text=slack_message)
-                elif e.response.status_code < 400:
-                    print('Slack api error: Status={}, Reason={}'.format(e.response.status_code, e.response['error']), file=sys.stderr)
-            except SlackClientError as e:
-                print(e)
+                except SlackApiError as e:
+                    if e.response.status_code == 429:
+                        delay = int(e.response.headers['Retry-After'])
+                        print('Rate limited. Retrying in {} seconds'.format(delay), file=sys.stderr)
+                        time.sleep(delay)
+                        client.chat_postMessage(channel=channel, text=slack_message)
+                    elif e.response.status_code < 400:
+                        print('Slack api error: Status={}, Reason={}'.format(e.response.status_code, e.response['error']), file=sys.stderr)
+                except SlackClientError as e:
+                    print(e)
 
     return 0

@@ -14,6 +14,7 @@ def sw2_parser_channel_resources(subparser):
     parser.add_argument('--device', nargs=1, default=[None], help='device name')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--json', action='store_true', help='in json format')
+    parser.add_argument('--send', action='store_true', help='send to device')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     return []
 
@@ -24,6 +25,7 @@ def sw2_channel_resources(args):
     args_compact = args.get('compact')
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
+    args_send = args.get('send')
 
     channels = get_channels(args_name, strict=args_strict)
     if channels is None:
@@ -63,7 +65,7 @@ def sw2_channel_resources(args):
                 return 1
 
             channel_resources = json.loads(res.text)
-            output_to_device(device_info, channel_resources)
+            output_to_device(device_info, channel_resources, sending=args_send)
             return 0
         elif args_json:
             print(res.text)
