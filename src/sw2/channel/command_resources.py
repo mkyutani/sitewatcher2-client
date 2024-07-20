@@ -39,6 +39,8 @@ def sw2_channel_resources(args):
 
         if args_device:
             query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources', args_device]))
+            if args_send:
+                query = query + '?log=true'
         else:
             query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources']))
 
