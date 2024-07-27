@@ -62,12 +62,6 @@ def sw2_channel_resources(args):
 
     options = []
 
-    if args_timestamp:
-        timestamp = get_timestamp(channel, args_timestamp)
-        if timestamp is None:
-            return 1
-        options.append(f't={timestamp}')
-
     for channel in channels:
         print(f'Channel: {channel["id"]} {channel["name"]}')
 
@@ -89,6 +83,12 @@ def sw2_channel_resources(args):
             query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources', device_info['name']]))
             if args_send:
                 options.append('log=true')
+
+        if args_timestamp:
+            timestamp = get_timestamp(channel, args_timestamp)
+            if timestamp is None:
+                return 1
+            options.append(f't={timestamp}')
 
         if len(options) > 0:
             query = '?'.join([query, '&'.join(options)])
