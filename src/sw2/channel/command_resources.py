@@ -60,30 +60,38 @@ def sw2_channel_resources(args):
         print('channel not found', file=sys.stderr)
         return 1
 
+    options = []
+
+    if args_timestamp:
+        timestamp = get_timestamp(channel, args_timestamp)
+        if timestamp is None:
+            return 1
+        options.append(f't={timestamp}')
+
     for channel in channels:
         print(f'Channel: {channel["id"]} {channel["name"]}')
 
+        device_info = None
+        if args_device:
+            for device in channel['devices']:
+                if device['name'] == args_device:
+                    device_info = device
+                    break
+            else:
+                print(f'device not found: {args_device}', file=sys.stderr)
+                return 1
+
         headers = {}
 
-        if args_device:
-            query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources', args_device]))
-            options = []
+        if device_info is None:
+            query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources']))
+        else:
+            query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources', device_info['name']]))
             if args_send:
                 options.append('log=true')
-            if args_timestamp:
-                timestamp = get_timestamp(channel, args_timestamp)
-                if timestamp is None:
-                    return 1
-                options.append(f't={timestamp}')
-            if len(options) > 0:
-                query = query + '?' + '&'.join(options)
-        else:
-            query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources']))
-            if args_timestamp:
-                timestamp = get_timestamp(channel, args_timestamp)
-                if timestamp is None:
-                    return 1
-                query = query + f'?t={timestamp}'
+
+        if len(options) > 0:
+            query = '?'.join([query, '&'.join(options)])
 
         res = None
         try:
@@ -97,19 +105,9 @@ def sw2_channel_resources(args):
             print(f'{message} ', file=sys.stderr)
             return 1
 
-        if args_device:
-            device_info = None
-            for device in channel['devices']:
-                if device['name'] == args_device:
-                    device_info = device
-                    break
-            else:
-                print(f'device not found: {args_device}', file=sys.stderr)
-                return 1
-
+        if device_info:
             channel_resources = json.loads(res.text)
             output_to_device(device_info, channel_resources, sending=args_send)
-            return 0
         elif args_json:
             print(res.text)
         else:
