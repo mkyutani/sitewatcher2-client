@@ -78,3 +78,27 @@ def get_channels(name, strict=False):
                 channels.append(channel)
 
     return channels
+
+def get_timestamp(channel, timestamp_text):
+    if timestamp_text is None:
+        print(f'No timestamp text', file=sys.stderr)
+        return None
+    elif timestamp_text == 'latest':
+        latest = None
+        for timestamp in channel['timestamps']:
+            if latest is None or timestamp['timestamp'] > latest:
+                latest = timestamp['timestamp']
+        return latest
+    else:
+        pattern = timestamp_text
+        matched = None
+        for timestamp in channel['timestamps']:
+            if timestamp['timestamp'].startswith(pattern):
+                if matched is not None:
+                    print(f'Multiple timestamps matched', file=sys.stderr)
+                    return None
+                matched = timestamp['timestamp']
+        if matched is None:
+            print(f'No timestamps matched', file=sys.stderr)
+            return None
+        return matched

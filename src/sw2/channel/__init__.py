@@ -13,6 +13,7 @@ from sw2.channel.command_resources import sw2_channel_resources, sw2_parser_chan
 from sw2.channel.command_set_device import sw2_channel_set_device, sw2_parser_channel_set_device
 from sw2.channel.command_set_directory import sw2_channel_set_directory_description, sw2_channel_set_directory_priority, sw2_channel_set_directory_title, sw2_parser_channel_set_directory_description, sw2_parser_channel_set_directory_priority, sw2_parser_channel_set_directory_title
 from sw2.channel.command_set_site import sw2_channel_set_site_description, sw2_channel_set_site_priority, sw2_channel_set_site_title, sw2_parser_channel_set_site_description, sw2_parser_channel_set_site_priority, sw2_parser_channel_set_site_title
+from sw2.channel.command_share import sw2_channel_share, sw2_parser_channel_share
 
 channel_function_map = {
     'add': { 'function': sw2_channel_add, 'parser': sw2_parser_channel_add },
@@ -33,5 +34,6 @@ channel_function_map = {
     'set-directory-title': { 'function': sw2_channel_set_directory_title, 'parser': sw2_parser_channel_set_directory_title },
     'set-site-description': { 'function': sw2_channel_set_site_description, 'parser': sw2_parser_channel_set_site_description },
     'set-site-priority': { 'function': sw2_channel_set_site_priority, 'parser': sw2_parser_channel_set_site_priority },
-    'set-site-title': { 'function': sw2_channel_set_site_title, 'parser': sw2_parser_channel_set_site_title }
+    'set-site-title': { 'function': sw2_channel_set_site_title, 'parser': sw2_parser_channel_set_site_title },
+    'share': { 'function': sw2_channel_share, 'parser': sw2_parser_channel_share }
 }
