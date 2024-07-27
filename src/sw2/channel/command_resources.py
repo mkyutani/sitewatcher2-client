@@ -61,6 +61,8 @@ def sw2_channel_resources(args):
         return 1
 
     for channel in channels:
+        print(f'Channel: {channel["id"]} {channel["name"]}')
+
         headers = {}
 
         if args_device:

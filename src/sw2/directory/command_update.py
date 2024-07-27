@@ -30,7 +30,11 @@ def sw2_directory_update(args):
         return 1
 
     for directory in directories:
+        print(f'Directory: {directory["id"]} {directory["name"]}')
+
         for site in directory['sites']:
+            print(f'Site: {site["id"]} {site["name"]}')
+
             resources = update_resources(site, test=args_test)
             if resources is None:
                 return 1

@@ -45,6 +45,8 @@ def output_to_device(device_info, channel_resources, sending=False):
                 try:
                     slack_message =  create_message(slack_template, channel_resource)
                     client.chat_postMessage(channel=channel, text=slack_message)
+                    slack_message_crlf_removed = re.sub(r'[\r\n]', ' ', slack_message)
+                    print(f'Sent to {channel}: {slack_message_crlf_removed}')
                 except SlackApiError as e:
                     if e.response.status_code == 429:
                         delay = int(e.response.headers['Retry-After'])

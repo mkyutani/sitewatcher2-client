@@ -34,7 +34,7 @@ def push_resource(site, uri, properties):
         resource = json.loads(res.text)
         return resource
 
-def update_resources(site, test=False):
+def update_resources(site, test=False, verbose=False):
     links = get_list_links(site['uri'])
     if test:
         return links
