@@ -37,9 +37,12 @@ def sw2_site_list(args):
         yaml.dump(sites, sys.stdout)
     else:
         for site in sites:
-            if not args_detail:
-                print(f'site {site["id"]} {site["name"]}')
-            else:
-                print(f'site {site["id"]} {site["name"]} {site["uri"]} {site["directory"]} {site["directory_name"]}')
+            print(f'site {site["id"]} {site["name"]}')
+            if args_detail:
+                print(f'- uri {site["uri"]}')
+                print(f'- directory {site["directory"]} {site["directory_name"]}')
+                for rule in site['rules']:
+                    print(f'- rule {rule["rule_category_name"]} {rule["weight"]} {rule["value"]}')
+
 
     return 0
