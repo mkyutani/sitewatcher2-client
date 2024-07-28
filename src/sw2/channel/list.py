@@ -95,7 +95,7 @@ def get_timestamp(channel, timestamp_text):
         for timestamp in channel['timestamps']:
             if timestamp['timestamp'].startswith(pattern):
                 if matched is not None:
-                    print(f'Multiple timestamps matched', file=sys.stderr)
+                    print(f'Ambiguous timestamps', file=sys.stderr)
                     return None
                 matched = timestamp['timestamp']
         if matched is None:

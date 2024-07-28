@@ -31,7 +31,7 @@ def sw2_channel_share(args):
     options = []
 
     for channel in channels:
-        print(f'Channel: {channel["id"]} {channel["name"]}')
+        print(f'channel {channel["id"]} {channel["name"]}', file=sys.stderr)
 
         headers = {}
 
@@ -43,12 +43,12 @@ def sw2_channel_share(args):
                 break
         else:
             print(f'device not found: {args_device}', file=sys.stderr)
-            return 1
+            continue
 
         if args_timestamp:
             timestamp = get_timestamp(channel, args_timestamp)
             if timestamp is None:
-                return 1
+                continue
             options.append(f't={timestamp}')
 
         if len(options) > 0:

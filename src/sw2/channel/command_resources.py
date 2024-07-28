@@ -3,26 +3,29 @@ import requests
 import sys
 from urllib.parse import urljoin
 
+import yaml
+
 from sw2.channel.list import get_channels, get_timestamp
 from sw2.env import Environment
 
 def sw2_parser_channel_resources(subparser):
     parser = subparser.add_parser('resources', help='get resources of channels')
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='channel id, name or "all"')
-    parser.add_argument('--compact', action='store_true', help='in compact format')
-    parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     parser.add_argument('--timestamp', nargs=1, default=[None], help='timestamp or "latest"')
+    format_group = parser.add_mutually_exclusive_group()
+    format_group.add_argument('--detail', action='store_true', help='show detail')
+    format_group.add_argument('--json', action='store_true', help='in json format')
+    format_group.add_argument('--yaml', action='store_true', help='in yaml format')
     return []
 
 def sw2_channel_resources(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_compact = args.get('compact')
-    args_json = args.get('json')
-    args_delimiter = args.get('delimiter')[0]
     args_timestamp = args.get('timestamp')[0]
+    args_detail = args.get('detail')
+    args_json = args.get('json')
+    args_yaml = args.get('yaml')
 
     channels = get_channels(args_name, strict=args_strict)
     if channels is None:
@@ -31,19 +34,20 @@ def sw2_channel_resources(args):
         print('channel not found', file=sys.stderr)
         return 1
 
-    options = []
+    all_channel_resources = []
 
     for channel in channels:
-        print(f'Channel: {channel["id"]} {channel["name"]}')
+        print(f'channel {channel["id"]} {channel["name"]}', file=sys.stderr)
 
         headers = {}
+        options = []
 
         query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources']))
 
         if args_timestamp:
             timestamp = get_timestamp(channel, args_timestamp)
             if timestamp is None:
-                return 1
+                continue
             options.append(f't={timestamp}')
 
         if len(options) > 0:
@@ -61,22 +65,26 @@ def sw2_channel_resources(args):
             print(f'{message} ', file=sys.stderr)
             return 1
 
-        if args_json:
-            print(res.text)
-        else:
-            channel_resources = json.loads(res.text)
-            if args_compact:
-                name = None
-                for channel_resource in channel_resources:
-                    for kv in channel_resource['kv']:
-                        if kv['key'] == 'name':
-                            name = kv['value']
-                            break
-                    print(channel_resource['timestamp'], channel_resource['channel_name'], channel_resource['site_name'], name, sep=args_delimiter)
+        channel_resources = json.loads(res.text)
+        for channel_resource in channel_resources:
+            all_channel_resources.append(channel_resource)
+
+    if args_json:
+        json.dump(all_channel_resources, sys.stdout)
+    elif args_yaml:
+        yaml.dump(all_channel_resources, sys.stdout)
+    else:
+        name = None
+        for channel_resource in all_channel_resources:
+            for kv in channel_resource['kv']:
+                if kv['key'] == 'name':
+                    name = kv['value']
+                    break
             else:
-                for channel_resource in channel_resources:
-                    print(channel_resource['channel'])
-                    for kv in channel_resource['kv']:
-                        print(f'- {kv["key"]}:{kv["value"]}')
+                name = 'unknown'
+            print(f'{channel_resource["channel_name"]} {channel_resource["timestamp"]} {channel_resource["site_name"]} {name} {channel_resource["uri"]}')
+            if args_detail:
+                for kv in channel_resource['kv']:
+                    print(f'- property {kv["key"]} {kv["value"]}')
 
     return 0
