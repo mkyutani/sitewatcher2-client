@@ -11,9 +11,9 @@ def sw2_parser_channel_list(subparser):
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='channel id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     format_group = parser.add_mutually_exclusive_group()
-    format_group.add_argument('--detail', action='store_true', help='show detail')
-    format_group.add_argument('--json', action='store_true', help='in json format')
-    format_group.add_argument('--yaml', action='store_true', help='in yaml format')
+    format_group.add_argument('-d', '--detail', action='store_true', help='show detail')
+    format_group.add_argument('-j', '--json', action='store_true', help='in json format')
+    format_group.add_argument('-y', '--yaml', action='store_true', help='in yaml format')
     return aliases
 
 def sw2_channel_list(args):
