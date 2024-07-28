@@ -1,21 +1,26 @@
 import json
 import sys
+
+import yaml
 from sw2.site.list import get_sites
 
 def sw2_parser_site_list(subparser):
     aliases = ['l']
     parser = subparser.add_parser('list', aliases=aliases, help='list sites')
-    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='site id or name')
-    parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    parser.add_argument('--json', action='store_true', help='in json format')
+    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='site id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='strict name check')
+    format_group = parser.add_mutually_exclusive_group()
+    format_group.add_argument('--detail', action='store_true', help='show detail')
+    format_group.add_argument('--json', action='store_true', help='in json format')
+    format_group.add_argument('--yaml', action='store_true', help='in yaml format')
     return aliases
 
 def sw2_site_list(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_delimiter = args.get('delimiter')[0]
+    args_detail = args.get('detail')
     args_json = args.get('json')
+    args_yaml = args.get('yaml')
 
     sites = get_sites(args_name, strict=args_strict)
     if sites is None:
@@ -27,9 +32,14 @@ def sw2_site_list(args):
     sites.sort(key=lambda x: x['id'])
 
     if args_json:
-        print(json.dumps(sites))
+        json.dump(sites, sys.stdout)
+    elif args_yaml:
+        yaml.dump(sites, sys.stdout)
     else:
         for site in sites:
-            print(str(site['id']), site['name'], site['directory_name'], site["uri"], sep=args_delimiter)
+            if not args_detail:
+                print(f'site {site["id"]} {site["name"]}')
+            else:
+                print(f'site {site["id"]} {site["name"]} {site["uri"]} {site["directory"]} {site["directory_name"]}')
 
     return 0

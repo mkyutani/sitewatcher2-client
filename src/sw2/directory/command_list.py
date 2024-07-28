@@ -1,24 +1,27 @@
 import json
 import sys
 
+import yaml
+
 from sw2.directory.list import get_directories
 
 def sw2_parser_directory_list(subparser):
     aliases = ['l']
     parser = subparser.add_parser('list', aliases=aliases, help='list directories')
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory id, name or "all"')
-    parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    parser.add_argument('--json', action='store_true', help='in json format')
-    parser.add_argument('--sites', action='store_true', help='list sites')
     parser.add_argument('--strict', action='store_true', help='strict name check')
+    format_group = parser.add_mutually_exclusive_group()
+    format_group.add_argument('--detail', action='store_true', help='show detail')
+    format_group.add_argument('--json', action='store_true', help='in json format')
+    format_group.add_argument('--yaml', action='store_true', help='in yaml format')
     return aliases
 
 def sw2_directory_list(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_sites = args.get('sites')
+    args_detail = args.get('detail')
     args_json = args.get('json')
-    args_delimiter = args.get('delimiter')[0]
+    args_yaml = args.get('yaml')
 
     directories = get_directories(args_name, strict=args_strict)
     if directories is None:
@@ -30,12 +33,14 @@ def sw2_directory_list(args):
     directories.sort(key=lambda x: x['id'])
 
     if args_json:
-        print(json.dumps(directories))
+        json.dump(directories, sys.stdout)
+    elif args_yaml:
+        yaml.dump(directories, sys.stdout)
     else:
         for directory in directories:
-            print(str(directory['id']), directory['name'], sep=args_delimiter)
-            if args_sites:
+            print(f'directory {directory["id"]} {directory["name"]}')
+            if args_detail:
                 for site in directory['sites']:
-                    print(' ', str(site['id']), site['name'], sep=args_delimiter)
+                    print(f'- site {site["id"]} {site["name"]}')
 
     return 0
