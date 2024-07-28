@@ -29,7 +29,7 @@ def sw2_site_update(args):
         return 1
 
     for site in sites:
-        print(f'Site: {site["id"]} {site["name"]}')
+        print(f'site {site["id"]} {site["name"]}', file=sys.stderr)
 
         resources = update_resources(site, test=args_test)
         if resources is None:

@@ -30,7 +30,7 @@ def sw2_directory_update(args):
         return 1
 
     for directory in directories:
-        print(f'Directory: {directory["id"]} {directory["name"]}')
+        print(f'directory {directory["id"]} {directory["name"]}', file=sys.stderr)
 
         for site in directory['sites']:
             print(f'Site: {site["id"]} {site["name"]}')
