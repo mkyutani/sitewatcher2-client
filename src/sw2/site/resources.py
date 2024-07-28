@@ -1,4 +1,5 @@
 import json
+import re
 import sys
 from urllib.parse import urljoin
 import requests
@@ -34,6 +35,31 @@ def push_resource(site, uri, properties):
         resource = json.loads(res.text)
         return resource
 
+def test_resource(site, link):
+    excludes = site.get('exclude')
+    if excludes is not None:
+        excludes.sort(key=lambda x: x.get('weight', 0))
+        for exclude in excludes:
+            condition = exclude['value']
+            property_name, pattern = condition.split(':')
+            property_text = link['properties'].get(property_name)
+            if property_text is not None and re.search(pattern, property_text):
+                return False, f'{link["name"]} ({property_name}:{property_text}) excluded by rule [{condition}]'
+
+    includes = site.get('include')
+    if includes is not None:
+        includes.sort(key=lambda x: x.get('weight', 0))
+        for include in includes:
+            condition = include['value']
+            property_name, pattern = condition.split(':')
+            property_text = link['properties'].get(property_name)
+            if property_text is not None and re.search(pattern, property_text):
+                break
+        else:
+            return False, f'{link["name"]} not included'
+
+    return True, None
+
 def update_resources(site, test=False, verbose=False):
     links = get_list_links(site['uri'])
     if test:
@@ -41,9 +67,13 @@ def update_resources(site, test=False, verbose=False):
     else:
         resources = []
         for link in links:
-            resource = push_resource(site['id'], link['uri'], link['properties'])
-            if resource is not None:
-                resources.append(resource)
+            result, reason = test_resource(site, link)
+            if result:
+                resource = push_resource(site['id'], link['uri'], link['properties'])
+                if resource is not None:
+                    resources.append(resource)
+            else:
+                print(reason, file=sys.stderr)
         return resources
 
 def get_resources(id):

@@ -1,5 +1,7 @@
 import json
 import sys
+
+import yaml
 from sw2.site.list import get_sites
 from sw2.site.resources import get_resources
 from sw2.util import is_uuid
@@ -7,41 +9,59 @@ from sw2.util import is_uuid
 def sw2_parser_site_resources(subparser):
     aliases = []
     parser = subparser.add_parser('resources', aliases=aliases, help='get resources of site')
-    parser.add_argument('site', metavar='SITE', help='site id or name')
-    parser.add_argument('--json', action='store_true', help='in json format')
-    parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
+    parser.add_argument('name', help='site id, name or "all"')
+    parser.add_argument('--strict', action='store_true', help='strict name check')
+    format_group = parser.add_mutually_exclusive_group()
+    format_group.add_argument('-d', '--detail', action='store_true', help='show detail')
+    format_group.add_argument('-j', '--json', action='store_true', help='in json format')
+    format_group.add_argument('-y', '--yaml', action='store_true', help='in yaml format')
     return aliases
 
 def sw2_site_resources(args):
-    args_id = args.get('site')
+    args_name = args.get('name')
+    args_strict = args.get('strict')
+    args_detail = args.get('detail')
     args_json = args.get('json')
-    args_delimiter = args.get('delimiter')[0]
+    args_yaml = args.get('yaml')
 
-    if is_uuid(args_id):
-        ids = [args_id]
-    else:
-        sites = get_sites(args_id)
-        if len(sites) == 0:
-            print('Site not found', file=sys.stderr)
-            return 1
+    sites = get_sites(args_name, strict=args_strict)
+    if sites is None:
+        return 1
+    elif len(sites) == 0:
+        print('site not found', file=sys.stderr)
+        return 1
 
-        ids = [s['id'] for s in sites]
-
+    all_site_resources = []
     result = 0
 
-    for id in ids:
-        resources = get_resources(id)
+    for site in sites:
+        print(f'site {site["id"]} {site["name"]}', file=sys.stderr)
+
+        resources = get_resources(site['id'])
         if resources is None:
             result = 1
             continue
 
-        if args_json:
-            print(json.dumps(resources))
-        else:
-            for r in resources:
-                print(r['uri'])
-                properties = r['properties']
-                for kv in properties:
-                    print('-', kv['key'], kv['value'], sep=args_delimiter)
+        for resource in resources:
+            all_site_resources.append(resource)
+
+    if args_json:
+        json.dump(all_site_resources, sys.stdout)
+    elif args_yaml:
+        yaml.dump(all_site_resources, sys.stdout)
+    else:
+        for resource in all_site_resources:
+            name = 'None'
+            for kv in resource['properties']:
+                if kv['key'] == 'name':
+                    name = kv['value']
+                    break
+            print(f'resource {resource["id"]} {name}')
+            if args_detail:
+                print(f'- uri {resource["uri"]}')
+                print(f'- site {resource["site"]} {resource["site_name"]}')
+                print(f'- timestamp {resource["timestamp"]}')
+                for kv in resource['properties']:
+                    print(f'- property {kv["key"]} {kv["value"]}')
 
     return result
