@@ -18,20 +18,17 @@ def sw2_site_rename(args):
     args_new = args.get('new')
     args_strict = args.get('strict')
 
-    if is_uuid(args_new):
-        id = args_new
-    else:
-        sites = get_sites(args_new, strict=args_strict)
-        if sites is None:
-            return 1
-        elif len(sites) == 0:
-            print('site not found', file=sys.stderr)
-            return 1
-        elif len(sites) > 1:
-            print('site is not unique', file=sys.stderr)
-            return 1
+    sites = get_sites(args_name, strict=args_strict)
+    if sites is None:
+        return 1
+    elif len(sites) == 0:
+        print('site not found', file=sys.stderr)
+        return 1
+    elif len(sites) > 1:
+        print('ambiguous site name', file=sys.stderr)
+        return 1
 
-        id = sites[0]['id']
+    id = sites[0]['id']
 
     headers = { 'Content-Type': 'application/json' }
     contents = {
