@@ -9,7 +9,7 @@ from sw2.util import is_uuid
 def sw2_parser_site_resources(subparser):
     aliases = []
     parser = subparser.add_parser('resources', aliases=aliases, help='get resources of site')
-    parser.add_argument('name', help='site id, name or "all"')
+    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='site id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     format_group = parser.add_mutually_exclusive_group()
     format_group.add_argument('-d', '--detail', action='store_true', help='show detail')
