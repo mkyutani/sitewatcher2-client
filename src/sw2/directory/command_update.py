@@ -5,6 +5,7 @@ import sys
 import yaml
 
 from sw2.directory.list import get_directories
+from sw2.site.list import get_site
 from sw2.site.resources import update_resources
 
 def sw2_parser_directory_update(subparser):
@@ -40,7 +41,11 @@ def sw2_directory_update(args):
         print(f'directory {directory["id"]} {directory["name"]}', file=sys.stderr)
 
         for site in directory['sites']:
-            print(f'Site: {site["id"]} {site["name"]}')
+            print(f'site {site["id"]} {site["name"]}')
+
+            site = get_site(site['id'])
+            if site is None:
+                return 1
 
             resources = update_resources(site, test=args_test)
             if resources is None:

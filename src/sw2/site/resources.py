@@ -36,6 +36,9 @@ def push_resource(site, uri, properties):
         return resource
 
 def test_resource(site, link):
+    if site.get('rule_category_names') is None:
+        return False, 'No rules in site structure'
+
     excludes = site.get('exclude')
     if excludes is not None:
         excludes.sort(key=lambda x: x.get('weight', 0))
