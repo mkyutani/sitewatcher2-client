@@ -45,7 +45,7 @@ def sw2_channel_list(args):
                 for site in channel['sites']:
                     print(f'- site {site["id"]} {site["name"]}')
                 for device in channel['devices']:
-                    print(f'- device {device["name"]} {device["interface"]} {device["tag"]}')
+                    print(f'- device {device["name"]} {device["interface"]} {device["apikey"]} {device["tag"]} {device["template"]}')
                 for timestamp in channel['timestamps']:
                     print(f'- timestamp {timestamp["timestamp"]}')
     return 0
