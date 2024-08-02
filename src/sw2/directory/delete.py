@@ -5,7 +5,7 @@ from sw2.env import Environment
 
 def delete_directory(id):
     headers = {}
-    query = urljoin(Environment().apiChannels(), id)
+    query = urljoin(Environment().apiDirectories(), id)
 
     res = None
     try:

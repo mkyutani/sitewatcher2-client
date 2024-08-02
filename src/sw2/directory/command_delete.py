@@ -30,7 +30,7 @@ def sw2_directory_delete(args):
     for id in ids:
         result = delete_directory(id)
         if result is False:
-            print('failed to delete {id}', file=sys.stderr)
+            print(f'failed to delete {id}', file=sys.stderr)
             failures = failures + 1
 
     if failures > 0:
