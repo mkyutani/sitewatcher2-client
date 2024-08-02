@@ -51,8 +51,8 @@ def sw2_directory_update(args):
             if resources is None:
                 return 1
 
-        for resource in resources:
-            all_site_resources.append(resource)
+            for resource in resources:
+                all_site_resources.append(resource)
 
     if args_json:
         json.dump(all_site_resources, sys.stdout)
