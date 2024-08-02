@@ -35,7 +35,7 @@ def push_resource(site, uri, properties):
         resource = json.loads(res.text)
         return resource
 
-def test_resource(site, link):
+def test_resource_by_rules(site, link):
     if site.get('rule_category_names') is None:
         return False, 'No rules in site structure'
 
@@ -63,19 +63,29 @@ def test_resource(site, link):
 
     return True, None
 
-def update_resources(site, test=False, verbose=False):
+def test_resources(site):
     links = get_list_links(site['uri'])
 
     resources = []
     for link in links:
-        result, reason = test_resource(site, link)
+        result, reason = test_resource_by_rules(site, link)
         if result:
-            if test:
-                resources.append(link)
-            else:
-                resource = push_resource(site['id'], link['uri'], link['properties'])
-                if resource is not None:
-                    resources.append(resource)
+            resources.append(link)
+        else:
+            print(reason, file=sys.stderr)
+
+    return resources
+
+def update_resources(site):
+    links = get_list_links(site['uri'])
+
+    resources = []
+    for link in links:
+        result, reason = test_resource_by_rules(site, link)
+        if result:
+            resource = push_resource(site['id'], link['uri'], link['properties'])
+            if resource is not None:
+                resources.append(resource)
         else:
             print(reason, file=sys.stderr)
 

@@ -2,12 +2,14 @@ import json
 import sys
 import yaml
 
-from sw2.site.link_list import get_list_links
+from sw2.site.list import get_sites
+from sw2.site.resources import test_resources
 
 def sw2_parser_site_test(subparser):
     aliases = []
-    parser = subparser.add_parser('test', aliases=aliases, help='test links from uri')
-    parser.add_argument('uri', help='url')
+    parser = subparser.add_parser('test', aliases=aliases, help='test site resources')
+    parser.add_argument('name', help='site id, name or "all"')
+    parser.add_argument('--strict', action='store_true', help='strict name check')
     format_group = parser.add_mutually_exclusive_group()
     format_group.add_argument('-d', '--detail', action='store_true', help='show detail')
     format_group.add_argument('-j', '--json', action='store_true', help='in json format')
@@ -15,22 +17,42 @@ def sw2_parser_site_test(subparser):
     return aliases
 
 def sw2_site_test(args):
-    args_directory = args.get('uri')
+    args_name = args.get('name')
+    args_strict = args.get('strict')
     args_detail = args.get('detail')
     args_json = args.get('json')
     args_yaml = args.get('yaml')
 
-    links = get_list_links(args_directory)
+    sites = get_sites(args_name, strict=args_strict)
+    if sites is None:
+        return 1
+    elif len(sites) == 0:
+        print('site not found', file=sys.stderr)
+        return 1
+
+    all_site_resources = []
+
+    for site in sites:
+        print(f'site {site["id"]} {site["name"]}', file=sys.stderr)
+
+        resources = test_resources(site)
+        if resources is None:
+            return 1
+
+        for resource in resources:
+            all_site_resources.append(resource)
 
     if args_json:
-        json.dump(links, sys.stdout)
+        json.dump(all_site_resources, sys.stdout)
     elif args_yaml:
-        yaml.dump(links, sys.stdout)
+        yaml.dump(all_site_resources, sys.stdout)
     else:
-        for link in links:
-            print(link['uri'], link['name'])
+        for resource in all_site_resources:
+            print(f'resource test {resource["name"]}')
             if args_detail:
-                for key in link['properties'].keys():
-                    print(f'- {key} {link["properties"][key]}')
+                print(f'- uri {resource["uri"]}')
+                properties = resource['properties']
+                for key in properties.keys():
+                    print(f'- property {key} {properties[key]}')
 
     return 0
