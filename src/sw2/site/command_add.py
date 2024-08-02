@@ -9,16 +9,12 @@ def sw2_parser_site_add(subparser):
     parser.add_argument('directory', metavar='DIR', help='directory id or name')
     parser.add_argument('name', metavar='NAME', help='name')
     parser.add_argument('uri', metavar='URI', help='source uri')
-    parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
-    parser.add_argument('--json', action='store_true', help='in json format')
     return []
 
 def sw2_site_add(args):
     args_directory = args.get('directory')
     args_name = args.get('name')
     args_uri = args.get('uri')
-    args_delimiter = args.get('delimiter')[0]
-    args_json = args.get('json')
 
     directories = list_directories(args_directory)
     if directories is None:
