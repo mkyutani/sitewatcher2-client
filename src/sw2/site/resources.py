@@ -65,19 +65,21 @@ def test_resource(site, link):
 
 def update_resources(site, test=False, verbose=False):
     links = get_list_links(site['uri'])
-    if test:
-        return links
-    else:
-        resources = []
-        for link in links:
-            result, reason = test_resource(site, link)
-            if result:
+
+    resources = []
+    for link in links:
+        result, reason = test_resource(site, link)
+        if result:
+            if test:
+                resources.append(link)
+            else:
                 resource = push_resource(site['id'], link['uri'], link['properties'])
                 if resource is not None:
                     resources.append(resource)
-            else:
-                print(reason, file=sys.stderr)
-        return resources
+        else:
+            print(reason, file=sys.stderr)
+
+    return resources
 
 def get_resources(id):
     query = urljoin(Environment().apiSites(), f'{id}/resources')
