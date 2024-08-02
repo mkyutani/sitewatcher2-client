@@ -4,13 +4,19 @@ import io
 import sys
 from sw2.channel import channel_function_map
 from sw2.directory import directory_function_map
-from sw2.ping import sw2_ping
+from sw2.ping import sw2_parser_ping, sw2_ping
 from sw2.site import site_function_map
+from sw2.test import sw2_parser_test, sw2_test
 
 function_map = {
     'channel': { 'aliases': [ 'c' ], 'map': channel_function_map, 'help': 'channel' },
     'directory': { 'aliases': [ 'd' ], 'map': directory_function_map, 'help': 'directory' },
     'site': { 'aliases': [ 's' ], 'map': site_function_map, 'help': 'site' }
+}
+
+root_function_map = {
+    'ping': { 'function': sw2_ping, 'parser': sw2_parser_ping },
+    'test': { 'function': sw2_test, 'parser': sw2_parser_test }
 }
 
 def set_io_buffers():
@@ -25,7 +31,8 @@ def main():
     parser = argparse.ArgumentParser(description='Sitewatcher2 Client Tool')
     sp = parser.add_subparsers(dest='category', title='categories', required=True)
 
-    ping_parser = sp.add_parser('ping', help='test connection')
+    for root_function in root_function_map.values():
+        root_function['parser'](sp)
 
     for category in function_map.keys():
         runtime_function_map[category] = copy.deepcopy(function_map[category])
@@ -47,5 +54,7 @@ def main():
         method = args.method
         function = runtime_function_map[category]['map'][method]['function']
         return function(vars(args))
-    elif category == 'ping':
-        return sw2_ping()
+    else:
+        for root_function_name in root_function_map.keys():
+            if root_function_name == category:
+                return root_function_map[root_function_name]['function'](vars(args))
