@@ -17,7 +17,7 @@ def sw2_parser_channel_share(subparser):
     return []
 
 def sw2_channel_share(args):
-    args_name = args.get('name')
+    args_name = args.get('name')[0]
     args_device = args.get('device')[0]
     args_dry = args.get('dry')
     args_strict = args.get('strict')
