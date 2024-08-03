@@ -4,7 +4,7 @@ import sys
 from urllib.parse import urljoin
 
 from sw2.channel.device import output_to_device
-from sw2.channel.list import get_channels, get_timestamp
+from sw2.channel.list import get_channels, get_device_timestamp, get_timestamp
 from sw2.env import Environment
 
 def sw2_parser_channel_share(subparser):
@@ -48,7 +48,7 @@ def sw2_channel_share(args):
             continue
 
         if args_timestamp:
-            timestamp = get_timestamp(channel, args_timestamp)
+            timestamp = get_device_timestamp(channel, device_info['name'], args_timestamp)
             if timestamp is None:
                 continue
             options.append(f't={timestamp}')
