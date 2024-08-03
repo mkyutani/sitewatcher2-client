@@ -6,11 +6,11 @@ import yaml
 
 from sw2.directory.list import get_directories
 from sw2.site.list import get_site
-from sw2.site.resources import update_resources
+from sw2.site.resources import test_resources
 
-def sw2_parser_directory_update(subparser):
+def sw2_parser_directory_test(subparser):
     aliases = []
-    parser = subparser.add_parser('update', aliases=aliases, help='update site resources in directory')
+    parser = subparser.add_parser('test', aliases=aliases, help='test site resources in directory')
     parser.add_argument('name', help='directory id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     format_group = parser.add_mutually_exclusive_group()
@@ -19,10 +19,9 @@ def sw2_parser_directory_update(subparser):
     format_group.add_argument('-y', '--yaml', action='store_true', help='in yaml format')
     return aliases
 
-def sw2_directory_update(args):
+def sw2_directory_test(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_test = args.get('test')
     args_detail = args.get('detail')
     args_json = args.get('json')
     args_yaml = args.get('yaml')
@@ -46,7 +45,7 @@ def sw2_directory_update(args):
             if site is None:
                 return 1
 
-            resources = update_resources(site)
+            resources = test_resources(site)
             if resources is None:
                 return 1
 
@@ -59,17 +58,11 @@ def sw2_directory_update(args):
         yaml.dump(all_site_resources, sys.stdout)
     else:
         for resource in all_site_resources:
-            name = 'None'
-            for kv in resource['properties']:
-                if kv['key'] == 'name':
-                    name = kv['value']
-                    break
-            print(f'resource {resource["id"]} {name}')
+            print(f'resource test {resource["name"]}')
             if args_detail:
                 print(f'- uri {resource["uri"]}')
-                print(f'- site {resource["site"]} {resource["site_name"]}')
-                print(f'- timestamp {resource["timestamp"]}')
-                for kv in resource['properties']:
-                    print(f'- property {kv["key"]} {kv["value"]}')
+                properties = resource['properties']
+                for key in properties.keys():
+                    print(f'- property {key} {properties[key]}')
 
     return 0
