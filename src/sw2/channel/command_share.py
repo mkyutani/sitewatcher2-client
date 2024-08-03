@@ -58,7 +58,10 @@ def sw2_channel_share(args):
 
         res = None
         try:
-            res = requests.post(query, headers=headers)
+            if args_dry:
+                res = requests.get(query, headers=headers)
+            else:
+                res = requests.post(query, headers=headers)
         except Exception as e:
             print(str(e), file=sys.stderr)
             return 1
