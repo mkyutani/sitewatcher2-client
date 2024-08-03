@@ -38,7 +38,7 @@ def sw2_channel_share(args):
         headers = {}
 
         device_info = None
-        for device in channel['devices']:
+        for device in channel['devices'].values():
             if device['name'] == args_device:
                 device_info = device
                 query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources', device_info['name']]))
