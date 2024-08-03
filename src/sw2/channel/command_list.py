@@ -40,12 +40,20 @@ def sw2_channel_list(args):
         for channel in channels:
             print(f'channel {channel["id"]} {channel["name"]}')
             if args_detail:
-                for directory in channel['directories']:
-                    print(f'- directory {directory["id"]} {directory["name"]}')
-                for site in channel['sites']:
-                    print(f'- site {site["id"]} {site["name"]}')
-                for device in channel['devices']:
-                    print(f'- device {device["name"]} {device["interface"]} {device["apikey"]} {device["tag"]} {device["template"]}')
-                for timestamp in channel['timestamps']:
-                    print(f'- timestamp {timestamp["timestamp"]}')
+                if 'directories' in channel:
+                    for directory in channel['directories']:
+                        print(f'- directory {directory["id"]} {directory["name"]}')
+                if 'sites' in channel:
+                    for site in channel['sites']:
+                        print(f'- site {site["id"]} {site["name"]}')
+                if 'timestamps' in channel:
+                    for timestamp in channel['timestamps']:
+                        print(f'- timestamp {timestamp["timestamp"]}')
+                if 'devices' in channel:
+                    for device in channel['devices'].values():
+                        print(f'- device {device["name"]} {device["interface"]} {device["apikey"]} {device["tag"]} {device["template"]}')
+                        if 'timestamps' in device:
+                            for timestamp in device['timestamps']:
+                                print(f'  - timestamp {timestamp}')
+
     return 0
