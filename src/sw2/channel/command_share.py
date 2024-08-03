@@ -9,7 +9,7 @@ from sw2.env import Environment
 
 def sw2_parser_channel_share(subparser):
     parser = subparser.add_parser('share', help='share resources of channels')
-    parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='channel id, name or "all"')
+    parser.add_argument('name', nargs=1, help='channel id, name or "all" (required)')
     parser.add_argument('device', nargs=1, help='device name')
     parser.add_argument('--dry', action='store_true', help='dry run')
     parser.add_argument('--strict', action='store_true', help='strict name check')
