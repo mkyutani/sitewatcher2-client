@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 from urllib.parse import urljoin
 
 class Environment:
@@ -12,6 +13,8 @@ class Environment:
                 'dir': '.',
                 'server': 'http://localhost:18085'
             }
+
+            load_dotenv('.env')
 
             dir = os.environ.get('SW2_DIR')
             if dir:

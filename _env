@@ -1,0 +1,6 @@
+#
+# Rename _env to .env and configure environment variables
+# Test command:
+#   sw2 ping
+#
+SW2_SERVER=http://localhost:18085
