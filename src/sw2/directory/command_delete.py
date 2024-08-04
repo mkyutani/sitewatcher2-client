@@ -3,7 +3,6 @@ import sys
 from urllib.parse import urljoin
 import requests
 
-from sw2.directory.delete import delete_directory
 from sw2.directory.list import get_directories
 from sw2.env import Environment
 
