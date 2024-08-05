@@ -10,18 +10,11 @@ def sw2_parser_site_test(subparser):
     parser = subparser.add_parser('test', aliases=aliases, help='test site resources')
     parser.add_argument('name', help='site id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='strict name check')
-    format_group = parser.add_mutually_exclusive_group()
-    format_group.add_argument('-d', '--detail', action='store_true', help='show detail')
-    format_group.add_argument('-j', '--json', action='store_true', help='in json format')
-    format_group.add_argument('-y', '--yaml', action='store_true', help='in yaml format')
     return aliases
 
 def sw2_site_test(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
-    args_detail = args.get('detail')
-    args_json = args.get('json')
-    args_yaml = args.get('yaml')
 
     sites = get_sites(args_name, strict=args_strict)
     if sites is None:
@@ -30,29 +23,18 @@ def sw2_site_test(args):
         print('site not found', file=sys.stderr)
         return 1
 
-    all_site_resources = []
-
     for site in sites:
-        print(f'site {site["id"]} {site["name"]}', file=sys.stderr)
+        print(f'site {site["id"]} {site["name"]}')
 
         resources = test_resources(site)
         if resources is None:
             return 1
 
         for resource in resources:
-            all_site_resources.append(resource)
-
-    if args_json:
-        json.dump(all_site_resources, sys.stdout)
-    elif args_yaml:
-        yaml.dump(all_site_resources, sys.stdout)
-    else:
-        for resource in all_site_resources:
             print(f'resource test {resource["name"]}')
-            if args_detail:
-                print(f'- uri {resource["uri"]}')
-                properties = resource['properties']
-                for key in properties.keys():
-                    print(f'- property {key} {properties[key]}')
+            print(f'- uri {resource["uri"]}')
+            properties = resource['properties']
+            for key in properties.keys():
+                print(f'- property {key} {properties[key]}')
 
     return 0
