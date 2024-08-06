@@ -44,7 +44,7 @@ def test_resource_by_rules(site, link):
         excludes.sort(key=lambda x: x.get('weight', 0))
         for exclude in excludes:
             condition = exclude['value']
-            property_name, pattern = condition.split(':')
+            property_name, pattern = condition.split(':', 1)
             property_text = link['properties'].get(property_name)
             if property_text is not None and re.search(pattern, property_text):
                 return False, f'{link["name"]} ({property_name}:{property_text}) excluded by rule [{condition}]'
@@ -54,7 +54,7 @@ def test_resource_by_rules(site, link):
         includes.sort(key=lambda x: x.get('weight', 0))
         for include in includes:
             condition = include['value']
-            property_name, pattern = condition.split(':')
+            property_name, pattern = condition.split(':', 1)
             property_text = link['properties'].get(property_name)
             if property_text is not None and re.search(pattern, property_text):
                 break
