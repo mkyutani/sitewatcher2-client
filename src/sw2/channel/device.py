@@ -1,4 +1,5 @@
 import re
+import string
 import time
 import requests
 import sys
@@ -8,6 +9,13 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackClientError, SlackApiError
 
 def create_message(template, channel_resource):
+    class SilentFormatter(string.Formatter):
+        def get_value(self, key, *args, **kwargs):
+            if not key in args[1]:
+                return '*'
+            else:
+                return super().get_value(key, *args, **kwargs)
+
     class Vars:
         def __init__(self):
             pass
@@ -16,7 +24,8 @@ def create_message(template, channel_resource):
         def g(self, k):
             return getattr(self, k)
         def m(self, t):
-            return t.format(**self.__dict__)
+            f = SilentFormatter()
+            return f.format(t, **self.__dict__)
 
     vars = Vars()
     for kv in channel_resource['kv']:
