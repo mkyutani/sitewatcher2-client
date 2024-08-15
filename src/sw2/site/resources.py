@@ -36,9 +36,6 @@ def push_resource(site, uri, properties):
         return resource
 
 def test_resource_by_rules(site, link):
-    if site.get('rule_category_names') is None:
-        return False, 'No rules in site structure'
-
     excludes = site.get('exclude')
     if excludes is not None:
         excludes.sort(key=lambda x: x.get('tag'))
@@ -69,6 +66,58 @@ def test_resource_by_rules(site, link):
 
     return True, None
 
+def extend_properties(site, link):
+    property_templates = site.get('property_template')
+    if property_templates is not None:
+        property_templates_sorted = []
+        for property_template in property_templates:
+            tag = property_template['tag']
+            value = property_template['value']
+
+            variables = tag.split(':')
+            if len(variables) < 2 or len(variables) > 3:
+                print(f'Invalid property template tag [{tag}]', file=sys.stderr)
+            elif len(variables) == 2:
+                property_template_weight = 0
+                target_name = variables[0]
+                source_name = variables[1]
+            else:
+                property_template_weight = int(variables[0])
+                target_name = variables[1]
+                source_name = variables[2]
+            source = link['properties'].get(source_name)
+            if source is None:
+                print(f'Property [{source_name}] not found', file=sys.stderr)
+                continue
+
+            sep = value[0]
+            operands = value[1:].split(sep)
+            if len(operands) != 3:
+                print(f'Invalid property template value [{tag}]', file=sys.stderr)
+                continue
+            pattern = operands[0]
+            repl = operands[1]
+            compiled_pattern = re.compile(pattern)
+            raw_repl = eval('"' + repl + '"') # convert raw string to string
+
+            property_templates_sorted.append({
+                'weight': property_template_weight,
+                'target_name': target_name,
+                'source_name': source_name,
+                'source': source,
+                'pattern': compiled_pattern,
+                'repl': raw_repl
+            })
+
+        property_templates_sorted.sort(key=lambda x: x.get('weight'))
+
+        for property_template in property_templates:
+            matched = re.sub(compiled_pattern, raw_repl, source)
+            if matched is None:
+                link['properties'][target_name] = source
+            else:
+                link['properties'][target_name] = matched
+
 def test_resources(site):
     links = get_list_links(site['uri'])
 
@@ -76,6 +125,7 @@ def test_resources(site):
     for link in links:
         result, reason = test_resource_by_rules(site, link)
         if result:
+            extend_properties(site, link)
             resources.append(link)
         else:
             print(reason, file=sys.stderr)
@@ -89,6 +139,7 @@ def update_resources(site):
     for link in links:
         result, reason = test_resource_by_rules(site, link)
         if result:
+            extend_properties(site, link)
             resource = push_resource(site['id'], link['uri'], link['properties'])
             if resource is not None:
                 resources.append(resource)
