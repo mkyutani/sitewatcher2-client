@@ -9,7 +9,7 @@ def sw2_parser_site_set(subparser):
     parser = subparser.add_parser('set', help='set rule of site')
     parser.add_argument('name', default=None, help='site id or name')
     parser.add_argument('rule', default=None, help='rule name')
-    parser.add_argument('weight', default=None, help='rule weight')
+    parser.add_argument('tag', default=None, help='rule tag')
     parser.add_argument('value', default=None, help='rule value')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
@@ -19,7 +19,7 @@ def sw2_parser_site_set(subparser):
 def sw2_site_set(args):
     args_name = args.get('name')
     args_rule = args.get('rule')
-    args_weight = args.get('weight')
+    args_tag = args.get('tag')
     args_value = args.get('value')
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
@@ -35,7 +35,7 @@ def sw2_site_set(args):
     for site in sites:
         headers = { 'Content-Type': 'application/json' }
         contents = {
-            'weight': args_weight,
+            'tag': args_tag,
             'value': args_value
         }
 
@@ -56,6 +56,6 @@ def sw2_site_set(args):
         if args_json:
             print(res.json)
         else:
-            print(site['id'], site['name'], args_weight, args_value, sep=args_delimiter)
+            print(site['id'], site['name'], args_tag, args_value, sep=args_delimiter)
 
     return 0

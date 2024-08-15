@@ -9,7 +9,7 @@ def sw2_parser_site_unset(subparser):
     parser = subparser.add_parser('unset', help='unset rule of site')
     parser.add_argument('name', default=None, help='site id or name')
     parser.add_argument('rule', default=None, help='rule name')
-    parser.add_argument('weight', default=None, help='rule weight')
+    parser.add_argument('tag', default=None, help='rule tag')
     parser.add_argument('--json', action='store_true', help='in json format')
     parser.add_argument('--delimiter', nargs=1, default=[' '], help='delimiter')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
@@ -19,7 +19,7 @@ def sw2_parser_site_unset(subparser):
 def sw2_site_unset(args):
     args_name = args.get('name')
     args_rule = args.get('rule')
-    args_weight = args.get('weight')
+    args_tag = args.get('tag')
     args_json = args.get('json')
     args_delimiter = args.get('delimiter')[0]
     args_strict = args.get('strict')
@@ -32,7 +32,7 @@ def sw2_site_unset(args):
         return 1
 
     for site in sites:
-        query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', args_rule, args_weight]))
+        query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', args_rule, args_tag]))
 
         res = None
         try:
@@ -49,6 +49,6 @@ def sw2_site_unset(args):
         if args_json:
             print(res.json)
         else:
-            print(site['id'], site['name'], args_weight, sep=args_delimiter)
+            print(site['id'], site['name'], args_tag, sep=args_delimiter)
 
     return 0

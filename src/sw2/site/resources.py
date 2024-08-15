@@ -41,7 +41,7 @@ def test_resource_by_rules(site, link):
 
     excludes = site.get('exclude')
     if excludes is not None:
-        excludes.sort(key=lambda x: x.get('weight', 0))
+        excludes.sort(key=lambda x: x.get('tag'))
         for exclude in excludes:
             condition = exclude['value']
             try:
@@ -54,7 +54,7 @@ def test_resource_by_rules(site, link):
 
     includes = site.get('include')
     if includes is not None:
-        includes.sort(key=lambda x: x.get('weight', 0))
+        includes.sort(key=lambda x: x.get('tag'))
         for include in includes:
             condition = include['value']
             try:

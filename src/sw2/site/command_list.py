@@ -43,6 +43,6 @@ def sw2_site_list(args):
                 print(f'- directory {site["directory"]} {site["directory_name"]}')
                 for rule_category_name in site['rule_category_names']:
                     for rule in site[rule_category_name]:
-                        print(f'- {rule_category_name} {rule["weight"]} {rule["value"]}')
+                        print(f'- {rule_category_name} {rule["tag"]} {rule["value"]}')
 
     return 0
