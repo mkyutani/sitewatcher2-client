@@ -8,6 +8,9 @@
 #   # Test the connection to the server
 #   docker run --env SW2_SERVER=https://sw2server:port --rm sw2
 #
+#   # (sw2 server on docker host network)
+#   docker run --net=host --rm sw2
+#
 #   # List directories
 #   docker run --env SW2_SERVER=https://sw2server:port --rm sw2 d list
 #
