@@ -1,10 +1,11 @@
 #/bin/env sh
-echo ========  $(date) ========
-echo ---- ping
-sudo docker run --net=sw2nw --rm sw2
-echo ---- update resources
-sudo docker run --net=sw2nw --rm sw2 d update all
-echo ---- collect resources in channels
-sudo docker run --net=sw2nw --rm sw2 c collect all
-echo ---- share new resources to slack
-sudo docker run --net=sw2nw --rm sw2 c share all slack
+echo ========  $(date) ======== >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log
+echo ---- ping >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log
+docker run --name sw2c --net=sw2nw --rm -a stdout -a stderr sw2 >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log 2>&1
+echo ---- update resources >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log
+docker run --net=sw2nw --rm sw2 d update all >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log 2>&1
+echo ---- collect resources in channels >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log
+docker run --net=sw2nw --rm sw2 c collect all >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log 2>&1
+echo ---- share new resources to slack >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log
+docker run --net=sw2nw --rm sw2 c share all slack >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log 2>&1
+echo  >>/var/log/sw2/sw2.$(date -u +%Y%m%d).log
