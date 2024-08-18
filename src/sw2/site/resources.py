@@ -8,6 +8,24 @@ from sw2.site.link_list import get_list_links
 from sw2.site.list import get_sites
 from sw2.env import Environment
 
+def get_resources(id):
+    query = urljoin(Environment().apiSites(), f'{id}/resources')
+
+    res = None
+    try:
+        res = requests.get(query)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return None
+
+    if res.status_code >= 400:
+        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+        print(f'{message} ', file=sys.stderr)
+        return None
+
+    resources = json.loads(res.text)
+    return resources
+
 def push_resource(site, uri, properties):
     headers = { 'Content-Type': 'application/json' }
     contents = {
@@ -118,14 +136,24 @@ def extend_properties(site, link):
             else:
                 link['properties'][target_name] = matched
 
+def get_unknown_links(site, links):
+    resources = get_resources(site['id'])
+    if resources is None:
+        return links
+
+    resource_uris = [resource['uri'] for resource in resources]
+    unknown_links = [link for link in links if link['uri'] not in resource_uris]
+    return unknown_links
+
 def test_resources(site):
-    links = get_list_links(site['uri'])
+    links = get_unknown_links(site, get_list_links(site['uri']))
 
     resources = []
     for link in links:
         result, reason = test_resource_by_rules(site, link)
         if result:
             extend_properties(site, link)
+            print(f'Posting {link["uri"]}...', file=sys.stderr)
             resources.append(link)
         else:
             print(reason, file=sys.stderr)
@@ -133,7 +161,7 @@ def test_resources(site):
     return resources
 
 def update_resources(site):
-    links = get_list_links(site['uri'])
+    links = get_unknown_links(site, get_list_links(site['uri']))
 
     resources = []
     for link in links:
@@ -141,27 +169,10 @@ def update_resources(site):
         if result:
             extend_properties(site, link)
             resource = push_resource(site['id'], link['uri'], link['properties'])
+            print(f'Posted {link["uri"]}...', file=sys.stderr)
             if resource is not None:
                 resources.append(resource)
         else:
             print(reason, file=sys.stderr)
 
-    return resources
-
-def get_resources(id):
-    query = urljoin(Environment().apiSites(), f'{id}/resources')
-
-    res = None
-    try:
-        res = requests.get(query)
-    except Exception as e:
-        print(str(e), file=sys.stderr)
-        return None
-
-    if res.status_code >= 400:
-        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-        print(f'{message} ', file=sys.stderr)
-        return None
-
-    resources = json.loads(res.text)
     return resources
