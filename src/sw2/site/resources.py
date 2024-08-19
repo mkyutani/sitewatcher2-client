@@ -87,10 +87,10 @@ def test_resource_by_rules(site, link):
 def extend_properties(site, link):
     property_templates = site.get('property_template')
     if property_templates is not None:
-        property_templates_sorted = []
-        for property_template in property_templates:
-            tag = property_template['tag']
-            value = property_template['value']
+        property_template_details = []
+        for property_template_detail in property_templates:
+            tag = property_template_detail['tag']
+            value = property_template_detail['value']
 
             variables = tag.split(':')
             if len(variables) < 2 or len(variables) > 3:
@@ -110,31 +110,40 @@ def extend_properties(site, link):
 
             sep = value[0]
             operands = value[1:].split(sep)
-            if len(operands) != 3:
+            if len(operands) < 2 or len(operands) > 3:
                 print(f'Invalid property template value [{tag}]', file=sys.stderr)
                 continue
             pattern = operands[0]
-            repl = operands[1]
             compiled_pattern = re.compile(pattern)
-            raw_repl = eval('"' + repl + '"') # convert raw string to string
+            if len(operands) == 2:
+                op = 'match'
+                repl = None
+            else:
+                op = 'replace'
+                repl = eval('"' + operands[1] + '"') # convert raw string to string
 
-            property_templates_sorted.append({
+            property_template_details.append({
                 'weight': property_template_weight,
                 'target_name': target_name,
                 'source_name': source_name,
                 'source': source,
+                'op': op,
                 'pattern': compiled_pattern,
-                'repl': raw_repl
+                'repl': repl
             })
 
-        property_templates_sorted.sort(key=lambda x: x.get('weight'))
+        property_template_details.sort(key=lambda x: x.get('weight'))
 
-        for property_template in property_templates:
-            matched = re.sub(compiled_pattern, raw_repl, source)
-            if matched is None:
-                link['properties'][target_name] = source
+        for property_template_detail in property_template_details:
+            if property_template_detail['repl'] is None:
+                matched = re.search(property_template_detail['pattern'], property_template_detail['source'])
+                if matched is not None:
+                    link['properties'][property_template_detail['target_name']] = matched.group()
             else:
-                link['properties'][target_name] = matched
+                matched = re.sub(property_template_detail['pattern'], property_template_detail['repl'], property_template_detail['source'])
+                print(property_template_detail['pattern'], property_template_detail['repl'], property_template_detail['source'], matched)
+                if matched is not None:
+                    link['properties'][property_template_detail['target_name']] = matched
 
 def get_unknown_links(site, links):
     resources = get_resources(site['id'])
