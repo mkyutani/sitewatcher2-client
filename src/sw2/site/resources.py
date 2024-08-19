@@ -93,12 +93,8 @@ def extend_properties(site, link):
             value = property_template_detail['value']
 
             variables = tag.split(':')
-            if len(variables) < 2 or len(variables) > 3:
+            if len(variables) != 3:
                 print(f'Invalid property template tag [{tag}]', file=sys.stderr)
-            elif len(variables) == 2:
-                property_template_weight = 0
-                target_name = variables[0]
-                source_name = variables[1]
             else:
                 property_template_weight = int(variables[0])
                 target_name = variables[1]
