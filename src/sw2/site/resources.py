@@ -154,8 +154,12 @@ def get_unknown_links(site, links):
     unknown_links = [link for link in links if link['uri'] not in resource_uris]
     return unknown_links
 
-def test_resources(site):
-    links = get_unknown_links(site, get_list_links(site['uri']))
+def test_resources(site, all=False):
+    all_links = get_list_links(site['uri'])
+    if all:
+        links = all_links
+    else:
+        links = get_unknown_links(site, all_links)
 
     resources = []
     for link in links:
