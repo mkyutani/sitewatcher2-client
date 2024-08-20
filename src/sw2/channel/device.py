@@ -1,36 +1,12 @@
 import re
-import string
 import time
-import requests
 import sys
 from urllib.parse import urljoin
 
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackClientError, SlackApiError
 
-def create_message(template, channel_resource):
-    class SilentFormatter(string.Formatter):
-        def get_value(self, key, *args, **kwargs):
-            if not key in args[1]:
-                return '*'
-            else:
-                return super().get_value(key, *args, **kwargs)
-
-    class Vars:
-        def __init__(self):
-            pass
-        def s(self, k, v):
-            setattr(self, k, v)
-        def g(self, k):
-            return getattr(self, k)
-        def m(self, t):
-            f = SilentFormatter()
-            return f.format(t, **self.__dict__)
-
-    vars = Vars()
-    for kv in channel_resource['kv']:
-        vars.s(kv['key'], kv['value'])
-    return vars.m(template)
+from sw2.formatter import PrivateFormatter
 
 def output_to_device(device_info, channel_resources, sending=False):
     if device_info['interface'] == 'slack':
@@ -43,7 +19,10 @@ def output_to_device(device_info, channel_resources, sending=False):
 
         for channel_resource in channel_resources:
             try:
-                slack_message =  create_message(slack_template, channel_resource)
+                formatter = PrivateFormatter()
+                for kv in channel_resource['kv']:
+                    formatter.set(kv['key'], kv['value'])
+                slack_message = formatter.format(slack_template)
                 verb = 'Sending'
                 if sending:
                     client.chat_postMessage(channel=channel, text=slack_message)

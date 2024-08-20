@@ -4,6 +4,7 @@ import sys
 from urllib.parse import urljoin
 import requests
 
+from sw2.formatter import PrivateFormatter
 from sw2.site.link_list import get_list_links
 from sw2.site.list import get_sites
 from sw2.env import Environment
@@ -89,49 +90,66 @@ def extend_properties(site, link):
     if property_templates is not None:
         property_template_details = []
         for property_template_detail in property_templates:
-            tag = property_template_detail['tag']
-            value = property_template_detail['value']
+            property_template_tag = property_template_detail['tag']
+            property_template_value = property_template_detail['value']
 
-            variables = tag.split(':')
-            if len(variables) != 3:
-                print(f'Invalid property template tag [{tag}]', file=sys.stderr)
+            variables = property_template_tag.split(':')
+            if len(variables) < 2 or len(variables) > 3:
+                print(f'Invalid property template tag [{property_template_tag}]', file=sys.stderr)
+            elif len(variables) == 2:
+                property_template_weight = int(variables[0])
+                target_name = variables[1]
+                source_name = None
+                source = None
+
+                property_template_details.append({
+                    'weight': property_template_weight,
+                    'target_name': target_name,
+                    'op': 'free',
+                    'template': property_template_value
+                })
             else:
                 property_template_weight = int(variables[0])
                 target_name = variables[1]
                 source_name = variables[2]
-            source = link['properties'].get(source_name)
-            if source is None:
-                print(f'Property [{source_name}] not found', file=sys.stderr)
-                continue
+                source = link['properties'].get(source_name)
+                if source is None:
+                    print(f'Property [{source_name}] not found', file=sys.stderr)
+                    continue
 
-            sep = value[0]
-            operands = value[1:].split(sep)
-            if len(operands) < 2 or len(operands) > 3:
-                print(f'Invalid property template value [{tag}]', file=sys.stderr)
-                continue
-            pattern = operands[0]
-            compiled_pattern = re.compile(pattern)
-            if len(operands) == 2:
-                op = 'match'
-                repl = None
-            else:
-                op = 'replace'
-                repl = eval('"' + operands[1] + '"') # convert raw string to string
+                sep = property_template_value[0]
+                operands = property_template_value[1:].split(sep)
+                if len(operands) < 2 or len(operands) > 3:
+                    print(f'Invalid property template value [{property_template_tag}]', file=sys.stderr)
+                    continue
+                pattern = operands[0]
+                compiled_pattern = re.compile(pattern)
+                if len(operands) == 2:
+                    op = 'match'
+                    repl = None
+                else:
+                    op = 'replace'
+                    repl = eval('"' + operands[1] + '"') # convert raw string to string
 
-            property_template_details.append({
-                'weight': property_template_weight,
-                'target_name': target_name,
-                'source_name': source_name,
-                'source': source,
-                'op': op,
-                'pattern': compiled_pattern,
-                'repl': repl
-            })
+                property_template_details.append({
+                    'weight': property_template_weight,
+                    'target_name': target_name,
+                    'op': op,
+                    'source_name': source_name,
+                    'source': source,
+                    'pattern': compiled_pattern,
+                    'repl': repl
+                })
 
         property_template_details.sort(key=lambda x: x.get('weight'))
 
         for property_template_detail in property_template_details:
-            if property_template_detail['repl'] is None:
+            if property_template_detail['op'] == 'free':
+                formatter = PrivateFormatter()
+                for property_name in link['properties'].keys():
+                    formatter.set(property_name, link['properties'][property_name])
+                link['properties'][property_template_detail['target_name']] = formatter.format(property_template_detail['template'])
+            elif property_template_detail['op'] == 'match':
                 matched = re.search(property_template_detail['pattern'], property_template_detail['source'])
                 if matched is not None:
                     link['properties'][property_template_detail['target_name']] = matched.group()
