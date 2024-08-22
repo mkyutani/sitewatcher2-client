@@ -50,7 +50,7 @@ def get_list_links(source):
     title = None
     table_header = None
     name = None
-    for tag in bs.find_all(['title', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'th']):
+    for tag in bs.find_all(['title', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr']):
         if tag.name[0] == 'h':
             level = int(tag.name[1])
             section_text = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
@@ -60,16 +60,28 @@ def get_list_links(source):
                 sections[i] = None
         elif tag.name == 'title':
             title = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
-        elif tag.name == 'th':
-            table_header = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
+        elif tag.name == 'table':
+            table_header = None
+        elif tag.name =='tr':
+            if table_header is None:
+                for th in tag.find_all('th'):
+                    found = ''.join(filter(lambda c: c >= ' ', th.text.strip()))
+                    if table_header is None:
+                        table_header = ''
+                    else:
+                        table_header = table_header + '::'
+                    table_header = table_header + found
         else:
-            parent_tag_text = ''
+            parent_tag_text = None
             for anc in tag.parents:
-                if anc.name == 'li' or anc.name == 'tr':
+                if (anc.name == 'li' and parent_tag_text is None) or anc.name == 'tr':
                     tag_texts = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
                     if len(tag_texts) > 1:
-                        parent_tag_text = tag_texts[0].strip()
-                    break
+                        tag_first = tag_texts[0].strip()
+                        if tag_first and len(tag_first) > 0:
+                            parent_tag_text = tag_first
+            if parent_tag_text is None:
+                parent_tag_text = ''
             href = tag.get('href')
             if href is not None:
                 ref = ''.join(filter(lambda c: c >= ' ', href))
@@ -90,7 +102,7 @@ def get_list_links(source):
                         tag_text = ''
                     if tag_text == parent_tag_text:
                         parent_tag_text = ''
-                    name = parent_tag_text + ':' + tag_text if len(parent_tag_text) > 0 else tag_text
+                    name = parent_tag_text + '::' + tag_text if len(parent_tag_text) > 0 else tag_text
                     name = ''.join(filter(lambda c: c >= ' ', name))
                     if len(name) == 0:
                         name = 'No name'
