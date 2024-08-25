@@ -112,10 +112,6 @@ def extend_properties(site, link):
                 property_template_weight = int(variables[0])
                 target_name = variables[1]
                 source_name = variables[2]
-                source = link['properties'].get(source_name)
-                if source is None:
-                    print(f'Property [{source_name}] not found', file=sys.stderr)
-                    continue
 
                 sep = property_template_value[0]
                 operands = property_template_value[1:].split(sep)
@@ -136,7 +132,6 @@ def extend_properties(site, link):
                     'target_name': target_name,
                     'op': op,
                     'source_name': source_name,
-                    'source': source,
                     'pattern': compiled_pattern,
                     'repl': repl
                 })
@@ -144,18 +139,24 @@ def extend_properties(site, link):
         property_template_details.sort(key=lambda x: x.get('weight'))
 
         for property_template_detail in property_template_details:
+            source = link['properties'].get(source_name)
+            if source is None:
+                print(f'Property [{source_name}] not found', file=sys.stderr)
+                continue
+
             if property_template_detail['op'] == 'free':
                 formatter = PrivateFormatter()
                 for property_name in link['properties'].keys():
                     formatter.set(property_name, link['properties'][property_name])
                 link['properties'][property_template_detail['target_name']] = formatter.format(property_template_detail['template'])
             elif property_template_detail['op'] == 'match':
-                matched = re.search(property_template_detail['pattern'], property_template_detail['source'])
+                matched = re.search(property_template_detail['pattern'], source)
                 if matched is not None:
                     link['properties'][property_template_detail['target_name']] = matched.group()
             else:
-                matched = re.sub(property_template_detail['pattern'], property_template_detail['repl'], property_template_detail['source'])
-                print(property_template_detail['pattern'], property_template_detail['repl'], property_template_detail['source'], matched)
+                print(f'>{property_template_detail}', file=sys.stderr)
+                matched = re.sub(property_template_detail['pattern'], property_template_detail['repl'], source)
+                print(property_template_detail['pattern'], property_template_detail['repl'], source)
                 if matched is not None:
                     link['properties'][property_template_detail['target_name']] = matched
 
