@@ -30,21 +30,18 @@ def sw2_directory_unset(args):
     for directory in directories:
         print(f'directory {directory["id"]} {directory["name"]}')
 
-        for site in directory['sites']:
-            print(f'site {site["id"]} {site["name"]}')
+        query = urljoin(Environment().apiDirectories(), '/'.join([directory['id'], 'rules', args_rule, args_tag]))
 
-            query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', args_rule, args_tag]))
+        res = None
+        try:
+            res = requests.delete(query)
+        except Exception as e:
+            print(str(e), file=sys.stderr)
+            return 1
 
-            res = None
-            try:
-                res = requests.delete(query)
-            except Exception as e:
-                print(str(e), file=sys.stderr)
-                return 1
-
-            if res.status_code >= 400:
-                message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-                print(f'{message} ', file=sys.stderr)
-                return 1
+        if res.status_code >= 400:
+            message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+            print(f'{message} ', file=sys.stderr)
+            return 1
 
     return 0

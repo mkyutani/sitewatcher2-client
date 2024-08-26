@@ -40,7 +40,11 @@ def sw2_site_list(args):
             print(f'site {site["id"]} {site["name"]}')
             if args_detail:
                 print(f'- uri {site["uri"]}')
-                print(f'- directory {site["directory"]} {site["directory_name"]}')
+                print(f'- directory {site["directory"]["id"]} {site["directory"]["name"]}')
+                for directory_rule_category_name in site["directory"]['rule_category_names']:
+                    sorted_rules = sorted(site["directory"][directory_rule_category_name], key=lambda x:int(x['tag'].split(':')[0]))
+                    for rule in sorted_rules:
+                        print(f'  - rule {directory_rule_category_name} {rule["tag"]} {rule["value"]}')
                 for rule_category_name in site['rule_category_names']:
                     sorted_rules = sorted(site[rule_category_name], key=lambda x:int(x['tag'].split(':')[0]))
                     for rule in sorted_rules:

@@ -32,27 +32,24 @@ def sw2_directory_set(args):
     for directory in directories:
         print(f'directory {directory["id"]} {directory["name"]}')
 
-        for site in directory['sites']:
-            print(f'site {site["id"]} {site["name"]}')
+        headers = { 'Content-Type': 'application/json' }
+        contents = {
+            'tag': args_tag,
+            'value': args_value
+        }
 
-            headers = { 'Content-Type': 'application/json' }
-            contents = {
-                'tag': args_tag,
-                'value': args_value
-            }
+        query = urljoin(Environment().apiDirectories(), '/'.join([directory['id'], 'rules', args_rule]))
 
-            query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', args_rule]))
+        res = None
+        try:
+            res = requests.post(query, json=contents, headers=headers)
+        except Exception as e:
+            print(str(e), file=sys.stderr)
+            return 1
 
-            res = None
-            try:
-                res = requests.post(query, json=contents, headers=headers)
-            except Exception as e:
-                print(str(e), file=sys.stderr)
-                return 1
-
-            if res.status_code >= 400:
-                message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-                print(f'{message} ', file=sys.stderr)
-                return 1
+        if res.status_code >= 400:
+            message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+            print(f'{message} ', file=sys.stderr)
+            return 1
 
     return 0

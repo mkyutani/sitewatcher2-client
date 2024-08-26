@@ -169,7 +169,40 @@ def get_unknown_links(site, links):
     unknown_links = [link for link in links if link['uri'] not in resource_uris]
     return unknown_links
 
+def integrate_rules(site):
+    integrated_rules = {}
+    integrated_rules['rule_category_names'] = []
+    for rule_category_name in site.get('rule_category_names'):
+        for rule in site.get(rule_category_name):
+            if rule_category_name not in integrated_rules['rule_category_names']:
+                integrated_rules['rule_category_names'].append(rule_category_name)
+                integrated_rules[rule_category_name] = []
+            integrated_rules[rule_category_name].append({
+                'tag': rule['tag'],
+                'value': rule['value']
+            })
+    directory = site.get('directory')
+    for directory_rule_category_name in directory.get('rule_category_names'):
+        for rule in directory.get(directory_rule_category_name):
+            if directory_rule_category_name not in integrated_rules['rule_category_names'] or rule['tag'] not in [integrated_rule['tag'] for integrated_rule in integrated_rules[directory_rule_category_name]]:
+                if directory_rule_category_name not in integrated_rules['rule_category_names']:
+                    integrated_rules['rule_category_names'].append(directory_rule_category_name)
+                    integrated_rules[directory_rule_category_name] = []
+                integrated_rules[directory_rule_category_name].append({
+                    'tag': rule['tag'],
+                    'value': rule['value']
+                })
+
+    for rule_category_name in integrated_rules['rule_category_names']:
+        integrated_rules[rule_category_name].sort(key=lambda x: x.get('tag').split(':')[0])
+
+    site.update({'integrated_rules': integrated_rules})
+
+    return site
+
 def test_resources(site, all=False):
+    site = integrate_rules(site)
+
     all_links = get_list_links(site['uri'])
     if all:
         links = all_links
@@ -189,6 +222,8 @@ def test_resources(site, all=False):
     return resources
 
 def update_resources(site):
+    site = integrate_rules(site)
+
     links = get_unknown_links(site, get_list_links(site['uri']))
 
     resources = []
