@@ -55,7 +55,7 @@ def push_resource(site, uri, properties):
         return resource
 
 def test_resource_by_rules(site, link):
-    excludes = site.get('exclude')
+    excludes = site.get('integrated_rules').get('exclude')
     if excludes is not None:
         excludes.sort(key=lambda x: x.get('tag'))
         for exclude in excludes:
@@ -68,7 +68,7 @@ def test_resource_by_rules(site, link):
             except ValueError:
                 return False, f'Invalid rule [{condition}]'
 
-    includes = site.get('include')
+    includes = site.get('integrated_rules').get('include')
     if includes is not None:
         includes.sort(key=lambda x: x.get('tag'))
         for include in includes:
@@ -86,7 +86,7 @@ def test_resource_by_rules(site, link):
     return True, None
 
 def extend_properties(site, link):
-    property_templates = site.get('property_template')
+    property_templates = site.get('integrated_rules').get('property_template')
     if property_templates is not None:
         property_template_details = []
         for property_template_detail in property_templates:
