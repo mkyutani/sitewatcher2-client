@@ -35,11 +35,10 @@ def sw2_site_set(args):
     for site in sites:
         headers = { 'Content-Type': 'application/json' }
         contents = {
-            'tag': args_tag,
             'value': args_value
         }
 
-        query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', args_rule]))
+        query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', args_rule, args_tag]))
 
         res = None
         try:

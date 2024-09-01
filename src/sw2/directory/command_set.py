@@ -34,11 +34,10 @@ def sw2_directory_set(args):
 
         headers = { 'Content-Type': 'application/json' }
         contents = {
-            'tag': args_tag,
             'value': args_value
         }
 
-        query = urljoin(Environment().apiDirectories(), '/'.join([directory['id'], 'rules', args_rule]))
+        query = urljoin(Environment().apiDirectories(), '/'.join([directory['id'], 'rules', args_rule, args_tag]))
 
         res = None
         try:
