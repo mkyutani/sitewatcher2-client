@@ -16,8 +16,8 @@ def sw2_parser_site_set(subparser):
 
 def sw2_site_set(args):
     args_name = args.get('name')
-    args_rule = args.get('rule')
-    args_weight = args.get('weight')
+    args_rule = args.get('rule').lower()
+    args_weight = str(int(args.get('weight')))
     args_expression = args.get('expression')
     args_strict = args.get('strict')
 
@@ -32,21 +32,30 @@ def sw2_site_set(args):
     contents = {}
 
     try:
-        op, expr = args_expression.split(':', 1)
-        op = op.strip().lower()
-        if op not in ['set', 'match', 'none']:
-            raise ValueError()
-        contents['op'] = op
-        if op == 'set':
-            dst, value = expr.split(':', 1)
-            contents['src'] = None
-            contents['dst'] = dst.strip()
+        if args_rule in ['include', 'exclude']:
+            src, value = args_expression.split(':', 1)
+            contents['op'] = None
+            contents['src'] = src
+            contents['dst'] = None
             contents['value'] = value
-        elif op == 'match':
-            src, dst, value = expr.split(':', 2)
-            contents['src'] = src.strip()
-            contents['dst'] = dst.strip()
-            contents['value'] = value
+        elif args_rule == 'property_template':
+            op, expr = args_expression.split(':', 1)
+            op = op.strip().lower()
+            if op not in ['set', 'match', 'none']:
+                raise ValueError()
+            contents['op'] = op
+            if op == 'set':
+                dst, value = expr.split(':', 1)
+                contents['src'] = None
+                contents['dst'] = dst.strip()
+                contents['value'] = value
+            elif op == 'match':
+                src, dst, value = expr.split(':', 2)
+                contents['src'] = src.strip()
+                contents['dst'] = dst.strip()
+                contents['value'] = value
+            else:
+                raise ValueError()
         else:
             raise ValueError()
     except ValueError:
@@ -56,7 +65,7 @@ def sw2_site_set(args):
             contents['dst'] = None
             contents['value'] = None
         else:
-            print('Invalid expression', file=sys.stderr)
+            print(f'Invalid expression ({args_rule}, {args_weight})', file=sys.stderr)
             return 1
 
     for site in sites:

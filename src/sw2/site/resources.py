@@ -6,7 +6,6 @@ import requests
 
 from sw2.formatter import PrivateFormatter
 from sw2.site.link_list import get_list_links
-from sw2.site.list import get_sites
 from sw2.env import Environment
 
 def get_resources(id):
@@ -62,12 +61,12 @@ def test_resource_by_rules(site, link):
             weight = exclude.get('weight')
             src = exclude.get('src')
             pattern = exclude.get('value')
-            if src is not None or pattern is not None:
+            if src is None or pattern is None:
                 print(f'Invalid exclude rule (weight={weight})', file=sys.stderr)
                 continue
-            source = link['properties'].get(src)
-            if source is not None and re.search(pattern, source):
-                return False, f'{link["name"]} ({src}:{source}) excluded by rule [{pattern}]'
+            property_value = link['properties'].get(src)
+            if (property_value is None and pattern.lower() == 'none') or (property_value is not None and re.search(pattern, property_value)):
+                    return False, f'{link["name"]} ({src}:{property_value}) excluded by rule [{pattern}]'
 
     includes = site.get('integrated_rules').get('include')
     if includes is not None:
@@ -76,10 +75,11 @@ def test_resource_by_rules(site, link):
             weight = exclude.get('weight')
             src = include.get('src')
             pattern = include.get('value')
-            if src is not None or pattern is not None:
+            if src is None or pattern is None:
                 print(f'Invalid include rule (weight={weight})', file=sys.stderr)
                 continue
-            if source is not None and re.search(pattern, source):
+            property_value = link['properties'].get(src)
+            if (property_value is None and pattern.lower() == 'none') or (property_value is not None and re.search(pattern, property_value)):
                 break
         else:
             return False, f'{link["name"]} not included'
@@ -183,15 +183,15 @@ def integrate_rules(site):
                     integrated_rules['rule_category_names'].append(directory_rule_category_name)
                     integrated_rules[directory_rule_category_name] = []
                     integrated_rule_weights[directory_rule_category_name] = []
-                if rule['weight'] not in integrated_rule_weights[directory_rule_category_name]:
-                    integrated_rules[directory_rule_category_name].append({
-                        'weight': rule.get('weight'),
-                        'op': rule.get('op'),
-                        'src': rule.get('src'),
-                        'dst': rule.get('dst'),
-                        'value': rule.get('value')
-                    })
-                    integrated_rule_weights[directory_rule_category_name].append(rule['weight'])
+            if rule['weight'] not in integrated_rule_weights[directory_rule_category_name]:
+                integrated_rules[directory_rule_category_name].append({
+                    'weight': rule.get('weight'),
+                    'op': rule.get('op'),
+                    'src': rule.get('src'),
+                    'dst': rule.get('dst'),
+                    'value': rule.get('value')
+                })
+                integrated_rule_weights[directory_rule_category_name].append(rule['weight'])
 
     for rule_category_name in integrated_rules['rule_category_names']:
         integrated_rules[rule_category_name].sort(key=lambda x: x.get('weight'))

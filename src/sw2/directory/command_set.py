@@ -33,27 +33,40 @@ def sw2_directory_set(args):
     contents = {}
 
     try:
-        op, expr = args_expression.split(':', 1)
-        op = op.strip().lower()
-        if op not in ['set', 'match', 'none']:
-            raise ValueError()
-        contents['op'] = op
-        if op == 'set':
-            dst, value = expr.split(':', 1)
-            contents['dst'] = dst.strip()
+        if args_rule in ['include', 'exclude']:
+            src, value = args_expression.split(':', 1)
+            contents['op'] = None
+            contents['src'] = src
+            contents['dst'] = None
             contents['value'] = value
-        elif op == 'match':
-            src, dst, value = expr.split(':', 2)
-            contents['src'] = src.strip()
-            contents['dst'] = dst.strip()
-            contents['value'] = value
+        elif args_rule == 'property_template':
+            op, expr = args_expression.split(':', 1)
+            op = op.strip().lower()
+            if op not in ['set', 'match', 'none']:
+                raise ValueError()
+            contents['op'] = op
+            if op == 'set':
+                dst, value = expr.split(':', 1)
+                contents['src'] = None
+                contents['dst'] = dst.strip()
+                contents['value'] = value
+            elif op == 'match':
+                src, dst, value = expr.split(':', 2)
+                contents['src'] = src.strip()
+                contents['dst'] = dst.strip()
+                contents['value'] = value
+            else:
+                raise ValueError()
         else:
             raise ValueError()
     except ValueError:
         if args_expression.lower() == 'none':
             contents['op'] = 'none'
+            contents['src'] = None
+            contents['dst'] = None
+            contents['value'] = None
         else:
-            print('Invalid expression', file=sys.stderr)
+            print(f'Invalid expression ({args_rule}, {args_weight})', file=sys.stderr)
             return 1
 
     for directory in directories:
