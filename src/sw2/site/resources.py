@@ -138,7 +138,6 @@ def extend_properties(site, link):
                 else:
                     replaced = operands[1]
                     matched = re.sub(compiled_pattern, replaced, source)
-                    print('>>>>', pattern, replaced, source, matched)
                     if matched is not None:
                         link['properties'][dst] = matched
             elif op == 'none':
