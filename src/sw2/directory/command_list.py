@@ -43,9 +43,10 @@ def sw2_directory_list(args):
             print(f'directory {directory["id"]} {directory["name"]}')
             if args_detail:
                 for rule_category_name in directory['rule_category_names']:
-                    sorted_rules = sorted(directory[rule_category_name], key=lambda x:int(x['tag'].split(':')[0]))
+                    sorted_rules = sorted(directory[rule_category_name], key=lambda x: x['weight'])
                     for rule in sorted_rules:
-                        print(f'- rule {rule_category_name} {rule["tag"]} {rule["value"]}')
+                        exp = ' '.join(filter(lambda x: x is not None, [rule['op'], rule['dst'], rule['src'], rule['value']]))
+                        print(f'- rule {rule_category_name} {rule["weight"]} {exp}')
             if args_sites:
                 for site in directory['sites']:
                     print(f'- site {site["id"]} {site["name"]}')

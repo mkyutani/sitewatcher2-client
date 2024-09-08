@@ -42,12 +42,24 @@ def sw2_site_list(args):
                 print(f'- uri {site["uri"]}')
                 print(f'- directory {site["directory"]["id"]} {site["directory"]["name"]}')
                 for directory_rule_category_name in site["directory"]['rule_category_names']:
-                    sorted_rules = sorted(site["directory"][directory_rule_category_name], key=lambda x:int(x['tag'].split(':')[0]))
+                    sorted_rules = sorted(site["directory"][directory_rule_category_name], key=lambda x: x['weight'])
                     for rule in sorted_rules:
-                        print(f'  - rule {directory_rule_category_name} {rule["tag"]} {rule["value"]}')
-                for rule_category_name in site['rule_category_names']:
-                    sorted_rules = sorted(site[rule_category_name], key=lambda x:int(x['tag'].split(':')[0]))
+                        weight = rule.get('weight')
+                        op = rule.get('op')
+                        src = rule.get('src')
+                        dst = rule.get('dst')
+                        value = rule.get('value')
+                        exp = ' '.join(filter(lambda x: x is not None, [op, src, dst, value]))
+                        print(f'  - rule {directory_rule_category_name} {weight} {exp}')
+                for site_rule_category_name in site['rule_category_names']:
+                    sorted_rules = sorted(site[site_rule_category_name], key=lambda x: x['weight'])
                     for rule in sorted_rules:
-                        print(f'- rule {rule_category_name} {rule["tag"]} {rule["value"]}')
+                        weight = rule.get('weight')
+                        op = rule.get('op')
+                        src = rule.get('src')
+                        dst = rule.get('dst')
+                        value = rule.get('value')
+                        exp = ' '.join(filter(lambda x: x is not None, [op, src, dst, value]))
+                        print(f'- rule {directory_rule_category_name} {weight} {exp}')
 
     return 0

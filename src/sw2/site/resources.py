@@ -57,29 +57,30 @@ def push_resource(site, uri, properties):
 def test_resource_by_rules(site, link):
     excludes = site.get('integrated_rules').get('exclude')
     if excludes is not None:
-        excludes.sort(key=lambda x: x.get('tag'))
+        excludes.sort(key=lambda x: x.get('weight'))
         for exclude in excludes:
-            condition = exclude['value']
-            try:
-                property_name, pattern = condition.split(':', 1)
-                property_text = link['properties'].get(property_name)
-                if property_text is not None and re.search(pattern, property_text):
-                    return False, f'{link["name"]} ({property_name}:{property_text}) excluded by rule [{condition}]'
-            except ValueError:
-                return False, f'Invalid rule [{condition}]'
+            weight = exclude.get('weight')
+            src = exclude.get('src')
+            pattern = exclude.get('value')
+            if src is not None or pattern is not None:
+                print(f'Invalid exclude rule (weight={weight})', file=sys.stderr)
+                continue
+            source = link['properties'].get(src)
+            if source is not None and re.search(pattern, source):
+                return False, f'{link["name"]} ({src}:{source}) excluded by rule [{pattern}]'
 
     includes = site.get('integrated_rules').get('include')
     if includes is not None:
-        includes.sort(key=lambda x: x.get('tag'))
+        includes.sort(key=lambda x: x.get('weight'))
         for include in includes:
-            condition = include['value']
-            try:
-                property_name, pattern = condition.split(':', 1)
-                property_text = link['properties'].get(property_name)
-                if property_text is not None and re.search(pattern, property_text):
-                    break
-            except ValueError:
-                return False, f'Invalid rule [{condition}]'
+            weight = exclude.get('weight')
+            src = include.get('src')
+            pattern = include.get('value')
+            if src is not None or pattern is not None:
+                print(f'Invalid include rule (weight={weight})', file=sys.stderr)
+                continue
+            if source is not None and re.search(pattern, source):
+                break
         else:
             return False, f'{link["name"]} not included'
 
@@ -88,77 +89,62 @@ def test_resource_by_rules(site, link):
 def extend_properties(site, link):
     property_templates = site.get('integrated_rules').get('property_template')
     if property_templates is not None:
-        property_template_details = []
-        for property_template_detail in property_templates:
-            property_template_tag = property_template_detail['tag']
-            property_template_value = property_template_detail['value']
+        property_templates.sort(key=lambda x: x.get('weight'))
 
-            variables = property_template_tag.split(':')
-            if len(variables) < 2 or len(variables) > 3:
-                print(f'Invalid property template tag [{property_template_tag}]', file=sys.stderr)
-            elif len(variables) == 2:
-                property_template_weight = int(variables[0])
-                target_name = variables[1]
-                source_name = None
-                source = None
+        for property_template in property_templates:
+            weight = property_template.get('weight')
+            op = property_template.get('op')
+            src = property_template.get('src')
+            dst = property_template.get('dst')
+            value = property_template.get('value')
 
-                property_template_details.append({
-                    'weight': property_template_weight,
-                    'target_name': target_name,
-                    'op': 'free',
-                    'template': property_template_value
-                })
-            else:
-                property_template_weight = int(variables[0])
-                target_name = variables[1]
-                source_name = variables[2]
-
-                sep = property_template_value[0]
-                operands = property_template_value[1:].split(sep)
-                if len(operands) < 2 or len(operands) > 3:
-                    print(f'Invalid property template value [{property_template_tag}]', file=sys.stderr)
-                    continue
-                pattern = operands[0]
-                compiled_pattern = re.compile(pattern)
-                if len(operands) == 2:
-                    op = 'match'
-                    repl = None
-                else:
-                    op = 'replace'
-                    repl = eval('"' + operands[1] + '"') # convert raw string to string
-
-                property_template_details.append({
-                    'weight': property_template_weight,
-                    'target_name': target_name,
-                    'op': op,
-                    'source_name': source_name,
-                    'pattern': compiled_pattern,
-                    'repl': repl
-                })
-
-        property_template_details.sort(key=lambda x: x.get('weight'))
-
-        for property_template_detail in property_template_details:
-            source = link['properties'].get(source_name)
-            if source is None:
-                print(f'Property [{source_name}] not found', file=sys.stderr)
+            if op is None:
+                print(f'Operation is not defined in property template (weight={weight})', file=sys.stderr)
                 continue
 
-            if property_template_detail['op'] == 'free':
+            op = op.lower()
+
+            if op == 'set':
+                if dst is None:
+                    print(f'Destination property name is necessary for set operation (weight={weight})', file=sys.stderr)
+                    continue
+
                 formatter = PrivateFormatter()
                 for property_name in link['properties'].keys():
                     formatter.set(property_name, link['properties'][property_name])
-                link['properties'][property_template_detail['target_name']] = formatter.format(property_template_detail['template'])
-            elif property_template_detail['op'] == 'match':
-                matched = re.search(property_template_detail['pattern'], source)
-                if matched is not None:
-                    link['properties'][property_template_detail['target_name']] = matched.group()
+                link['properties'][dst] = formatter.format(value)
+            elif op == 'match':
+                if src is None or dst is None or value is None or len(value) <= 2:
+                    print(f'Source, destination and template value are necessary for match operation (weight={weight})', file=sys.stderr)
+                    continue
+
+                source = link['properties'].get(src)
+                if source is None:
+                    print(f'Property {src} not found', file=sys.stderr)
+                    continue
+
+                sep = value[0]
+                operands = value[1:].split(sep)
+                if len(operands) < 2 or len(operands) > 3:
+                    print(f'Invalid property template value (weight={weight})', file=sys.stderr)
+                    continue
+
+                pattern = operands[0]
+                compiled_pattern = re.compile(pattern)
+                if len(operands) == 2:
+                    matched = re.search(compiled_pattern, source)
+                    if matched is not None:
+                        link['properties'][dst] = matched.group()
+                else:
+                    replaced = operands[1]
+                    matched = re.sub(compiled_pattern, replaced, source)
+                    print('>>>>', pattern, replaced, source, matched)
+                    if matched is not None:
+                        link['properties'][dst] = matched
+            elif op == 'none':
+                pass
             else:
-                print(f'>{property_template_detail}', file=sys.stderr)
-                matched = re.sub(property_template_detail['pattern'], property_template_detail['repl'], source)
-                print(property_template_detail['pattern'], property_template_detail['repl'], source)
-                if matched is not None:
-                    link['properties'][property_template_detail['target_name']] = matched
+                print(f'Unknown operation {property_template["op"]}', file=sys.stderr)
 
 def get_unknown_links(site, links):
     resources = get_resources(site['id'])
@@ -172,29 +158,43 @@ def get_unknown_links(site, links):
 def integrate_rules(site):
     integrated_rules = {}
     integrated_rules['rule_category_names'] = []
+    integrated_rule_weights = {}
+
     for rule_category_name in site.get('rule_category_names'):
         for rule in site.get(rule_category_name):
             if rule_category_name not in integrated_rules['rule_category_names']:
                 integrated_rules['rule_category_names'].append(rule_category_name)
                 integrated_rules[rule_category_name] = []
+                integrated_rule_weights[rule_category_name] = []
             integrated_rules[rule_category_name].append({
-                'tag': rule['tag'],
-                'value': rule['value']
+                'weight': rule.get('weight'),
+                'op': rule.get('op'),
+                'src': rule.get('src'),
+                'dst': rule.get('dst'),
+                'value': rule.get('value')
             })
+            integrated_rule_weights[rule_category_name].append(rule['weight'])
+
     directory = site.get('directory')
     for directory_rule_category_name in directory.get('rule_category_names'):
         for rule in directory.get(directory_rule_category_name):
-            if directory_rule_category_name not in integrated_rules['rule_category_names'] or rule['tag'] not in [integrated_rule['tag'] for integrated_rule in integrated_rules[directory_rule_category_name]]:
+            if directory_rule_category_name not in integrated_rules['rule_category_names']:
                 if directory_rule_category_name not in integrated_rules['rule_category_names']:
                     integrated_rules['rule_category_names'].append(directory_rule_category_name)
                     integrated_rules[directory_rule_category_name] = []
-                integrated_rules[directory_rule_category_name].append({
-                    'tag': rule['tag'],
-                    'value': rule['value']
-                })
+                    integrated_rule_weights[directory_rule_category_name] = []
+                if rule['weight'] not in integrated_rule_weights[directory_rule_category_name]:
+                    integrated_rules[directory_rule_category_name].append({
+                        'weight': rule.get('weight'),
+                        'op': rule.get('op'),
+                        'src': rule.get('src'),
+                        'dst': rule.get('dst'),
+                        'value': rule.get('value')
+                    })
+                    integrated_rule_weights[directory_rule_category_name].append(rule['weight'])
 
     for rule_category_name in integrated_rules['rule_category_names']:
-        integrated_rules[rule_category_name].sort(key=lambda x: x.get('tag').split(':')[0])
+        integrated_rules[rule_category_name].sort(key=lambda x: x.get('weight'))
 
     site.update({'integrated_rules': integrated_rules})
 
