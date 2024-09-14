@@ -60,6 +60,6 @@ def sw2_site_list(args):
                         dst = rule.get('dst')
                         value = rule.get('value')
                         exp = ':'.join(filter(lambda x: x is not None, [op, src, dst, value]))
-                        print(f'- rule {directory_rule_category_name} {weight} {exp}')
+                        print(f'- rule {site_rule_category_name} {weight} {exp}')
 
     return 0
