@@ -4,7 +4,7 @@ import re
 from urllib.parse import urljoin
 import requests
 import sys
-from sw2.directory.list import list_directories
+from sw2.directory.list import get_directory, list_directories
 from sw2.env import Environment
 from sw2.util import is_uuid
 
@@ -68,43 +68,40 @@ def get_sites(name, strict=False):
             sites.append(site)
     else:
         if name and name.find(':') >= 0:
-            directory_name, site_name = name.split(':')
-
+            directory_name, site_name = name.split(':', 1)
             if len(directory_name) == 0:
                 directory_name = None
+            if len(site_name) == 0:
+                site_name = None
+
             directory_id_names = list_directories(directory_name, strict=strict)
             if directory_id_names is None:
                 return None
 
-            if len(site_name) == 0:
-                site_name = None
-            site_id_names = list_sites(site_name, strict=strict)
-            if site_id_names is None:
-                return None
+            for directory_id_name in directory_id_names:
+                directory = get_directory(directory_id_name['id'])
+                if directory:
+                    for site in directory['sites']:
+                        if strict:
+                            if site_name == site['name']:
+                                sites.append(site)
+                        else:
+                            if site_name is None or re.search(site_name, site['name']):
+                                sites.append(site)
 
-            sites = []
-            for site_id_name in site_id_names:
-                site = get_site(site_id_name['id'])
-                if site is None:
-                    pass
-                elif directory_id_names is not None:
-                    for directory_id_name in directory_id_names:
-                        if site['directory']['id'] == directory_id_name['id']:
-                            sites.append(site)
-                else:
-                    sites.append(site)
-            if len(sites) == 0:
-                return None
         else:
-            sites = []
             site_id_names = list_sites(name, strict=strict)
             if site_id_names is None:
                 return None
+
             for id_name in site_id_names:
                 site = get_site(id_name['id'])
                 if site is None:
                     return None
                 else:
                     sites.append(site)
+
+    if len(sites) == 0:
+        return None
 
     return sites
