@@ -143,8 +143,8 @@ def extend_properties(site, link):
                         link['properties'][dst] = matched.group()
                 else:
                     replaced = operands[1]
-                    matched = re.sub(compiled_pattern, replaced, source)
-                    if matched is not None:
+                    matched, count = re.subn(compiled_pattern, replaced, source)
+                    if count > 0 and matched is not None:
                         link['properties'][dst] = matched
             elif op == 'none':
                 pass
