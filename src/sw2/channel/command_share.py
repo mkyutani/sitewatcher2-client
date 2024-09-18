@@ -48,7 +48,7 @@ def sw2_channel_share(args):
             continue
 
         if args_timestamp:
-            timestamp = get_device_timestamp(channel, device_info['name'], args_timestamp)
+            timestamp = get_timestamp(channel, args_timestamp)
             if timestamp is None:
                 continue
             options.append(f't={timestamp}')
