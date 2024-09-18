@@ -72,7 +72,7 @@ def test_resource_by_rules(site, link):
     if includes is not None:
         includes.sort(key=lambda x: x.get('weight'))
         for include in includes:
-            weight = exclude.get('weight')
+            weight = include.get('weight')
             src = include.get('src')
             pattern = include.get('value')
             if src is None or pattern is None:
