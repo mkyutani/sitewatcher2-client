@@ -39,7 +39,6 @@ def sw2_site_list(args):
         for site in sites:
             print(f'site {site["id"]} {site["name"]}')
             if args_detail:
-                print(site)
                 print(f'- uri {site["uri"]}')
                 print(f'- directory {site["directory"]["id"]} {site["directory"]["name"]}')
                 for directory_rule_category_name in site['directory']['rule_category_names']:
