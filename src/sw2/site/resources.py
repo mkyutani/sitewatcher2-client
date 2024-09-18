@@ -87,7 +87,6 @@ def test_resource_by_rules(site, link):
     return True, None
 
 def extend_properties(site, link):
-    print(site)
     link['properties']['_site'] = site['id']
     link['properties']['_site_name'] = site['name']
     link['properties']['_site_uri'] = site['uri']
