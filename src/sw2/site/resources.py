@@ -219,7 +219,6 @@ def test_resources(site, all=False):
         result, reason = test_resource_by_rules(site, link)
         if result:
             extend_properties(site, link)
-            print(f'Posting {link["uri"]}...', file=sys.stderr)
             resources.append(link)
         else:
             print(reason, file=sys.stderr)
@@ -237,7 +236,6 @@ def update_resources(site):
         if result:
             extend_properties(site, link)
             resource = push_resource(site['id'], link['uri'], link['properties'])
-            print(f'Posted {link["uri"]}...', file=sys.stderr)
             if resource is not None:
                 resources.append(resource)
         else:
