@@ -82,6 +82,19 @@ def get_sites(name, strict=False):
                 directory = get_directory(directory_id_name['id'])
                 if directory:
                     for site in directory['sites']:
+                        site.update({
+                            'directory': {
+                                'id': directory['id'],
+                                'name': directory['name'],
+                                'created': directory['created'],
+                                'updated': directory['updated'],
+                                'rule_category_names': directory['rule_category_names']
+                            }
+                        })
+                        del site['directory_name']
+                        for rule_category_name in directory['rule_category_names']:
+                            site['directory'][rule_category_name] = directory[rule_category_name]
+
                         if strict:
                             if site_name == site['name']:
                                 sites.append(site)
