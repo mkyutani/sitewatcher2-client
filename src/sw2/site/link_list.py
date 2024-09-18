@@ -108,15 +108,15 @@ def get_list_links(source):
                         name = 'No name'
 
                     properties = {}
-                    properties['uri'] = uri
-                    properties['name'] = name
+                    properties['_uri'] = uri
+                    properties['_name'] = name
                     if title is not None:
-                        properties['title'] = title
+                        properties['_title'] = title
                     if table_header is not None:
-                        properties['th'] = table_header
+                        properties['_th'] = table_header
                     for i in range(6):
                         if sections[i] is not None:
-                            properties[f'h{i + 1}'] = sections[i]
+                            properties[f'_h{i + 1}'] = sections[i]
 
                     links.append({
                         'uri': uri,

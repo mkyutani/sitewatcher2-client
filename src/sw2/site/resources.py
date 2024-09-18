@@ -87,6 +87,13 @@ def test_resource_by_rules(site, link):
     return True, None
 
 def extend_properties(site, link):
+    print(site)
+    link['properties']['_site'] = site['id']
+    link['properties']['_site_name'] = site['name']
+    link['properties']['_site_uri'] = site['uri']
+    link['properties']['_directory'] = site['directory']['id']
+    link['properties']['_directory_name'] = site['directory']['name']
+
     property_templates = site.get('integrated_rules').get('property_template')
     if property_templates is not None:
         property_templates.sort(key=lambda x: x.get('weight'))
