@@ -40,7 +40,7 @@ def sw2_site_list(args):
     else:
         for site in sites:
             if args_rules_only:
-                if (site['rule_category_names'] and len(site['rule_category_names']) > 0) or (site['directory']['rule_category_names'] and len(site['directory']['rule_category_names']) > 0):
+                if len(site['rule_category_names']) > 0 or len(site['directory']['rule_category_names']) > 0:
                     print(f'site {site["id"]} {site["name"]}')
                     for site_rule_category_name in site['rule_category_names']:
                         sorted_rules = sorted(site[site_rule_category_name], key=lambda x: x['weight'])
@@ -52,16 +52,18 @@ def sw2_site_list(args):
                             value = rule.get('value')
                             exp = ':'.join(filter(lambda x: x is not None, [op, src, dst, value]))
                             print(f'- rule {site_rule_category_name} {weight} {exp}')
-                    for directory_rule_category_name in site['directory']['rule_category_names']:
-                        sorted_rules = sorted(site['directory'][directory_rule_category_name], key=lambda x: x['weight'])
-                        for rule in sorted_rules:
-                            weight = rule.get('weight')
-                            op = rule.get('op')
-                            src = rule.get('src')
-                            dst = rule.get('dst')
-                            value = rule.get('value')
-                            exp = ':'.join(filter(lambda x: x is not None, [op, src, dst, value]))
-                            print(f'- directory-rule {directory_rule_category_name} {weight} {exp}')
+                    if len(site['directory']['rule_category_names']) > 0:
+                        print(f'- directory {site["directory"]["id"]} {site["directory"]["name"]}')
+                        for directory_rule_category_name in site['directory']['rule_category_names']:
+                            sorted_rules = sorted(site['directory'][directory_rule_category_name], key=lambda x: x['weight'])
+                            for rule in sorted_rules:
+                                weight = rule.get('weight')
+                                op = rule.get('op')
+                                src = rule.get('src')
+                                dst = rule.get('dst')
+                                value = rule.get('value')
+                                exp = ':'.join(filter(lambda x: x is not None, [op, src, dst, value]))
+                                print(f'  - rule {directory_rule_category_name} {weight} {exp}')
             else:
                 print(f'site {site["id"]} {site["name"]}')
                 if args_detail:
