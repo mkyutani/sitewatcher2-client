@@ -86,7 +86,7 @@ def get_list_links(source):
             if href is not None:
                 ref = ''.join(filter(lambda c: c >= ' ', href))
                 ref = re.sub('<.*?>', '', ref)
-                ref = ref.strip().lower()
+                ref = ref.strip()
                 if not (ref.startswith('#') or ref.startswith('mailto:') or ref.startswith('tel:') or ref.startswith('javascript:')):
                     if re.match(r'^[^:]*:', ref):
                         uri = ref
