@@ -34,6 +34,7 @@ def send_to_msteams(device_info, channel_resources, sending=False):
     for resource_list in all_resource_list:
         if not initial:
             time.sleep(5)
+        else:
             initial = False
 
         text = ''.join(resource_list)
