@@ -77,13 +77,16 @@ def sw2_channel_resources(args):
         name = None
         for channel_resource in all_channel_resources:
             for kv in channel_resource['kv']:
-                if kv['key'] == 'name':
+                if kv['key'] == '_name':
                     name = kv['value']
                     break
             else:
                 name = 'unknown'
             print(f'{channel_resource["channel_name"]} {channel_resource["timestamp"]} {channel_resource["site_name"]} {name} {channel_resource["uri"]}')
             if args_detail:
+                for channel_resource_item in channel_resource:
+                    if channel_resource_item != 'kv':
+                        print(f'- {channel_resource_item} {channel_resource[channel_resource_item]}')
                 for kv in channel_resource['kv']:
                     print(f'- property {kv["key"]} {kv["value"]}')
 
