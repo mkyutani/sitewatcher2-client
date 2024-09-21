@@ -104,6 +104,7 @@ def get_list_links(source):
                         parent_tag_text = ''
                     name = parent_tag_text + '::' + tag_text if len(parent_tag_text) > 0 else tag_text
                     name = ''.join(filter(lambda c: c >= ' ', name))
+                    name = re.sub('\s', '_', name)
                     if len(name) == 0:
                         name = 'No name'
 
