@@ -9,9 +9,9 @@ def sw2_parser_directory_set(subparser):
     aliases = []
     parser = subparser.add_parser('set', aliases=aliases, help='set rule of site in directory')
     parser.add_argument('name', help='directory id, name or "all"')
-    parser.add_argument('rule', help='rule name')
+    parser.add_argument('rule', help='rule name (include, exclude, or property_template)')
     parser.add_argument('weight', help='rule weight')
-    parser.add_argument('expression', help='rule expression ("set":dst:value, "match":src:dst:value, or "none")')
+    parser.add_argument('expression', help='rule expression (src:value for include and exclude; "set":dst:value, "match":dst:src:value, or "none" for property_template)')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     return aliases
 
@@ -51,7 +51,7 @@ def sw2_directory_set(args):
                 contents['dst'] = dst.strip()
                 contents['value'] = value
             elif op == 'match':
-                src, dst, value = expr.split(':', 2)
+                dst, src, value = expr.split(':', 2)
                 contents['src'] = src.strip()
                 contents['dst'] = dst.strip()
                 contents['value'] = value

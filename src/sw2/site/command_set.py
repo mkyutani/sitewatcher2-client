@@ -8,9 +8,9 @@ from sw2.site.list import get_sites
 def sw2_parser_site_set(subparser):
     parser = subparser.add_parser('set', help='set rule of site')
     parser.add_argument('name', help='site id or name')
-    parser.add_argument('rule', help='rule name')
+    parser.add_argument('rule', help='rule name (include, exclude, or property_template)')
     parser.add_argument('weight', help='rule weight')
-    parser.add_argument('expression', help='rule expression ("set":dst:value, "match":src:dst:value, or "none")')
+    parser.add_argument('expression', help='rule expression (src:value for include and exclude; "set":dst:value, "match":dst:src:value, or "none" for property_template)')
     parser.add_argument('--strict', action='store_true', help='site name strict mode')
     return []
 
@@ -50,7 +50,7 @@ def sw2_site_set(args):
                 contents['dst'] = dst.strip()
                 contents['value'] = value
             elif op == 'match':
-                src, dst, value = expr.split(':', 2)
+                dst, src, value = expr.split(':', 2)
                 contents['src'] = src.strip()
                 contents['dst'] = dst.strip()
                 contents['value'] = value

@@ -50,7 +50,7 @@ def sw2_directory_list(args):
                         src = rule.get('src')
                         dst = rule.get('dst')
                         value = rule.get('value')
-                        exp = ':'.join(filter(lambda x: x is not None, [op, src, dst, value]))
+                        exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                         print(f'- rule {rule_category_name} {weight} \'{exp}\'')
             if args_sites:
                 for site in directory['sites']:

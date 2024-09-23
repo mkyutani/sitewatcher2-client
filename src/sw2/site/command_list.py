@@ -50,7 +50,7 @@ def sw2_site_list(args):
                             src = rule.get('src')
                             dst = rule.get('dst')
                             value = rule.get('value')
-                            exp = ':'.join(filter(lambda x: x is not None, [op, src, dst, value]))
+                            exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                             print(f'- rule {site_rule_category_name} {weight} \'{exp}\'')
                     if len(site['directory']['rule_category_names']) > 0:
                         print(f'- directory {site["directory"]["id"]} {site["directory"]["name"]}')
@@ -62,7 +62,7 @@ def sw2_site_list(args):
                                 src = rule.get('src')
                                 dst = rule.get('dst')
                                 value = rule.get('value')
-                                exp = ':'.join(filter(lambda x: x is not None, [op, src, dst, value]))
+                                exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                                 print(f'  - rule {directory_rule_category_name} {weight} \'{exp}\'')
             else:
                 print(f'site {site["id"]} {site["name"]}')
@@ -77,7 +77,7 @@ def sw2_site_list(args):
                             src = rule.get('src')
                             dst = rule.get('dst')
                             value = rule.get('value')
-                            exp = ':'.join(filter(lambda x: x is not None, [op, src, dst, value]))
+                            exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                             print(f'  - rule {directory_rule_category_name} {weight} \'{exp}\'')
                     for site_rule_category_name in site['rule_category_names']:
                         sorted_rules = sorted(site[site_rule_category_name], key=lambda x: x['weight'])
@@ -87,7 +87,7 @@ def sw2_site_list(args):
                             src = rule.get('src')
                             dst = rule.get('dst')
                             value = rule.get('value')
-                            exp = ':'.join(filter(lambda x: x is not None, [op, src, dst, value]))
+                            exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                             print(f'- rule {site_rule_category_name} {weight} \'{exp}\'')
 
     return 0
