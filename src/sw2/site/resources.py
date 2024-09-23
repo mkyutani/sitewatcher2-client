@@ -53,6 +53,59 @@ def push_resource(site, uri, properties):
         resource = json.loads(res.text)
         return resource
 
+def put_resource(site, uri, properties):
+    headers = { 'Content-Type': 'application/json' }
+    contents = {
+        'uri': uri,
+        'properties': properties
+    }
+
+    query = urljoin(Environment().apiSites(), f'{site}/resources')
+
+    res = None
+    try:
+        res = requests.put(query, json=contents, headers=headers)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return None
+
+    if res.status_code >= 400:
+        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+        print(f'{message} ', file=sys.stderr)
+        return None
+
+    if res.status_code == 204:
+        return None
+    else:
+        resource = json.loads(res.text)
+        return resource
+
+def delete_resource(site, uri):
+    headers = { 'Content-Type': 'application/json' }
+    contents = {
+        'uri': uri
+    }
+
+    query = urljoin(Environment().apiSites(), f'{site}/resources')
+
+    res = None
+    try:
+        res = requests.delete(query, json=contents, headers=headers)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return None
+
+    if res.status_code >= 400:
+        message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
+        print(f'{message} ', file=sys.stderr)
+        return None
+
+    if res.status_code == 204:
+        return None
+    else:
+        resource = json.loads(res.text)
+        return resource
+
 def test_resource_by_rules(site, link):
     excludes = site.get('integrated_rules').get('exclude')
     if excludes is not None:
@@ -151,14 +204,28 @@ def extend_properties(site, link):
             else:
                 print(f'Unknown operation {property_template["op"]}', file=sys.stderr)
 
-def get_unknown_links(site, links):
+def classify_links(site, links):
     resources = get_resources(site['id'])
     if resources is None:
         return links
 
     resource_uris = [resource['uri'] for resource in resources]
-    unknown_links = [link for link in links if link['uri'] not in resource_uris]
+    unknown_links = []
+    known_links = []
+    for link in links:
+        if link['uri'] not in resource_uris:
+            unknown_links.append(link)
+        else:
+            known_links.append(link)
+    return unknown_links, known_links
+
+def get_unknown_links(site, links):
+    unknown_links, _ = classify_links(site, links)
     return unknown_links
+
+def get_known_links(site, links):
+    _, known_links = classify_links(site, links)
+    return known_links
 
 def integrate_rules(site):
     integrated_rules = {}
@@ -240,5 +307,30 @@ def update_resources(site):
                 resources.append(resource)
         else:
             print(reason, file=sys.stderr)
+
+    return resources
+
+def refresh_resources(site):
+    site = integrate_rules(site)
+
+    all_links = get_list_links(site['uri'])
+    known_links = get_known_links(site, all_links)
+
+    resources = []
+    for known_link in known_links:
+        result, reason = test_resource_by_rules(site, known_link)
+        if result:
+            extend_properties(site, known_link)
+            resource = put_resource(site['id'], known_link['uri'], known_link['properties'])
+            if resource is not None:
+                resources.append(resource)
+        else:
+            print(reason, file=sys.stderr)
+
+    resource_uris = [resource['uri'] for resource in resources]
+    missing_links = [link for link in all_links if link['uri'] not in resource_uris]
+    for missing_link in missing_links:
+        resource = delete_resource(site['id'], missing_link['uri'])
+        print(f'{missing_link["name"]} ({missing_link["uri"]}) deleted', file=sys.stderr)
 
     return resources
