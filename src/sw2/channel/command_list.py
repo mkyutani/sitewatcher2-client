@@ -48,7 +48,7 @@ def sw2_channel_list(args):
                         print(f'- site {site["id"]} {site["name"]}')
                 if 'devices' in channel:
                     for device in channel['devices'].values():
-                        print(f'- device {device["name"]} {device["interface"]} {device["apikey"]} {device["tag"]} {device["template"]}')
+                        print(f'- device {device["name"]} {device["interface"]} {device["apikey"]} {device["tag"]} \'{device["template"]}\'')
                 if 'timestamps' in channel:
                     for timestamp in channel['timestamps'][-5:]:
                         print(f'- timestamp {timestamp}')
