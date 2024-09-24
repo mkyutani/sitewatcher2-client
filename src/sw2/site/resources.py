@@ -217,14 +217,21 @@ def classify_links(site, links):
             unknown_links.append(link)
         else:
             known_links.append(link)
-    return unknown_links, known_links
+
+    all_links = [link['uri'] for link in links]
+    missing_resources = []
+    for resource in resources:
+        if resource['uri'] not in all_links:
+            missing_resources.append(resource)
+
+    return unknown_links, known_links, missing_resources
 
 def get_unknown_links(site, links):
-    unknown_links, _ = classify_links(site, links)
+    unknown_links, _, _ = classify_links(site, links)
     return unknown_links
 
 def get_known_links(site, links):
-    _, known_links = classify_links(site, links)
+    _, known_links, _ = classify_links(site, links)
     return known_links
 
 def integrate_rules(site):
@@ -314,7 +321,7 @@ def refresh_resources(site):
     site = integrate_rules(site)
 
     all_links = get_list_links(site['uri'])
-    known_links = get_known_links(site, all_links)
+    unknown_links, known_links, missing_resources = classify_links(site, all_links)
 
     resources = []
     for known_link in known_links:
@@ -332,5 +339,9 @@ def refresh_resources(site):
     for missing_link in missing_links:
         resource = delete_resource(site['id'], missing_link['uri'])
         print(f'{missing_link["name"]} ({missing_link["uri"]}) deleted', file=sys.stderr)
+
+    for missing_resource in missing_resources:
+        resource = delete_resource(site['id'], missing_resource['uri'])
+        print(f'{missing_resource["id"]} ({missing_resource["uri"]}) deleted', file=sys.stderr)
 
     return resources
