@@ -32,7 +32,7 @@ def send_to_msteams(device_info, channel_resources, sending=False):
 
     initial = True
     for resource_list in all_resource_list:
-        if not initial:
+        if not initial and sending:
             time.sleep(5)
         else:
             initial = False
