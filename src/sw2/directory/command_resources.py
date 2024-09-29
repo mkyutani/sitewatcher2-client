@@ -57,7 +57,7 @@ def sw2_directory_resources(args):
         for resource in all_site_resources:
             name = 'None'
             for kv in resource['properties']:
-                if kv['key'] == 'name':
+                if kv['key'] == '_name':
                     name = kv['value']
                     break
             print(f'resource {resource["id"]} {name}')
