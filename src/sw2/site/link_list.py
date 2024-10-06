@@ -80,6 +80,8 @@ def get_list_links(source):
                         tag_first = tag_texts[0].strip()
                         if tag_first and len(tag_first) > 0:
                             parent_tag_text = tag_first
+                            if anc.name == 'tr':
+                                break
             if parent_tag_text is None:
                 parent_tag_text = ''
             href = tag.get('href')
