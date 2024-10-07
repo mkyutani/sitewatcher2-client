@@ -29,9 +29,10 @@ def send_to_slack(device_info, channel_resources, sending=False):
         except SlackApiError as e:
             if e.response.status_code == 429:
                 delay = int(e.response.headers['Retry-After'])
-                print('Rate limited. Retrying in {} seconds'.format(delay), file=sys.stderr)
+                print(f'Rate limited. Retrying in {delay} seconds: {slack_message_crlf_removed}', file=sys.stderr)
                 time.sleep(delay)
                 client.chat_postMessage(channel=channel, text=slack_message)
+                print(f'{verb} to {channel}: {slack_message_crlf_removed}', file=sys.stderr)
             elif e.response.status_code < 400:
                 print('Slack api error: Status={}, Reason={}'.format(e.response.status_code, e.response['error']), file=sys.stderr)
         except SlackClientError as e:
