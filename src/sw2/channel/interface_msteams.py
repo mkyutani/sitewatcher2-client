@@ -10,8 +10,11 @@ from sw2.formatter import PrivateFormatter
 
 def send_to_msteams(device_info, channel_resources, sending=False):
     msteams_webhook = device_info['apikey']
-    msteams_channel = device_info['tag']
+    msteams_title = device_info['tag']
     msteams_template = eval('"' + device_info['template'] + '"') # convert raw string to string
+
+    if not msteams_title:
+        msteams_title = 'sitewatcher2'
 
     all_resource_list = []
     resource_list = []
@@ -53,7 +56,7 @@ def send_to_msteams(device_info, channel_resources, sending=False):
                     'content': {
                         '@type': 'MessageCard',
                         '@context': 'https://schema.org/extensions',
-                        'title': 'sitewatcher2',
+                        'title': msteams_title,
                         'sections': contents
                     }
                 }
@@ -72,7 +75,7 @@ def send_to_msteams(device_info, channel_resources, sending=False):
                     print(f'{res.status_code} {text_crlf_removed}', file=sys.stderr)
                     continue
                 verb = res.status_code
-            print(f'{verb} {text_crlf_removed}', file=sys.stderr)
+            print(f'{verb} {msteams_title} {text_crlf_removed}', file=sys.stderr)
         except Exception as e:
             print(f'{type(e).__name__} {text_crlf_removed}', file=sys.stderr)
             print(e, file=sys.stderr)
