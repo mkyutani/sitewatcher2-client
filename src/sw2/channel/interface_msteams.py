@@ -22,7 +22,9 @@ def send_to_msteams(device_info, channel_resources, sending=False):
     for channel_resource in channel_resources:
         formatter = PrivateFormatter()
         for kv in channel_resource['kv']:
-            formatter.set(kv['key'], kv['value'])
+            key = kv['key']
+            value_string = eval('"' + kv['value'] + '"') # convert raw string to string
+            formatter.set(key, value_string)
         item = formatter.format(msteams_template)
         resource_list.append(f'- {item}\r')
         count = count + 1
