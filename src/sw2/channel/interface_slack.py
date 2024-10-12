@@ -18,7 +18,9 @@ def send_to_slack(device_info, channel_resources, sending=False):
         try:
             formatter = PrivateFormatter()
             for kv in channel_resource['kv']:
-                formatter.set(kv['key'], kv['value'])
+                key = kv['key']
+                value_string = eval('"' + kv['value'] + '"') # convert raw string to string
+                formatter.set(key, value_string)
             slack_message = formatter.format(slack_template)
             verb = 'Sending'
             if sending:
