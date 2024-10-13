@@ -82,6 +82,33 @@ def get_list_links(source):
                             parent_tag_text = tag_first
                             if anc.name == 'tr':
                                 break
+
+            ancestors = []
+            for anc in tag.parents:
+                if anc.name == 'document' or anc.name == 'html' or anc.name == 'body':
+                    break
+                attrs = []
+                for key in anc.attrs:
+                    if key == 'id' or key == 'class':
+                        if type(anc[key]) == list:
+                            attrs.append(f'{key}={",".join(anc[key])}')
+                        else:
+                            attrs.append(f'{key}={anc[key]}')
+                if len(attrs) > 0:
+                    attrs_string = ','.join(attrs)
+                else:
+                    attrs_string = None
+                if anc.contents is None or anc.contents[0] is None or anc.contents[0].text is None:
+                    text = None
+                else:
+                    text = anc.contents[0].text.strip()
+                    if len(text) == 0:
+                        text = None
+                ancestor_text = ':'.join(list(filter(lambda x: x is not None, [anc.name, attrs_string, text])))
+                ancestors.append(ancestor_text)
+            ancestors.reverse()
+            ancestors_text = ';'.join(ancestors)
+
             if parent_tag_text is None:
                 parent_tag_text = ''
             href = tag.get('href')
@@ -120,6 +147,8 @@ def get_list_links(source):
                     for i in range(6):
                         if sections[i] is not None:
                             properties[f'_h{i + 1}'] = sections[i]
+                    if len(ancestors_text) > 0:
+                        properties['_tags'] = ancestors_text
 
                     links.append({
                         'uri': uri,
