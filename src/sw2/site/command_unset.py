@@ -16,7 +16,7 @@ def sw2_parser_site_unset(subparser):
 
 def sw2_site_unset(args):
     args_name = args.get('name')
-    args_rule = args.get('rule')
+    args_rule = args.get('rule').lower()
     args_weight = args.get('weight')
     args_strict = args.get('strict')
 
@@ -25,6 +25,10 @@ def sw2_site_unset(args):
         return 1
     elif len(sites) == 0:
         print('site not found', file=sys.stderr)
+        return 1
+
+    if args_rule not in ['include', 'exclude', 'start', 'stop', 'property_template']:
+        print(f'Invalid rule or expression ({args_rule}, {args_weight})', file=sys.stderr)
         return 1
 
     for site in sites:

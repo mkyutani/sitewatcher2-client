@@ -32,7 +32,7 @@ def sw2_site_set(args):
     contents = {}
 
     try:
-        if args_rule in ['include', 'exclude']:
+        if args_rule in ['include', 'exclude', 'start', 'stop']:
             src, value = args_expression.split(':', 1)
             contents['op'] = None
             contents['src'] = src
@@ -65,7 +65,7 @@ def sw2_site_set(args):
             contents['dst'] = None
             contents['value'] = None
         else:
-            print(f'Invalid expression ({args_rule}, {args_weight})', file=sys.stderr)
+            print(f'Invalid rule or expression ({args_rule}, {args_weight})', file=sys.stderr)
             return 1
 
     for site in sites:

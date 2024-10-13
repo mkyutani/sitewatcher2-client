@@ -106,7 +106,43 @@ def delete_resource(site, uri):
         resource = json.loads(res.text)
         return resource
 
-def test_resource_by_rules(site, link):
+def initialize_resource_started_status(site):
+    starts = site.get('integrated_rules').get('start')
+    if starts is None:
+        started = True
+    else:
+        started = False
+    return started
+
+def test_resource_by_rules(site, link, started):
+    if not started:
+        starts = site.get('integrated_rules').get('start')
+        if starts is not None:
+            starts.sort(key=lambda x: x.get('weight'))
+            for start in starts:
+                src = start.get('src')
+                pattern = start.get('value')
+                if src is None or pattern is None:
+                    print(f'Invalid start rule (weight={weight})', file=sys.stderr)
+                    continue
+                property_value = link['properties'].get(src)
+                if (property_value is None and pattern.lower() == 'none') or (property_value is not None and re.search(pattern, property_value)):
+                        return False, f'{link["name"]} ({src}:{property_value}) triggers to start by rule [{pattern}]', True
+        return False, f'{link["name"]} not started', False
+
+    stops = site.get('integrated_rules').get('stop')
+    if stops is not None:
+        stops.sort(key=lambda x: x.get('weight'))
+        for stop in stops:
+            src = stop.get('src')
+            pattern = stop.get('value')
+            if src is None or pattern is None:
+                print(f'Invalid stop rule (weight={weight})', file=sys.stderr)
+                continue
+            property_value = link['properties'].get(src)
+            if (property_value is None and pattern.lower() == 'none') or (property_value is not None and re.search(pattern, property_value)):
+                    return False, f'{link["name"]} ({src}:{property_value}) triggers to stop by rule [{pattern}]', False
+
     excludes = site.get('integrated_rules').get('exclude')
     if excludes is not None:
         excludes.sort(key=lambda x: x.get('weight'))
@@ -119,7 +155,7 @@ def test_resource_by_rules(site, link):
                 continue
             property_value = link['properties'].get(src)
             if (property_value is None and pattern.lower() == 'none') or (property_value is not None and re.search(pattern, property_value)):
-                    return False, f'{link["name"]} ({src}:{property_value}) excluded by rule [{pattern}]'
+                    return False, f'{link["name"]} ({src}:{property_value}) excluded by rule [{pattern}]', started
 
     includes = site.get('integrated_rules').get('include')
     if includes is not None:
@@ -135,9 +171,9 @@ def test_resource_by_rules(site, link):
             if (property_value is None and pattern.lower() == 'none') or (property_value is not None and re.search(pattern, property_value)):
                 break
         else:
-            return False, f'{link["name"]} not included'
+            return False, f'{link["name"]} not included', started
 
-    return True, None
+    return True, None, started
 
 def extend_properties(site, link):
     link['properties']['_site'] = site['id']
@@ -289,8 +325,9 @@ def test_resources(site, all=False):
         links = get_unknown_links(site, all_links)
 
     resources = []
+    started = initialize_resource_started_status(site)
     for link in links:
-        result, reason = test_resource_by_rules(site, link)
+        result, reason, started = test_resource_by_rules(site, link, started)
         if result:
             extend_properties(site, link)
             resources.append(link)
@@ -305,8 +342,9 @@ def update_resources(site):
     links = get_unknown_links(site, get_list_links(site['uri']))
 
     resources = []
+    started = initialize_resource_started_status(site)
     for link in links:
-        result, reason = test_resource_by_rules(site, link)
+        result, reason, started = test_resource_by_rules(site, link, started)
         if result:
             extend_properties(site, link)
             resource = push_resource(site['id'], link['uri'], link['properties'])
@@ -324,8 +362,9 @@ def refresh_resources(site):
     unknown_links, known_links, missing_resources = classify_links(site, all_links)
 
     resources = []
+    started = initialize_resource_started_status(site)
     for known_link in known_links:
-        result, reason = test_resource_by_rules(site, known_link)
+        result, reason, started = test_resource_by_rules(site, known_link, started)
         if result:
             extend_properties(site, known_link)
             resource = put_resource(site['id'], known_link['uri'], known_link['properties'])
@@ -338,10 +377,10 @@ def refresh_resources(site):
     missing_links = [link for link in all_links if link['uri'] not in resource_uris]
     for missing_link in missing_links:
         resource = delete_resource(site['id'], missing_link['uri'])
-        print(f'{missing_link["name"]} ({missing_link["uri"]}) deleted', file=sys.stderr)
+        print(f'{missing_link["name"]} ({missing_link["uri"]}) is dismissed', file=sys.stderr)
 
     for missing_resource in missing_resources:
         resource = delete_resource(site['id'], missing_resource['uri'])
-        print(f'{missing_resource["id"]} ({missing_resource["uri"]}) deleted', file=sys.stderr)
+        print(f'{missing_resource["id"]} ({missing_resource["uri"]}) is missing', file=sys.stderr)
 
     return resources
