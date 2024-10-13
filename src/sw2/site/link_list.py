@@ -101,7 +101,7 @@ def get_list_links(source):
                 if anc.contents is None or anc.contents[0] is None or anc.contents[0].text is None:
                     text = None
                 else:
-                    text = anc.contents[0].text.strip()
+                    text = ''.join([c.text.strip() for c in anc.contents if c.name is None])
                     if len(text) == 0:
                         text = None
                 ancestor_text = ':'.join(list(filter(lambda x: x is not None, [anc.name, attrs_string, text])))
