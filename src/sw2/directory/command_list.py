@@ -11,6 +11,7 @@ def sw2_parser_directory_list(subparser):
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='directory id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     format_group = parser.add_mutually_exclusive_group()
+    format_group.add_argument('-c', '--command', action='store_true', help='show command template')
     format_group.add_argument('-d', '--detail', action='store_true', help='show detail')
     format_group.add_argument('-j', '--json', action='store_true', help='in json format')
     format_group.add_argument('-s', '--sites', action='store_true', help='show sites')
@@ -20,6 +21,7 @@ def sw2_parser_directory_list(subparser):
 def sw2_directory_list(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
+    args_command = args.get('command')
     args_detail = args.get('detail')
     args_json = args.get('json')
     args_sites = args.get('sites')
@@ -40,8 +42,9 @@ def sw2_directory_list(args):
         yaml.dump(directories, sys.stdout)
     else:
         for directory in directories:
-            print(f'directory {directory["id"]} {directory["name"]}')
-            if args_detail:
+            if args_command:
+                print(f'# directory {directory["id"]} {directory["name"]}')
+                print(f'sw2 directory add \'{directory["name"]}\'')
                 for rule_category_name in directory['rule_category_names']:
                     sorted_rules = sorted(directory[rule_category_name], key=lambda x: x['weight'])
                     for rule in sorted_rules:
@@ -51,8 +54,22 @@ def sw2_directory_list(args):
                         dst = rule.get('dst')
                         value = rule.get('value')
                         exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
-                        print(f'- rule {rule_category_name} {weight} \'{exp}\'')
-            if args_sites:
-                for site in directory['sites']:
-                    print(f'- site {site["id"]} {site["name"]}')
+                        print(f'sw2 directory set \'{directory["name"]}\' --strict {rule_category_name} {weight} \'{exp}\'')
+            else:
+                print(f'directory {directory["id"]} {directory["name"]}')
+                if args_detail:
+                    for rule_category_name in directory['rule_category_names']:
+                        sorted_rules = sorted(directory[rule_category_name], key=lambda x: x['weight'])
+                        for rule in sorted_rules:
+                            weight = rule.get('weight')
+                            op = rule.get('op')
+                            src = rule.get('src')
+                            dst = rule.get('dst')
+                            value = rule.get('value')
+                            exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
+                            print(f'- rule {rule_category_name} {weight} \'{exp}\'')
+                if args_sites:
+                    for site in directory['sites']:
+                        print(f'- site {site["id"]} {site["name"]}')
+
     return 0

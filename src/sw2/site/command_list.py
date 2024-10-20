@@ -10,6 +10,7 @@ def sw2_parser_site_list(subparser):
     parser.add_argument('name', nargs='?', metavar='NAME', default=None, help='site id, name or "all"')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     format_group = parser.add_mutually_exclusive_group()
+    format_group.add_argument('-c', '--command', action='store_true', help='show command template')
     format_group.add_argument('-d', '--detail', action='store_true', help='show detail')
     format_group.add_argument('-j', '--json', action='store_true', help='in json format')
     format_group.add_argument('-r', '--rules-only', action='store_true', help='show rules only')
@@ -19,6 +20,7 @@ def sw2_parser_site_list(subparser):
 def sw2_site_list(args):
     args_name = args.get('name')
     args_strict = args.get('strict')
+    args_command = args.get('command')
     args_detail = args.get('detail')
     args_json = args.get('json')
     args_rules_only = args.get('rules_only')
@@ -64,6 +66,19 @@ def sw2_site_list(args):
                                 value = rule.get('value')
                                 exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                                 print(f'  - rule {directory_rule_category_name} {weight} \'{exp}\'')
+            elif args_command:
+                print(f'# site {site["id"]} {site["name"]}')
+                print(f'sw2 site add {site["directory"]["id"]} \'{site["name"]}\' {site["uri"]}')
+                for site_rule_category_name in site['rule_category_names']:
+                    sorted_rules = sorted(site[site_rule_category_name], key=lambda x: x['weight'])
+                    for rule in sorted_rules:
+                        weight = rule.get('weight')
+                        op = rule.get('op')
+                        src = rule.get('src')
+                        dst = rule.get('dst')
+                        value = rule.get('value')
+                        exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
+                        print(f'sw2 site set \'{site["directory"]["name"]}:{site["name"]}\' --strict {site_rule_category_name} {weight} \'{exp}\'')
             else:
                 print(f'site {site["id"]} {site["name"]}')
                 if args_detail:
