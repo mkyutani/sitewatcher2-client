@@ -1,7 +1,7 @@
 import json
 import sys
 import requests
-from sw2.directory.list import list_directories
+from sw2.directory.list import get_directories
 from sw2.env import Environment
 
 def sw2_parser_site_add(subparser):
@@ -16,7 +16,7 @@ def sw2_site_add(args):
     args_name = args.get('name')
     args_uri = args.get('uri')
 
-    directories = list_directories(args_directory)
+    directories = get_directories(args_directory)
     if directories is None:
         return 1
     if len(directories) == 0:
@@ -25,7 +25,6 @@ def sw2_site_add(args):
 
     directory = directories[0]
     directory_id = directory['id']
-    directory_name = directory['name']
 
     headers = { 'Content-Type': 'application/json' }
     contents = {
