@@ -1,3 +1,4 @@
+import json
 import sys
 from urllib.parse import urljoin
 import requests
@@ -47,5 +48,8 @@ def sw2_site_rename(args):
         message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
         print(f'{message} ', file=sys.stderr)
         return 1
+
+    site = json.loads(res.text)
+    print(f'{site["id"]} {site["name"]}')
 
     return 0
