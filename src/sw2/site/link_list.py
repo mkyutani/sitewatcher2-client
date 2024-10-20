@@ -49,6 +49,7 @@ def get_list_links(source):
     sections = [None] * 6
     title = None
     table_header = None
+    definition_term = None
     name = None
     for tag in bs.find_all(['title', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr']):
         if tag.name[0] == 'h':
@@ -66,11 +67,12 @@ def get_list_links(source):
             if table_header is None:
                 for th in tag.find_all('th'):
                     found = ''.join(filter(lambda c: c >= ' ', th.text.strip()))
-                    if table_header is None:
-                        table_header = ''
-                    else:
-                        table_header = table_header + '::'
-                    table_header = table_header + found
+                    if len(found) > 0:
+                        if table_header is None:
+                            table_header = ''
+                        else:
+                            table_header = table_header + '::'
+                        table_header = table_header + found
         else:
             parent_tag_text = None
             for anc in tag.parents:
@@ -82,6 +84,16 @@ def get_list_links(source):
                             parent_tag_text = tag_first
                             if anc.name == 'tr':
                                 break
+                elif anc.name == 'dl':
+                    if definition_term is None:
+                        for dt in anc.find_all('dt'):
+                            found = ''.join(filter(lambda c: c >= ' ', dt.text.strip()))
+                            if len(found) > 0:
+                                if definition_term is None:
+                                    definition_term = ''
+                                else:
+                                    definition_term = definition_term + '::'
+                                definition_term = definition_term + found
 
             ancestors = []
             for anc in tag.parents:
@@ -144,6 +156,8 @@ def get_list_links(source):
                         properties['_title'] = title
                     if table_header is not None:
                         properties['_th'] = table_header
+                    if definition_term is not None:
+                        properties['_dt'] = definition_term
                     for i in range(6):
                         if sections[i] is not None:
                             properties[f'_h{i + 1}'] = sections[i]
