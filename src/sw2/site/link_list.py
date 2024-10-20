@@ -1,11 +1,33 @@
-import copy
+import feedparser
+import hashlib
 import re
 import sys
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 import requests
 
-def get_list_links(source):
+def get_rss_links(source):
+    feed = None
+    try:
+        feed = feedparser.parse(source)
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        return []
+
+    links = []
+    for e in feed['entries']:
+        links.append({
+            'uri': e['link'],
+            'name': e['title'],
+            'properties': {
+                '_uri': e['link'],
+                '_name': e['title'],
+            }
+        })
+
+    return links
+
+def get_html_links(source):
     headers = { 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36' }
 
     try:
@@ -171,3 +193,9 @@ def get_list_links(source):
                     })
 
     return links
+
+def get_list_links(source):
+    if re.search(r'\.(rdf|rss|xml)$', source):
+        return get_rss_links(source)
+    else:
+        return get_html_links(source)

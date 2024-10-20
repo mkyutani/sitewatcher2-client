@@ -11,6 +11,7 @@ authors = [
 requires-python = ">=3.10"
 dependencies = [
     "BeautifulSoup4",
+    "feedparser",
     "python-dotenv",
     "pyyaml",
     "requests",
