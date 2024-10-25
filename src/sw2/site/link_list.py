@@ -195,7 +195,19 @@ def get_html_links(source):
     return links
 
 def get_list_links(source):
-    if re.search(r'\.(rdf|rss|xml)$', source):
-        return get_rss_links(source)
+    source_type = None
+    source_uri = source
+
+    source_lower = source.lower()
+    if source_lower.startswith('rss:'):
+        source_type = 'rss'
+        source_uri = source[4:]
+    elif source_lower.startswith('html:'):
+        source_uri = source[5:]
+    elif source_lower.endswith('.rss') or source_lower.endswith('.rdf') or source_lower.endswith('.xml'):
+        source_type = 'rss'
+
+    if source_type == 'rss':
+        return get_rss_links(source_uri)
     else:
-        return get_html_links(source)
+        return get_html_links(source_uri)
