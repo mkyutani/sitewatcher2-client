@@ -71,7 +71,6 @@ def get_html_links(source):
     sections = [None] * 6
     title = None
     table_header = None
-    definition_term = None
     name = None
     for tag in bs.find_all(['title', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr']):
         if tag.name[0] == 'h':
@@ -96,17 +95,24 @@ def get_html_links(source):
                             table_header = table_header + '::'
                         table_header = table_header + found
         else:
-            parent_tag_text = None
+            table_rows = None
+            list_items = None
+            definition_term = None
+            paragraph_content = None
             for anc in tag.parents:
-                if (anc.name == 'li' and parent_tag_text is None) or anc.name == 'tr':
-                    tag_texts = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
-                    if len(tag_texts) > 1:
-                        tag_first = tag_texts[0].strip()
-                        if tag_first and len(tag_first) > 0:
-                            parent_tag_text = tag_first
-                            if anc.name == 'tr':
-                                break
-                elif anc.name == 'dl':
+                if anc.name == 'li' and list_items is None:
+                    tag_text_list = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
+                    if len(tag_text_list) > 0:
+                        list_items = '::'.join(tag_text_list)
+                elif anc.name == 'tr' and table_rows is None:
+                    tag_text_list = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
+                    if len(tag_text_list) > 0:
+                        list_items = '::'.join(tag_text_list)
+                elif anc.name == 'p' and paragraph_content is None:
+                    tag_text_list = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
+                    if len(tag_text_list) > 0:
+                        paragraph_content = '::'.join(tag_text_list)
+                elif anc.name == 'dl' and definition_term is None:
                     if definition_term is None:
                         for dt in anc.find_all('dt'):
                             found = ''.join(filter(lambda c: c >= ' ', dt.text.strip()))
@@ -116,6 +122,24 @@ def get_html_links(source):
                                 else:
                                     definition_term = definition_term + '::'
                                 definition_term = definition_term + found
+
+            previous = None
+            previous_tag_text_list = []
+            for anc in tag.previous_siblings:
+                if anc.name == 'a':
+                    break
+                previous_tag_text_list.append(''.join(list(filter(lambda c: c >= ' ', anc.text.strip()))))
+                if len(previous_tag_text_list) > 0:
+                    previous = '::'.join(list(filter(lambda x: len(x) > 0, previous_tag_text_list)))
+
+            next = None
+            next_tag_text_list = []
+            for anc in tag.next_siblings:
+                if anc.name == 'a':
+                    break
+                next_tag_text_list.append(''.join(list(filter(lambda c: c >= ' ', anc.text.strip()))))
+                if len(next_tag_text_list) > 0:
+                    next = '::'.join(list(filter(lambda x: len(x) > 0, next_tag_text_list)))
 
             ancestors = []
             for anc in tag.parents:
@@ -143,8 +167,6 @@ def get_html_links(source):
             ancestors.reverse()
             ancestors_text = ';'.join(ancestors)
 
-            if parent_tag_text is None:
-                parent_tag_text = ''
             href = tag.get('href')
             if href is not None:
                 ref = ''.join(filter(lambda c: c >= ' ', href))
@@ -163,9 +185,7 @@ def get_html_links(source):
                     tag_text = tag.text.strip()
                     if tag_text is None:
                         tag_text = ''
-                    if tag_text == parent_tag_text:
-                        parent_tag_text = ''
-                    name = parent_tag_text + '::' + tag_text if len(parent_tag_text) > 0 else tag_text
+                    name = tag_text
                     name = ''.join(filter(lambda c: c >= ' ', name))
                     name = re.sub('\s', '_', name)
                     if len(name) == 0:
@@ -178,8 +198,18 @@ def get_html_links(source):
                         properties['_title'] = title
                     if table_header is not None:
                         properties['_th'] = table_header
+                    if table_rows is not None:
+                        properties['_tr'] = table_rows
+                    if list_items is not None:
+                        properties['_li'] = list_items
                     if definition_term is not None:
                         properties['_dt'] = definition_term
+                    if paragraph_content is not None:
+                        properties['_p'] = paragraph_content
+                    if previous is not None:
+                        properties['_prev'] = previous
+                    if next is not None:
+                        properties['_next'] = next
                     for i in range(6):
                         if sections[i] is not None:
                             properties[f'_h{i + 1}'] = sections[i]
