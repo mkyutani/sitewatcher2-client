@@ -192,6 +192,8 @@ def extend_properties(site, link):
             src = property_template.get('src')
             dst = property_template.get('dst')
             value = property_template.get('value')
+            if value is None:
+                value = ''
 
             if op is None:
                 print(f'Operation is not defined in property template (weight={weight})', file=sys.stderr)
