@@ -12,13 +12,11 @@ def sw2_parser_directory_test(subparser):
     aliases = []
     parser = subparser.add_parser('test', aliases=aliases, help='test site resources in directory')
     parser.add_argument('name', help='directory id, name or "all"')
-    parser.add_argument('--all', action='store_true', help='include known resources')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     return aliases
 
 def sw2_directory_test(args):
     args_name = args.get('name')
-    args_all = args.get('all')
     args_strict = args.get('strict')
 
     directories = get_directories(args_name, strict=args_strict)
@@ -38,7 +36,7 @@ def sw2_directory_test(args):
             if site is None:
                 return 1
 
-            resources = test_resources(site, all=args_all)
+            resources = test_resources(site, all=True)
             if resources is None:
                 return 1
 
