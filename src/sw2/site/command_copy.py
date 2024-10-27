@@ -41,6 +41,10 @@ def sw2_site_copy(args):
 
     source = sources[0]
     site_rule_category_names = source['rule_category_names']
+    if len(site_rule_category_names) == 0:
+        print('no rules to copy', file=sys.stderr)
+        return 1
+
     rules = []
     for site_rule_category_name in site_rule_category_names:
         sorted_source_rules = sorted(source[site_rule_category_name], key=lambda x: x['weight'])
@@ -55,8 +59,6 @@ def sw2_site_copy(args):
             rules.append(rule)
 
     headers = { 'Content-Type': 'application/json' }
-
-    print(rules)
 
     for site in sites:
         for rule in rules:
