@@ -51,7 +51,7 @@ def sw2_site_list(args):
                             op = rule.get('op')
                             src = rule.get('src')
                             dst = rule.get('dst')
-                            value = rule.get('value')
+                            value = rule.get('value') if rule.get('value') is not None else ''
                             exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                             print(f'- rule {site_rule_category_name} {weight} \'{exp}\'')
                     if len(site['directory']['rule_category_names']) > 0:
@@ -63,7 +63,7 @@ def sw2_site_list(args):
                                 op = rule.get('op')
                                 src = rule.get('src')
                                 dst = rule.get('dst')
-                                value = rule.get('value')
+                                value = rule.get('value') if rule.get('value') is not None else ''
                                 exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                                 print(f'  - rule {directory_rule_category_name} {weight} \'{exp}\'')
             elif args_command:
@@ -76,7 +76,7 @@ def sw2_site_list(args):
                         op = rule.get('op')
                         src = rule.get('src')
                         dst = rule.get('dst')
-                        value = rule.get('value')
+                        value = rule.get('value') if rule.get('value') is not None else ''
                         exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                         print(f'sw2 site set \'{site["directory"]["name"]}:{site["name"]}\' --strict {site_rule_category_name} {weight} \'{exp}\'')
             else:
@@ -91,7 +91,7 @@ def sw2_site_list(args):
                             op = rule.get('op')
                             src = rule.get('src')
                             dst = rule.get('dst')
-                            value = rule.get('value')
+                            value = rule.get('value') if rule.get('value') is not None else ''
                             exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                             print(f'  - rule {directory_rule_category_name} {weight} \'{exp}\'')
                     for site_rule_category_name in site['rule_category_names']:
@@ -101,7 +101,7 @@ def sw2_site_list(args):
                             op = rule.get('op')
                             src = rule.get('src')
                             dst = rule.get('dst')
-                            value = rule.get('value')
+                            value = rule.get('value') if rule.get('value') is not None else ''
                             exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                             print(f'- rule {site_rule_category_name} {weight} \'{exp}\'')
 

@@ -52,7 +52,7 @@ def sw2_directory_list(args):
                         op = rule.get('op')
                         src = rule.get('src')
                         dst = rule.get('dst')
-                        value = rule.get('value')
+                        value = rule.get('value') if rule.get('value') is not None else ''
                         exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                         print(f'sw2 directory set \'{directory["name"]}\' --strict {rule_category_name} {weight} \'{exp}\'')
             else:
@@ -65,7 +65,7 @@ def sw2_directory_list(args):
                             op = rule.get('op')
                             src = rule.get('src')
                             dst = rule.get('dst')
-                            value = rule.get('value')
+                            value = rule.get('value') if rule.get('value') is not None else ''
                             exp = ':'.join(filter(lambda x: x is not None, [op, dst, src, value]))
                             print(f'- rule {rule_category_name} {weight} \'{exp}\'')
                 if args_sites:
