@@ -1,4 +1,5 @@
 from sw2.directory.command_add import sw2_directory_add, sw2_parser_directory_add
+from sw2.directory.command_copy import sw2_directory_copy, sw2_parser_directory_copy
 from sw2.directory.command_delete import sw2_directory_delete, sw2_parser_directory_delete
 from sw2.directory.command_list import sw2_directory_list, sw2_parser_directory_list
 from sw2.directory.command_refresh import sw2_directory_refresh, sw2_parser_directory_refresh
@@ -11,6 +12,7 @@ from sw2.directory.command_update import sw2_directory_update, sw2_parser_direct
 
 directory_function_map = {
     'add': { 'function': sw2_directory_add, 'parser': sw2_parser_directory_add },
+    'copy': { 'function': sw2_directory_copy, 'parser': sw2_parser_directory_copy },
     'delete': { 'function': sw2_directory_delete, 'parser': sw2_parser_directory_delete },
     'list': { 'function': sw2_directory_list, 'parser': sw2_parser_directory_list },
     'refresh': { 'function': sw2_directory_refresh, 'parser': sw2_parser_directory_refresh },
