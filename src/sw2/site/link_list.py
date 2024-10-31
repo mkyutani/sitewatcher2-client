@@ -29,6 +29,7 @@ def get_rss_links(source):
 
 def get_html_links(source):
     headers = { 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36' }
+    property_value_max = 4096
 
     try:
         res = requests.get(source, headers=headers, timeout=10)
@@ -195,26 +196,26 @@ def get_html_links(source):
                     properties['_uri'] = uri
                     properties['_name'] = name
                     if title is not None:
-                        properties['_title'] = title
+                        properties['_title'] = title[:property_value_max]
                     if table_header is not None:
-                        properties['_th'] = table_header
+                        properties['_th'] = table_header[:property_value_max]
                     if table_rows is not None:
-                        properties['_tr'] = table_rows
+                        properties['_tr'] = table_rows[:property_value_max]
                     if list_items is not None:
-                        properties['_li'] = list_items
+                        properties['_li'] = list_items[:property_value_max]
                     if definition_term is not None:
-                        properties['_dt'] = definition_term
+                        properties['_dt'] = definition_term[:property_value_max]
                     if paragraph_content is not None:
-                        properties['_p'] = paragraph_content
+                        properties['_p'] = paragraph_content[:property_value_max]
                     if previous is not None:
-                        properties['_prev'] = previous
+                        properties['_prev'] = previous[:property_value_max]
                     if next is not None:
-                        properties['_next'] = next
+                        properties['_next'] = next[:property_value_max]
                     for i in range(6):
                         if sections[i] is not None:
-                            properties[f'_h{i + 1}'] = sections[i]
+                            properties[f'_h{i + 1}'] = sections[i][:property_value_max]
                     if len(ancestors_text) > 0:
-                        properties['_tags'] = ancestors_text
+                        properties['_tags'] = ancestors_text[:property_value_max]
 
                     links.append({
                         'uri': uri,
