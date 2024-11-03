@@ -320,7 +320,7 @@ def integrate_rules(site):
 def test_resources(site, all=False):
     site = integrate_rules(site)
 
-    all_links = get_list_links(site['uri'])
+    all_links = get_list_links(site['uri'], link_list_rules=site.get('integrated_rules').get('walk'))
     if all:
         links = all_links
     else:
@@ -341,7 +341,7 @@ def test_resources(site, all=False):
 def update_resources(site):
     site = integrate_rules(site)
 
-    links = get_unknown_links(site, get_list_links(site['uri']))
+    links = get_unknown_links(site, get_list_links(site['uri'], link_list_rules=site.get('integrated_rules').get('walk')))
 
     resources = []
     started = initialize_resource_started_status(site)
@@ -360,7 +360,7 @@ def update_resources(site):
 def refresh_resources(site):
     site = integrate_rules(site)
 
-    all_links = get_list_links(site['uri'])
+    all_links = get_list_links(site['uri'], link_list_rules=site.get('integrated_rules').get('walk'))
     unknown_links, known_links, missing_resources = classify_links(site, all_links)
 
     resources = []

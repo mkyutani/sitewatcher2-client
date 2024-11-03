@@ -38,6 +38,12 @@ def sw2_site_set(args):
             contents['src'] = src
             contents['dst'] = None
             contents['value'] = value
+        elif args_rule == 'walk':
+            dst, value = args_expression.split(':', 1)
+            contents['op'] = None
+            contents['src'] = None
+            contents['dst'] = dst
+            contents['value'] = value
         elif args_rule == 'property_template':
             op, expr = args_expression.split(':', 1)
             op = op.strip().lower()

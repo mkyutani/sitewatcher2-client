@@ -27,7 +27,68 @@ def get_rss_links(source):
 
     return links
 
-def get_html_links(source):
+def interpret_html_walk_expression(html_walk_expression):
+    ops = []
+
+    expr = html_walk_expression
+    while True:
+        if len(expr) == 0:
+            return ops
+        elif expr[0] in '<>^.':
+            ops.append(expr[0])
+            expr = expr[1:]
+        elif expr[0] in '0123456789':
+            num = 0
+            while len(expr) > 0 and expr[0] in '0123456789':
+                num = num * 10 + int(expr[0])
+                expr = expr[1:]
+            ops.append(num)
+
+def walk(soup, html_walk_expression = None):
+    content = None
+
+    ops = interpret_html_walk_expression(html_walk_expression)
+    tag = soup
+    for op in ops:
+        if type(op) == int:
+            index = op
+            for t in tag.children:
+                if index == 0:
+                    tag = t
+                    break
+                index = index - 1
+        elif ops[0] == '^':
+            tag = tag.parent
+        elif ops[0] == '<':
+            tag = tag.previous_sibling
+        elif ops[0] == '>':
+            tag = tag.next_sibling
+        elif ops[0] == '.':
+            pass
+
+        if tag is None:
+            break
+
+        if tag.name is not None:
+            if content is None:
+                content = ''
+            else:
+                content = content + '::'
+            content = content + tag.name
+
+    if tag is None:
+        return None
+
+    found = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
+    if len(found) > 0:
+        if content is None:
+            content = found
+        else:
+            content = content + '::' + found
+
+    return content
+
+def get_html_links(source, html_walk_expression = None):
     headers = { 'Cache-Control': 'no-cache', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.61 Safari/537.36' }
     property_value_max = 4096
 
@@ -102,6 +163,7 @@ def get_html_links(source):
             definition_term = None
             paragraph_content = None
             division_content = None
+            walk_contents = {}
             for anc in tag.parents:
                 if anc.name == 'li' and list_items is None:
                     tag_text_list = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
@@ -137,6 +199,12 @@ def get_html_links(source):
                             else:
                                 definition_term = definition_term + '::'
                             definition_term = definition_term + found
+
+            if html_walk_expression is not None:
+                for rule in html_walk_expression:
+                    value = walk(tag, rule['value'])
+                    if value is not None:
+                        walk_contents.update({rule['dst']: value})
 
             previous = None
             previous_tag_text_list = []
@@ -232,6 +300,8 @@ def get_html_links(source):
                     for i in range(6):
                         if sections[i] is not None:
                             properties[f'_h{i + 1}'] = sections[i][:property_value_max]
+                    for key in walk_contents:
+                        properties[key] = walk_contents[key][:property_value_max]
                     if len(ancestors_text) > 0:
                         properties['_tags'] = ancestors_text[:property_value_max]
 
@@ -243,7 +313,7 @@ def get_html_links(source):
 
     return links
 
-def get_list_links(source):
+def get_list_links(source, link_list_rules = None):
     source_type = None
     source_uri = source
 
@@ -259,4 +329,4 @@ def get_list_links(source):
     if source_type == 'rss':
         return get_rss_links(source_uri)
     else:
-        return get_html_links(source_uri)
+        return get_html_links(source_uri, html_walk_expression = link_list_rules)
