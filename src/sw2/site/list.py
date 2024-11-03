@@ -95,7 +95,9 @@ def get_sites(name, strict=False):
                         for rule_category_name in directory['rule_category_names']:
                             site['directory'][rule_category_name] = directory[rule_category_name]
 
-                        if strict:
+                        if site_name is None or site_name.lower() == 'all':
+                            sites.append(site)
+                        elif strict:
                             if site_name == site['name']:
                                 sites.append(site)
                         else:
