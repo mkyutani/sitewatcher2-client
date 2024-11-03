@@ -8,7 +8,7 @@ class PrivateFormatter:
             elif '_default' in args[1]:
                 return args[1]['_default']
             else:
-                return '*'
+                return ''
 
     def __init__(self):
         pass
