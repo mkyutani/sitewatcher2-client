@@ -98,8 +98,10 @@ def get_html_links(source):
         else:
             table_rows = None
             list_items = None
+            unordered_list_content = None
             definition_term = None
             paragraph_content = None
+            division_content = None
             for anc in tag.parents:
                 if anc.name == 'li' and list_items is None:
                     tag_text_list = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
@@ -113,16 +115,28 @@ def get_html_links(source):
                     tag_text_list = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
                     if len(tag_text_list) > 0:
                         paragraph_content = '::'.join(tag_text_list)
+                elif anc.name == 'div' and division_content is None:
+                    tag_text_list = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
+                    if len(tag_text_list) > 0:
+                        division_content = '::'.join(tag_text_list)
+                elif anc.name == 'ul' and unordered_list_content is None:
+                    for li in anc.find_all('li'):
+                        found = ''.join(filter(lambda c: c >= ' ', li.text.strip()))
+                        if len(found) > 0:
+                            if unordered_list_content is None:
+                                unordered_list_content = ''
+                            else:
+                                unordered_list_content = unordered_list_content + '::'
+                            unordered_list_content = unordered_list_content + found
                 elif anc.name == 'dl' and definition_term is None:
-                    if definition_term is None:
-                        for dt in anc.find_all('dt'):
-                            found = ''.join(filter(lambda c: c >= ' ', dt.text.strip()))
-                            if len(found) > 0:
-                                if definition_term is None:
-                                    definition_term = ''
-                                else:
-                                    definition_term = definition_term + '::'
-                                definition_term = definition_term + found
+                    for dt in anc.find_all('dt'):
+                        found = ''.join(filter(lambda c: c >= ' ', dt.text.strip()))
+                        if len(found) > 0:
+                            if definition_term is None:
+                                definition_term = ''
+                            else:
+                                definition_term = definition_term + '::'
+                            definition_term = definition_term + found
 
             previous = None
             previous_tag_text_list = []
@@ -203,10 +217,14 @@ def get_html_links(source):
                         properties['_tr'] = table_rows[:property_value_max]
                     if list_items is not None:
                         properties['_li'] = list_items[:property_value_max]
+                    if unordered_list_content is not None:
+                        properties['_ul'] = unordered_list_content[:property_value_max]
                     if definition_term is not None:
                         properties['_dt'] = definition_term[:property_value_max]
                     if paragraph_content is not None:
                         properties['_p'] = paragraph_content[:property_value_max]
+                    if division_content is not None:
+                        properties['_div'] = division_content[:property_value_max]
                     if previous is not None:
                         properties['_prev'] = previous[:property_value_max]
                     if next is not None:
