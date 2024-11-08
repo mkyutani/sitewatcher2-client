@@ -44,7 +44,7 @@ def sw2_site_set(args):
             contents['src'] = None
             contents['dst'] = dst.strip()
             contents['value'] = value
-        elif args_rule == 'property_template':
+        elif args_rule == 'property':
             op, expr = args_expression.split(':', 1)
             op = op.strip().lower()
             if op not in ['set', 'match', 'none']:

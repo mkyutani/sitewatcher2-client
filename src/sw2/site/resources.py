@@ -182,7 +182,7 @@ def extend_properties(site, link):
     link['properties']['_directory'] = site['directory']['id']
     link['properties']['_directory_name'] = site['directory']['name']
 
-    property_templates = site.get('integrated_rules').get('property_template')
+    property_templates = site.get('integrated_rules').get('property')
     if property_templates is not None:
         property_templates.sort(key=lambda x: x.get('weight'))
 

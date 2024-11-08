@@ -27,6 +27,10 @@ def sw2_directory_unset(args):
         print('directory not found', file=sys.stderr)
         return 1
 
+    if args_rule not in ['include', 'exclude', 'start', 'stop', 'property', 'walk']:
+        print(f'Invalid rule or expression ({args_rule}, {args_weight})', file=sys.stderr)
+        return 1
+
     for directory in directories:
         query = urljoin(Environment().apiDirectories(), '/'.join([directory['id'], 'rules', args_rule, args_weight]))
 
