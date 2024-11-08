@@ -34,15 +34,15 @@ def interpret_html_walk_expression(html_walk_expression):
     while True:
         if len(expr) == 0:
             return ops
-        elif expr[0] in '<>^.':
-            ops.append(expr[0])
-            expr = expr[1:]
         elif expr[0] in '0123456789':
             num = 0
             while len(expr) > 0 and expr[0] in '0123456789':
                 num = num * 10 + int(expr[0])
                 expr = expr[1:]
             ops.append(num)
+        else:
+            ops.append(expr[0])
+            expr = expr[1:]
 
 def walk(soup, html_walk_expression = None):
     content = None
@@ -57,13 +57,17 @@ def walk(soup, html_walk_expression = None):
                     tag = t
                     break
                 index = index - 1
-        elif ops[0] == '^':
+        elif op in 'kp^':
             tag = tag.parent
-        elif ops[0] == '<':
+        elif op in 'jn.':
+            for t in tag.children:
+                tag = t
+                break
+        elif op in 'hf<':
             tag = tag.previous_sibling
-        elif ops[0] == '>':
+        elif op in 'lb>':
             tag = tag.next_sibling
-        elif ops[0] == '.':
+        elif op in ' ':
             pass
 
         if tag is None:
