@@ -27,7 +27,7 @@ def sw2_site_unset(args):
         print('site not found', file=sys.stderr)
         return 1
 
-    if args_rule not in ['include', 'exclude', 'start', 'stop', 'property_template']:
+    if args_rule not in ['include', 'exclude', 'start', 'stop', 'property_template', 'walk']:
         print(f'Invalid rule or expression ({args_rule}, {args_weight})', file=sys.stderr)
         return 1
 
