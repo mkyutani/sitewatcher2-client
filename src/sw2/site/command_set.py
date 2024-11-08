@@ -42,7 +42,7 @@ def sw2_site_set(args):
             dst, value = args_expression.split(':', 1)
             contents['op'] = None
             contents['src'] = None
-            contents['dst'] = dst
+            contents['dst'] = dst.strip()
             contents['value'] = value
         elif args_rule == 'property_template':
             op, expr = args_expression.split(':', 1)
