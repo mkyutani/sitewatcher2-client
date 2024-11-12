@@ -33,8 +33,6 @@ def sw2_site_list(args):
         print('site not found', file=sys.stderr)
         return 1
 
-    sites.sort(key=lambda x: x['id'])
-
     if args_json:
         json.dump(sites, sys.stdout)
     elif args_yaml:

@@ -34,8 +34,6 @@ def sw2_directory_list(args):
         print('directory not found', file=sys.stderr)
         return 1
 
-    directories.sort(key=lambda x: x['id'])
-
     if args_json:
         json.dump(directories, sys.stdout)
     elif args_yaml:
