@@ -30,8 +30,6 @@ def sw2_channel_list(args):
         print('channel not found', file=sys.stderr)
         return 1
 
-    channels.sort(key=lambda x: x['id'])
-
     if args_json:
         json.dump(channels, sys.stdout)
     elif args_yaml:
