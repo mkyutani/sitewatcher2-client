@@ -40,6 +40,15 @@ def interpret_html_walk_expression(html_walk_expression):
                 num = num * 10 + int(expr[0])
                 expr = expr[1:]
             ops.append(num)
+        elif expr[0] == '/':
+            pattern = '/'
+            expr = expr[1:]
+            while len(expr) > 0 and expr[0] != '/':
+                pattern = pattern + expr[0]
+                expr = expr[1:]
+            if expr[0] == '/':
+                expr = expr[1:]
+            ops.append(pattern)
         else:
             ops.append(expr[0])
             expr = expr[1:]
@@ -49,6 +58,7 @@ def walk(soup, html_walk_expression = None):
 
     ops = interpret_html_walk_expression(html_walk_expression)
     tag = soup
+    searched = None
     for op in ops:
         if type(op) == int:
             index = op
@@ -57,6 +67,15 @@ def walk(soup, html_walk_expression = None):
                     tag = t
                     break
                 index = index - 1
+        elif op[0] == '/':
+            pattern = op[1:]
+            for t in tag.previous_siblings:
+                if t.string is not None:
+                    r = re.search(pattern, t.string)
+                    if r is not None:
+                        tag = t
+                        searched = r.group(0)
+                        break
         elif op in 'kp^':
             tag = tag.parent
         elif op in 'jn.':
@@ -83,12 +102,16 @@ def walk(soup, html_walk_expression = None):
     if tag is None:
         return None
 
-    found = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
-    if len(found) > 0:
+    if searched is not None:
+        text = searched
+    else:
+        text = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
+
+    if len(text) > 0:
         if content is None:
-            content = found
+            content = text
         else:
-            content = content + '::' + found
+            content = content + '::' + text
 
     return content
 
