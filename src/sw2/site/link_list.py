@@ -196,7 +196,7 @@ def get_html_links(source, html_walk_expression = None):
                 elif anc.name == 'tr' and table_rows is None:
                     tag_text_list = list(filter(lambda x: len(x) > 0, [s.strip() for s in anc.strings]))
                     if len(tag_text_list) > 0:
-                        list_items = '::'.join(tag_text_list)
+                        table_rows = '::'.join(tag_text_list)
                 elif anc.name == 'dl' and definition_term is None:
                     for dt in anc.find_all('dt'):
                         found = ''.join(filter(lambda c: c >= ' ', dt.text.strip()))
