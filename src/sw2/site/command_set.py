@@ -4,6 +4,7 @@ from urllib.parse import urljoin
 
 from sw2.env import Environment
 from sw2.site.list import get_sites
+from sw2.util import analyze_rule
 
 def sw2_parser_site_set(subparser):
     parser = subparser.add_parser('set', help='set rule of site')
@@ -29,50 +30,10 @@ def sw2_site_set(args):
         return 1
 
     headers = { 'Content-Type': 'application/json' }
-    contents = {}
-
-    try:
-        if args_rule in ['include', 'exclude', 'start', 'stop']:
-            src, value = args_expression.split(':', 1)
-            contents['op'] = None
-            contents['src'] = src
-            contents['dst'] = None
-            contents['value'] = value
-        elif args_rule == 'walk':
-            dst, value = args_expression.split(':', 1)
-            contents['op'] = None
-            contents['src'] = None
-            contents['dst'] = dst.strip()
-            contents['value'] = value
-        elif args_rule == 'property':
-            op, expr = args_expression.split(':', 1)
-            op = op.strip().lower()
-            if op not in ['set', 'match', 'none']:
-                raise ValueError()
-            contents['op'] = op
-            if op == 'set':
-                dst, value = expr.split(':', 1)
-                contents['src'] = None
-                contents['dst'] = dst.strip()
-                contents['value'] = value
-            elif op == 'match':
-                dst, src, value = expr.split(':', 2)
-                contents['src'] = src.strip()
-                contents['dst'] = dst.strip()
-                contents['value'] = value
-            else:
-                raise ValueError()
-        else:
-            raise ValueError()
-    except ValueError:
-        if args_expression.lower() == 'none':
-            contents['op'] = 'none'
-            contents['src'] = None
-            contents['dst'] = None
-            contents['value'] = None
-        else:
-            print(f'Invalid rule or expression ({args_rule}, {args_weight})', file=sys.stderr)
-            return 1
+    contents = analyze_rule(args_rule, args_expression)
+    if contents is None:
+        print(f'Invalid rule or expression ({args_rule}, {args_weight})', file=sys.stderr)
+        return 1
 
     for site in sites:
         query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', args_rule, args_weight]))
