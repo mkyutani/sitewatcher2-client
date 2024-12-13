@@ -11,6 +11,7 @@ def sw2_parser_site_test(subparser):
     aliases = []
     parser = subparser.add_parser('test', aliases=aliases, help='test site resources')
     parser.add_argument('name', help='site id, name or "all"')
+    parser.add_argument('-c', '--command', action='store_true', help='show command template for temporary rules')
     parser.add_argument('--unset', nargs=2, action='append', metavar=('CATEGORY', 'WEIGHT'), help='unset a rule temporarily')
     parser.add_argument('--set', nargs=3, action='append', metavar=('CATEGORY', 'WEIGHT', 'RULE'), help='set a rule temporarily')
     parser.add_argument('--strict', action='store_true', help='strict name check')
@@ -62,6 +63,7 @@ def patch_rules(site, temporary_rules, suppressed_rules):
 
 def sw2_site_test(args):
     args_name = args.get('name')
+    args_command = args.get('command')
     args_unset = args.get('unset')
     args_set = args.get('set')
     args_strict = args.get('strict')
@@ -93,17 +95,28 @@ def sw2_site_test(args):
     for site in sites:
         print(f'site {site["id"]} {site["name"]}')
 
-        site = patch_rules(site, temporary_rules, suppressed_rules)
+        if args_command:
+            for temporary_rule in temporary_rules:
+                category = temporary_rule['category']
+                weight = temporary_rule['weight']
+                exp = temporary_rule['expression']
+                print(f'sw2 site set \'{site["directory"]["name"]}:{site["name"]}\' --strict {category} {weight} \'{exp}\'')
+            for suppressed_rule in suppressed_rules:
+                category = suppressed_rule['category']
+                weight = suppressed_rule['weight']
+                print(f'sw2 site unset \'{site["directory"]["name"]}:{site["name"]}\' --strict {category} {weight}')
+        else:
+            site = patch_rules(site, temporary_rules, suppressed_rules)
 
-        resources = test_resources(site, all=True)
-        if resources is None:
-            return 1
+            resources = test_resources(site, all=True)
+            if resources is None:
+                return 1
 
-        for resource in resources:
-            print(f'resource test {resource["name"]}')
-            print(f'- uri {resource["uri"]}')
-            properties = resource['properties']
-            for key in properties.keys():
-                print(f'- property {key} {properties[key]}')
+            for resource in resources:
+                print(f'resource test {resource["name"]}')
+                print(f'- uri {resource["uri"]}')
+                properties = resource['properties']
+                for key in properties.keys():
+                    print(f'- property {key} {properties[key]}')
 
     return 0
