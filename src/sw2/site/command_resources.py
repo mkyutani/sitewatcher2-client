@@ -31,6 +31,8 @@ def sw2_site_resources(args):
         print('site not found', file=sys.stderr)
         return 1
 
+    sites.sort(key=lambda x: x['id'])
+
     all_site_resources = []
     result = 0
 

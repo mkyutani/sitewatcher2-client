@@ -21,6 +21,8 @@ def sw2_site_refresh(args):
         print('site not found', file=sys.stderr)
         return 1
 
+    sites.sort(key=lambda x: x['id'])
+
     for site in sites:
         print(f'site {site["id"]} {site["name"]}')
 

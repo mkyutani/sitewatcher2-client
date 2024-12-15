@@ -75,6 +75,8 @@ def sw2_site_test(args):
         print('site not found', file=sys.stderr)
         return 1
 
+    sites.sort(key=lambda x: x['id'])
+
     temporary_rules = []
     if args_set is not None:
         for set_rule in args_set:
