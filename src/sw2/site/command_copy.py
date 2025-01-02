@@ -12,14 +12,12 @@ def sw2_parser_site_copy(subparser):
     parser = subparser.add_parser('copy', aliases=aliases, help='copy site rules')
     parser.add_argument('name', nargs=1, metavar='NAME', default=None, help='destination site id, name or "all"')
     parser.add_argument('source', nargs=1, metavar='SOURCE', default=None, help='source site id or name')
-    parser.add_argument('--delete', action='store_true', help='delete all existing rules')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     return aliases
 
 def sw2_site_copy(args):
     args_name = args.get('name')[0]
     args_source = args.get('source')[0]
-    args_delete = args.get('delete')
     args_strict = args.get('strict')
 
     sites = get_sites(args_name, strict=args_strict)
@@ -63,22 +61,6 @@ def sw2_site_copy(args):
     headers = { 'Content-Type': 'application/json' }
 
     for site in sites:
-        if args_delete:
-            for rule_category_name in site['rule_category_names']:
-                query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', rule_category_name]))
-                res = None
-                try:
-                    print(query)
-                    res = requests.delete(query, headers=headers)
-                except Exception as e:
-                    print(str(e), file=sys.stderr)
-                    return 1
-
-                if res.status_code >= 400:
-                    message = ' '.join([str(res.status_code), res.text if res.text is not None else ''])
-                    print(f'{message} ', file=sys.stderr)
-                    return 1
-
         for rule in rules:
             query = urljoin(Environment().apiSites(), '/'.join([site['id'], 'rules', rule['category_name'], str(rule['weight'])]))
             contents = {}
