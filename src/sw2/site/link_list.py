@@ -40,15 +40,6 @@ def interpret_html_walk_expression(html_walk_expression):
                 num = num * 10 + int(expr[0])
                 expr = expr[1:]
             ops.append(num)
-        elif expr[0] == '/':
-            pattern = '/'
-            expr = expr[1:]
-            while len(expr) > 0 and expr[0] != '/':
-                pattern = pattern + expr[0]
-                expr = expr[1:]
-            if expr[0] == '/':
-                expr = expr[1:]
-            ops.append(pattern)
         else:
             ops.append(expr[0])
             expr = expr[1:]
@@ -67,26 +58,17 @@ def walk(soup, html_walk_expression, regular_expression):
                     tag = t
                     break
                 index = index - 1
-        elif op[0] == '/':
-            pattern = op[1:]
-            for t in tag.previous_siblings:
-                if t.string is not None:
-                    r = re.search(pattern, t.string)
-                    if r is not None:
-                        tag = t
-                        searched = r.group(0)
-                        break
-        elif op in 'kp^':
+        elif op == '^':
             tag = tag.parent
-        elif op in 'jn.':
+        elif op == '.':
             for t in tag.children:
                 tag = t
                 break
-        elif op in 'hf<':
+        elif op == '<':
             tag = tag.previous_sibling
-        elif op in 'lb>':
+        elif op == '>':
             tag = tag.next_sibling
-        elif op in ' ':
+        elif op == ' ':
             pass
 
         if tag is None:
