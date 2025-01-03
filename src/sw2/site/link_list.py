@@ -53,7 +53,7 @@ def interpret_html_walk_expression(html_walk_expression):
             ops.append(expr[0])
             expr = expr[1:]
 
-def walk(soup, html_walk_expression = None):
+def walk(soup, html_walk_expression, regular_expression):
     content = None
 
     ops = interpret_html_walk_expression(html_walk_expression)
@@ -112,6 +112,24 @@ def walk(soup, html_walk_expression = None):
             content = text
         else:
             content = content + '::' + text
+
+    if content and regular_expression:
+        sep = regular_expression[0]
+        operands = regular_expression[1:].split(sep)
+        if len(operands) < 2 or len(operands) > 3:
+            print(f'Invalid property template value (html_walk_expression)', file=sys.stderr)
+        else:
+            pattern = operands[0]
+            compiled_pattern = re.compile(pattern)
+            if len(operands) == 2:
+                matched = re.search(compiled_pattern, content)
+                if matched:
+                    content = matched.group()
+            else:
+                replaced = operands[1]
+                matched, count = re.subn(compiled_pattern, replaced, content)
+                if count > 0 and matched:
+                    content = matched
 
     return content
 
@@ -209,7 +227,7 @@ def get_html_links(source, html_walk_expression = None):
 
             if html_walk_expression is not None:
                 for rule in html_walk_expression:
-                    value = walk(tag, rule['value'])
+                    value = walk(tag, rule['src'], rule['value'])
                     if value is not None:
                         walk_contents.update({rule['dst']: value})
 

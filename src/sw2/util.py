@@ -14,9 +14,18 @@ def analyze_rule(category, expression):
             contents['dst'] = None
             contents['value'] = value
         elif category == 'walk':
-            dst, value = expression.split(':', 1)
+            items = expression.split(':', 2)
+            if len(items) == 3:
+                dst, src, value = items
+                if len(value) == 0:
+                    value = None
+            elif len(items) == 2:
+                dst, src = items
+                value = None
+            else:
+                raise ValueError()
             contents['op'] = None
-            contents['src'] = None
+            contents['src'] = src.strip()
             contents['dst'] = dst.strip()
             contents['value'] = value
         elif category == 'property':
