@@ -6,6 +6,8 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 import requests
 
+from sw2.util import to_printable
+
 def get_rss_links(source):
     feed = None
     try:
@@ -194,19 +196,19 @@ def get_html_links(source, html_walk_expression = None):
     for tag in bs.find_all(['title', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'table', 'tr']):
         if tag.name[0] == 'h':
             level = int(tag.name[1])
-            section_text = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
+            section_text = tag.text.strip()
             section_text = re.sub('<.*?>', '', section_text)
             sections[level - 1] = section_text
             for i in range(level, 6):
                 sections[i] = None
         elif tag.name == 'title':
-            title = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
+            title = tag.text.strip()
         elif tag.name == 'table':
             table_header = None
         elif tag.name =='tr':
             if table_header is None:
                 for th in tag.find_all('th'):
-                    found = ''.join(filter(lambda c: c >= ' ', th.text.strip()))
+                    found = th.text.strip()
                     if len(found) > 0:
                         if table_header is None:
                             table_header = ''
@@ -229,7 +231,7 @@ def get_html_links(source, html_walk_expression = None):
                         table_rows = '::'.join(tag_text_list)
                 elif anc.name == 'dl' and definition_term is None:
                     for dt in anc.find_all('dt'):
-                        found = ''.join(filter(lambda c: c >= ' ', dt.text.strip()))
+                        found = dt.text.strip()
                         if len(found) > 0:
                             if definition_term is None:
                                 definition_term = ''
@@ -271,9 +273,8 @@ def get_html_links(source, html_walk_expression = None):
 
             href = tag.get('href')
             if href is not None:
-                ref = ''.join(filter(lambda c: c >= ' ', href))
+                ref = href.strip()
                 ref = re.sub('<.*?>', '', ref)
-                ref = ref.strip()
                 if not (ref.startswith('#') or ref.startswith('mailto:') or ref.startswith('tel:') or ref.startswith('javascript:')):
                     if re.match(r'^[^:]*:', ref):
                         uri = ref
@@ -297,22 +298,30 @@ def get_html_links(source, html_walk_expression = None):
                     properties['_uri'] = uri
                     properties['_name'] = name
                     if title is not None:
+                        title = to_printable(title)
                         properties['_title'] = title[:property_value_max]
                     if table_header is not None:
+                        table_header = to_printable(table_header)
                         properties['_th'] = table_header[:property_value_max]
                     if table_rows is not None:
+                        table_rows = to_printable(table_rows)
                         properties['_tr'] = table_rows[:property_value_max]
                     if list_items is not None:
+                        list_items = to_printable(list_items)
                         properties['_li'] = list_items[:property_value_max]
                     if definition_term is not None:
+                        definition_term = to_printable(definition_term)
                         properties['_dt'] = definition_term[:property_value_max]
                     for i in range(6):
                         if sections[i] is not None:
-                            properties[f'_h{i + 1}'] = sections[i][:property_value_max]
+                            section_text = to_printable(sections[i])
+                            properties[f'_h{i + 1}'] = section_text[:property_value_max]
                     for key in walk_contents:
-                        properties[key] = walk_contents[key][:property_value_max]
+                        property = to_printable(walk_contents[key])
+                        properties[key] = property[:property_value_max]
                     if len(ancestors_text) > 0:
-                        properties['_tags'] = ancestors_text[:property_value_max]
+                        ancestors = to_printable(ancestors_text)
+                        properties['_tags'] = ancestors[:property_value_max]
 
                     links.append({
                         'uri': uri,

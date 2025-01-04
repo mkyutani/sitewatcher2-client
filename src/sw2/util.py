@@ -3,6 +3,9 @@ import re
 def is_uuid(id: str) -> bool:
     return re.match(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', id) is not None
 
+def to_printable(message: str) -> str:
+    return ''.join([ch if ch >= ' ' else '.' for ch in message])
+
 def analyze_rule(category, expression):
     contents = {}
 
