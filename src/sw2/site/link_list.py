@@ -27,6 +27,12 @@ def get_rss_links(source):
 
     return links
 
+class Tag:
+    def __init__(self, name):
+        self.name = name
+    def __str__(self):
+        return self.name
+
 def interpret_html_walk_expression(html_walk_expression):
     ops = []
 
@@ -40,6 +46,18 @@ def interpret_html_walk_expression(html_walk_expression):
                 num = num * 10 + int(expr[0])
                 expr = expr[1:]
             ops.append(num)
+        elif expr[0] in '^.<>':
+            ops.append(expr[0])
+            expr = expr[1:]
+        elif expr[0] in ' ,':
+            pass
+        elif expr[0] == '[':
+            tag_name = ''
+            expr = expr[1:]
+            while len(expr) > 0 and expr[0] != ']':
+                tag_name = tag_name + expr[0]
+                expr = expr[1:]
+            ops.append(Tag(tag_name))
         else:
             ops.append(expr[0])
             expr = expr[1:]
@@ -49,9 +67,24 @@ def walk(soup, html_walk_expression, regular_expression):
 
     ops = interpret_html_walk_expression(html_walk_expression)
     tag = soup
-    searched = None
     for op in ops:
-        if type(op) == int:
+        if type(op) == Tag:
+            searched = None
+            if tag.siblings:
+                for t in tag.siblings:
+                    if t.name == op.name:
+                        searched = t
+                        break
+            if not searched and tag.parents:
+                for t in tag.parents:
+                    if t.name == op.name:
+                        searched = t
+                        break
+            if searched is None:
+                tag = None
+            else:
+                tag = searched
+        elif type(op) == int:
             index = op
             for t in tag.children:
                 if index == 0:
@@ -68,8 +101,8 @@ def walk(soup, html_walk_expression, regular_expression):
             tag = tag.previous_sibling
         elif op == '>':
             tag = tag.next_sibling
-        elif op == ' ':
-            pass
+        else:
+            continue
 
         if tag is None:
             break
@@ -84,10 +117,7 @@ def walk(soup, html_walk_expression, regular_expression):
     if tag is None:
         return None
 
-    if searched is not None:
-        text = searched
-    else:
-        text = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
+    text = ''.join(filter(lambda c: c >= ' ', tag.text.strip()))
 
     if len(text) > 0:
         if content is None:
