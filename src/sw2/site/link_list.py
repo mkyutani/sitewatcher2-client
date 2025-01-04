@@ -243,24 +243,6 @@ def get_html_links(source, html_walk_expression = None):
                     if value is not None:
                         walk_contents.update({rule['dst']: value})
 
-            previous = None
-            previous_tag_text_list = []
-            for anc in tag.previous_siblings:
-                if anc.name == 'a':
-                    break
-                previous_tag_text_list.append(''.join(list(filter(lambda c: c >= ' ', anc.text.strip()))))
-                if len(previous_tag_text_list) > 0:
-                    previous = '::'.join(list(filter(lambda x: len(x) > 0, previous_tag_text_list)))
-
-            next = None
-            next_tag_text_list = []
-            for anc in tag.next_siblings:
-                if anc.name == 'a':
-                    break
-                next_tag_text_list.append(''.join(list(filter(lambda c: c >= ' ', anc.text.strip()))))
-                if len(next_tag_text_list) > 0:
-                    next = '::'.join(list(filter(lambda x: len(x) > 0, next_tag_text_list)))
-
             ancestors = []
             for anc in tag.parents:
                 if anc.name == 'document' or anc.name == 'html' or anc.name == 'body':
@@ -324,10 +306,6 @@ def get_html_links(source, html_walk_expression = None):
                         properties['_li'] = list_items[:property_value_max]
                     if definition_term is not None:
                         properties['_dt'] = definition_term[:property_value_max]
-                    if previous is not None:
-                        properties['_prev'] = previous[:property_value_max]
-                    if next is not None:
-                        properties['_next'] = next[:property_value_max]
                     for i in range(6):
                         if sections[i] is not None:
                             properties[f'_h{i + 1}'] = sections[i][:property_value_max]
