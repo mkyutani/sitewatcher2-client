@@ -11,17 +11,20 @@ def sw2_parser_channel_share(subparser):
     parser = subparser.add_parser('share', help='share resources of channels')
     parser.add_argument('name', nargs=1, help='channel id, name or "all" (required)')
     parser.add_argument('device', nargs=1, help='device name')
-    parser.add_argument('--dry', action='store_true', help='dry run')
     parser.add_argument('--strict', action='store_true', help='strict name check')
     parser.add_argument('--timestamp', nargs=1, default=[None], help='timestamp or "latest"')
+    no_share_group = parser.add_mutually_exclusive_group()
+    no_share_group.add_argument('--dry', action='store_true', help='dry run')
+    no_share_group.add_argument('--skip', action='store_true', help='skip sending')
     return []
 
 def sw2_channel_share(args):
     args_name = args.get('name')[0]
     args_device = args.get('device')[0]
-    args_dry = args.get('dry')
     args_strict = args.get('strict')
     args_timestamp = args.get('timestamp')[0]
+    args_dry = args.get('dry')
+    args_skip = args.get('skip')
 
     channels = get_channels(args_name, strict=args_strict)
     if channels is None:
@@ -72,6 +75,6 @@ def sw2_channel_share(args):
             return 1
 
         channel_resources = json.loads(res.text)
-        output_to_device(device_info, channel_resources, sending=not args_dry)
+        output_to_device(device_info, channel_resources, dry=args_dry, skip=args_skip)
 
     return 0

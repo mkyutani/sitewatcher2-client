@@ -8,7 +8,7 @@ from slack_sdk.errors import SlackClientError, SlackApiError
 from sw2.formatter import PrivateFormatter
 
 
-def send_to_msteams(device_info, channel_resources, sending=False):
+def send_to_msteams(device_info, channel_resources, dry=False, skip=False):
     msteams_webhook = device_info['apikey']
     msteams_title = device_info['tag']
     msteams_template = eval('"' + device_info['template'] + '"') # convert raw string to string
@@ -34,6 +34,8 @@ def send_to_msteams(device_info, channel_resources, sending=False):
             count = 0
     if len(resource_list) > 0:
         all_resource_list.append(resource_list)
+
+    sending = not dry and not skip
 
     initial = True
     for resource_list in all_resource_list:
@@ -67,8 +69,11 @@ def send_to_msteams(device_info, channel_resources, sending=False):
 
         res = None
         try:
-            verb = 'Sending'
-            if sending:
+            if dry:
+                verb = 'Sending'
+            elif skip:
+                verb = 'Skipped'
+            else:
                 res = requests.post(msteams_webhook, json=data)
                 if res is None:
                     print(f'None {text_crlf_removed}', file=sys.stderr)

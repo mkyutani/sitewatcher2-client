@@ -6,7 +6,7 @@ from slack_sdk.errors import SlackClientError, SlackApiError
 
 from sw2.formatter import PrivateFormatter
 
-def send_to_slack(device_info, channel_resources, sending=False):
+def send_to_slack(device_info, channel_resources, dry=False, skip=False):
     slack_api_key = device_info['apikey']
     slack_channel = device_info['tag']
     slack_template = eval('"' + device_info['template'] + '"') # convert raw string to string
@@ -22,8 +22,11 @@ def send_to_slack(device_info, channel_resources, sending=False):
                 value_string = eval('"' + kv['value'] + '"') # convert raw string to string
                 formatter.set(key, value_string)
             slack_message = formatter.format(slack_template)
-            verb = 'Sending'
-            if sending:
+            if dry:
+                verb = 'Sending'
+            elif skip:
+                verb = 'Skipped'
+            else:
                 client.chat_postMessage(channel=channel, text=slack_message)
                 verb = 'Sent'
             slack_message_crlf_removed = re.sub(r'[\r\n]', ' ', slack_message)
