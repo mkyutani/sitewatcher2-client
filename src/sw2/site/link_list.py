@@ -72,12 +72,12 @@ def walk(soup, html_walk_expression, regular_expression):
     for op in ops:
         if type(op) == Tag:
             searched = None
-            if tag.siblings:
+            if 'siblings' in tag and tag.siblings:
                 for t in tag.siblings:
                     if t.name == op.name:
                         searched = t
                         break
-            if not searched and tag.parents:
+            if not searched and ('parents' in tag and tag.parents):
                 for t in tag.parents:
                     if t.name == op.name:
                         searched = t
@@ -88,28 +88,33 @@ def walk(soup, html_walk_expression, regular_expression):
                 tag = searched
         elif type(op) == int:
             index = op
-            for t in tag.children:
-                if index == 0:
+            if 'children' in tag and tag.children:
+                for t in tag.children:
+                    if index == 0:
+                        tag = t
+                        break
+                    index = index - 1
+        elif op == '^':
+            if 'parent' in tag and tag.parent:
+                tag = tag.parent
+        elif op == '.':
+            if 'children' in tag:
+                for t in tag.children:
                     tag = t
                     break
-                index = index - 1
-        elif op == '^':
-            tag = tag.parent
-        elif op == '.':
-            for t in tag.children:
-                tag = t
-                break
         elif op == '<':
-            tag = tag.previous_sibling
+            if 'previous_sibling' in tag and tag.previous_sibling:
+                tag = tag.previous_sibling
         elif op == '>':
-            tag = tag.next_sibling
+            if 'next_sibling' in tag and tag.next_sibling:
+                tag = tag.next_sibling
         else:
             continue
 
         if tag is None:
             break
 
-        if tag.name is not None:
+        if 'name' in tag and tag.name:
             if content is None:
                 content = ''
             else:
