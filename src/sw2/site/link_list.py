@@ -1,5 +1,5 @@
 import feedparser
-import hashlib
+import os
 import re
 import sys
 from urllib.parse import urljoin, urlparse
@@ -64,57 +64,91 @@ def interpret_html_walk_expression(html_walk_expression):
             ops.append(expr[0])
             expr = expr[1:]
 
-def walk(soup, html_walk_expression, regular_expression):
+def walk(source_uri, soup, html_walk_expression, regular_expression):
     content = None
+    footprints = []
 
     ops = interpret_html_walk_expression(html_walk_expression)
     tag = soup
+    footprints.append(tag.name if tag.name else '?')
     for op in ops:
         if type(op) == Tag:
             searched = None
-            if 'siblings' in tag and tag.siblings:
+            if hasattr(tag, 'siblings')and tag.siblings:
                 for t in tag.siblings:
                     if t.name == op.name:
                         searched = t
                         break
-            if not searched and ('parents' in tag and tag.parents):
+            if not searched and hasattr(tag, 'parents') and tag.parents:
                 for t in tag.parents:
                     if t.name == op.name:
                         searched = t
                         break
             if searched is None:
                 tag = None
+                footprints.append('*')
             else:
                 tag = searched
+                footprints.append(tag.name if tag.name else '?')
         elif type(op) == int:
+            found = None
             index = op
-            if 'children' in tag and tag.children:
+            if hasattr(tag, 'children') and tag.children:
                 for t in tag.children:
                     if index == 0:
-                        tag = t
+                        found = t
                         break
                     index = index - 1
+            if found is None:
+                footprints.append('*')
+            else:
+                tag = found
+                footprints.append(tag.name if tag.name else '?')
         elif op == '^':
-            if 'parent' in tag and tag.parent:
-                tag = tag.parent
+            found = None
+            if hasattr(tag, 'parent') and tag.parent:
+                found = tag.parent
+            if found is None:
+                footprints.append('*')
+            else:
+                tag = found
+                footprints.append(tag.name if tag.name else '?')
         elif op == '.':
-            if 'children' in tag:
+            found = None
+            if hasattr(tag, 'children'):
                 for t in tag.children:
-                    tag = t
+                    if found is None:
+                        found = t
+                        break
                     break
+            if found is None:
+                footprints.append('*')
+            else:
+                tag = found
+                footprints.append(tag.name if tag.name else '?')
         elif op == '<':
-            if 'previous_sibling' in tag and tag.previous_sibling:
-                tag = tag.previous_sibling
+            found = None
+            if hasattr(tag, 'previous_sibling') and tag.previous_sibling:
+                found = tag.previous_sibling
+                footprints.append(tag.name if tag.name else '?')
+            else:
+                footprints.append('*')
         elif op == '>':
-            if 'next_sibling' in tag and tag.next_sibling:
-                tag = tag.next_sibling
+            found = None
+            if hasattr(tag, 'next_sibling') and tag.next_sibling:
+                found = tag.next_sibling
+                footprints.append(tag.name if tag.name else '?')
+            else:
+                footprints.append('*')
         else:
+            footprints.append('*')
             continue
 
         if tag is None:
+            footprints.append('None')
             break
 
-        if 'name' in tag and tag.name:
+        if hasattr(tag, 'name') and tag.name:
             if content is None:
                 content = ''
             else:
@@ -149,6 +183,9 @@ def walk(soup, html_walk_expression, regular_expression):
                 matched, count = re.subn(compiled_pattern, replaced, content)
                 if count > 0 and matched:
                     content = matched
+
+    all_footprints = ','.join(footprints)
+    print(f'{os.path.basename(source_uri)}:{all_footprints}:{content}', file=sys.stderr)
 
     return content
 
@@ -246,7 +283,7 @@ def get_html_links(source, html_walk_expression = None):
 
             if html_walk_expression is not None:
                 for rule in html_walk_expression:
-                    value = walk(tag, rule['src'], rule['value'])
+                    value = walk(source, tag, rule['src'], rule['value'])
                     if value is not None:
                         walk_contents.update({rule['dst']: value})
 
