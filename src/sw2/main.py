@@ -1,6 +1,7 @@
 import argparse
 import copy
 import io
+import signal
 import sys
 from sw2.channel import channel_function_map
 from sw2.directory import directory_function_map
@@ -19,13 +20,14 @@ root_function_map = {
     'test': { 'function': sw2_test, 'parser': sw2_parser_test }
 }
 
-def set_io_buffers():
+def setup():
+    signal.signal(signal.SIGINT, lambda num, frame: sys.exit(1))
     sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True)
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', line_buffering=True)
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=False)
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', line_buffering=False)
 
 def main():
-    set_io_buffers()
+    setup()
 
     runtime_function_map = {}
     parser = argparse.ArgumentParser(description='Sitewatcher2 Client Tool')
