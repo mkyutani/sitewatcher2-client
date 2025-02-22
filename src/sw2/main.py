@@ -4,6 +4,7 @@ import io
 import signal
 import sys
 from sw2.channel import channel_function_map
+from sw2.config import sw2_config, sw2_parser_config
 from sw2.directory import directory_function_map
 from sw2.ping import sw2_parser_ping, sw2_ping
 from sw2.site import site_function_map
@@ -17,7 +18,8 @@ function_map = {
 
 root_function_map = {
     'ping': { 'function': sw2_ping, 'parser': sw2_parser_ping },
-    'test': { 'function': sw2_test, 'parser': sw2_parser_test }
+    'test': { 'function': sw2_test, 'parser': sw2_parser_test },
+    'config': { 'function': sw2_config, 'parser': sw2_parser_config}
 }
 
 def setup():
