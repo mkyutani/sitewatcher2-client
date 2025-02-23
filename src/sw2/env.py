@@ -57,3 +57,5 @@ class Environment:
         return urljoin(self.apiBase(),  'sites/')
     def apiChannels(self):
         return urljoin(self.apiBase(),  'channels/')
+    def apiResources(self):
+        return urljoin(self.apiBase(),  'resources/')
