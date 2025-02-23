@@ -44,7 +44,7 @@ def sw2_channel_share(args):
         for device in channel['devices'].values():
             if device['name'] == args_device:
                 device_info = device
-                query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'resources', device_info['name']]))
+                query = urljoin(Environment().apiChannels(), '/'.join([channel['id'], 'devices', device_info['name'], 'resources']))
                 break
         else:
             print(f'device not found: {args_device}', file=sys.stderr)
