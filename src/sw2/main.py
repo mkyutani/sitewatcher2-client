@@ -26,9 +26,9 @@ root_function_map = {
 
 def setup():
     signal.signal(signal.SIGINT, lambda num, frame: sys.exit(1))
-    sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8')
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=False)
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', line_buffering=False)
+    sys.stdin.reconfigure(encoding='utf-8')
+    sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
+    sys.stderr.reconfigure(encoding='utf-8', line_buffering=True)
 
 def main():
     setup()
