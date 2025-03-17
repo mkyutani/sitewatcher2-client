@@ -127,16 +127,14 @@ def walk(source_uri, soup, html_walk_expression, regular_expression):
                 tag = found
                 footprints.append(tag.name if tag.name else '?')
         elif op == '<':
-            found = None
             if hasattr(tag, 'previous_sibling') and tag.previous_sibling:
-                found = tag.previous_sibling
+                tag = tag.previous_sibling
                 footprints.append(tag.name if tag.name else '?')
             else:
                 footprints.append('*')
         elif op == '>':
-            found = None
             if hasattr(tag, 'next_sibling') and tag.next_sibling:
-                found = tag.next_sibling
+                tag = tag.next_sibling
                 footprints.append(tag.name if tag.name else '?')
             else:
                 footprints.append('*')
@@ -294,7 +292,7 @@ def get_html_links(source, html_walk_expression = None):
                 attrs = []
                 for key in anc.attrs:
                     if key == 'id' or key == 'class':
-                        if type(anc[key]) == list:
+                        if type(anc[key]) is list:
                             attrs.append(f'{key}={",".join(anc[key])}')
                         else:
                             attrs.append(f'{key}={anc[key]}')
@@ -308,7 +306,8 @@ def get_html_links(source, html_walk_expression = None):
                     text = ''.join([c.text.strip() for c in anc.contents if c.name is None])
                     if len(text) == 0:
                         text = None
-                ancestor_text = ':'.join(list(filter(lambda x: x is not None, [anc.name, attrs_string, text])))
+                ancestor_text = ':'.join(list(filter(lambda x: x is not None, [anc.name, attrs_string])))
+#                ancestor_text = ':'.join(list(filter(lambda x: x is not None, [anc.name, attrs_string, text])))
                 ancestors.append(ancestor_text)
             ancestors.reverse()
             ancestors_text = ';'.join(ancestors)
