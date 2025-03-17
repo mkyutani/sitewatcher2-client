@@ -53,15 +53,27 @@ def send_to_msteams(device_info, channel_resources, dry=False, skip=False):
         ]
 
         data = {
-            'type': 'message',
+            'text': text,
             'attachments': [
                 {
-                    'contentType': 'application/vnd.microsoft.teams.card.o365connector',
+                    'contentType': 'application/vnd.microsoft.card.adaptive',
+                    'contentUrl': None,
                     'content': {
-                        '@type': 'MessageCard',
-                        '@context': 'https://schema.org/extensions',
-                        'title': msteams_title,
-                        'sections': contents
+                        '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
+                        'type': 'AdaptiveCard',
+                        'version': '1.4',
+                        'body': [
+                            {
+                                'type': 'TextBlock',
+                                'text': f'**{msteams_title}**',
+                                'wrap': True
+                            },
+                            {
+                                'type': 'TextBlock',
+                                'text': text,
+                                'wrap': True
+                            }
+                        ]
                     }
                 }
             ]
@@ -74,7 +86,10 @@ def send_to_msteams(device_info, channel_resources, dry=False, skip=False):
             elif skip:
                 verb = 'Skipped'
             else:
-                res = requests.post(msteams_webhook, json=data)
+                headers = {
+                    'Content-Type': 'application/json'
+                }
+                res = requests.post(msteams_webhook, json=data, headers=headers)
                 if res is None:
                     print(f'None {text_crlf_removed}', file=sys.stderr)
                     continue
