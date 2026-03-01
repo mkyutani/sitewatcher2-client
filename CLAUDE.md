@@ -27,6 +27,8 @@ docker build . --tag sw2:latest
 ```bash
 sw2 ping                              # Test server connection
 sw2 config SW2_SERVER                 # Get/set configuration
+sw2 resource <resource-id>            # Retrieve a resource by ID
+sw2 test <url>                        # Test links from a URL
 sw2 c list                            # List channels (alias for 'channel')
 sw2 d list                            # List directories (alias for 'directory')
 sw2 s list                            # List sites (alias for 'site')
@@ -45,6 +47,10 @@ New commands must follow this naming convention and be added to the module's `fu
 ### Source Structure
 - `src/sw2/main.py` - CLI entry point with argparse setup
 - `src/sw2/env.py` - Configuration management (reads `~/.sitewatcher` or `SW2_SERVER` env var)
+- `src/sw2/config.py` - `sw2 config` command implementation
+- `src/sw2/resource.py` - `sw2 resource` command (retrieve resource by ID)
+- `src/sw2/test.py` - `sw2 test` command (test links from a URL)
+- `src/sw2/formatter.py` - String formatter with default value support
 - `src/sw2/channel/` - Channel management (Slack, MS Teams interfaces)
 - `src/sw2/site/` - Site management commands
 - `src/sw2/directory/` - Directory management commands
@@ -63,6 +69,7 @@ New commands must follow this naming convention and be added to the module's `fu
 ## API Endpoints
 The client communicates with these server endpoints:
 - `/api/v1/directories/`
+- `/api/v1/directoryCollectors/`
 - `/api/v1/sites/`
 - `/api/v1/channels/`
 - `/api/v1/resources/`
